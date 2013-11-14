@@ -7,12 +7,15 @@ describe Basquiat do
 
   context '#configuration' do
     it '#exchange_name' do
-      expect(configuration.exchange_name).to eq('vagas')
+      expect(Basquiat.configuration.exchange_name).to eq('vagas')
     end
 
     it '#exchange_name=' do
-      configuration.exchange_name = 'test'
-      expect(configuration.exchange_name).to eq('test')
+      Basquiat.configuration.exchange_name = 'test'
+      expect(Basquiat.configuration.exchange_name).to eq('test')
+
+      Basquiat.configuration.exchange_name = nil
+      expect(Basquiat.configuration.exchange_name).to eq('vagas')
     end
   end
 end

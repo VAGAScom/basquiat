@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'guard-rspec'
   spec.add_development_dependency 'bunny'
   spec.add_development_dependency 'yajl-ruby'
+  spec.add_development_dependency 'simplecov'
 
   spec.add_dependency 'multi_json', '~> 1.0'
 end

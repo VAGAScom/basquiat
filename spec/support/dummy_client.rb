@@ -1,5 +1,8 @@
 class DummyClient
-  event_source('localhost', 5672)
+  include Basquiat::Consumer
+  event_adapter RabbitAdapter
+
+  event_source host: 'localhost', port: 5672
   subscribe 'some.event', with: ->(msg) { puts msg }
 end
 

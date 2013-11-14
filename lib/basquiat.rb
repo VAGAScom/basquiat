@@ -1,8 +1,14 @@
 require 'multi_json'
 require 'basquiat/version'
 
+require_relative 'adapters/null_adapter'
+
+require_relative 'interfaces/base'
+require_relative 'interfaces/producer'
+require_relative 'interfaces/consumer'
+
 module Basquiat
-  def configuration
+  def self.configuration
     Configuration.instance
   end
 
@@ -15,7 +21,7 @@ module Basquiat
     end
 
     def exchange_name=(value)
-      @exchange_name = String(value)
+      @exchange_name = value
     end
   end
 end
