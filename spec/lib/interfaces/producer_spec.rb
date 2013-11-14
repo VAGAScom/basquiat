@@ -5,7 +5,8 @@ describe Basquiat::Producer do
   subject { DummyProducer }
 
   it '#publish' do
-    DummyProducer.adapter.should_receive(:publish)
-    subject.publish('test.message', message: 'useful test message')
+    expect do
+      subject.publish('test.message', message: 'useful test message')
+    end.to change { DummyProducer.adapter.events('test.message').size }.by(1)
   end
 end
