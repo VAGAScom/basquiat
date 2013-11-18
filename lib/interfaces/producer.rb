@@ -3,7 +3,7 @@ module Basquiat
     include Basquiat::Base
 
     def self.publish(event, message)
-      adapter.publish(message, routing_key: event)
+      adapter.publish(event, message)
     end
   end
 end

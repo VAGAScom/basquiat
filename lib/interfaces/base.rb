@@ -1,6 +1,5 @@
 module Basquiat
   module Base
-
     module ClassMethods
       attr_reader :adapter
 
@@ -9,7 +8,7 @@ module Basquiat
       end
 
       def event_source(opts ={})
-        @adapter.connection_options(opts)
+        @adapter.adapter_options(opts)
       end
     end
 

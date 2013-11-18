@@ -1,10 +1,13 @@
 module Basquiat
   module Adapters
     class Test
-      @@events = Hash.new(Array.new)
+      include Basquiat::Adapters::Base
 
-      def connection_options(opts)
-        @options = opts
+      @@events = Hash.new(Array.new)
+      attr_reader :options
+
+      def default_options
+        { host: '127.0.0.1', port: 123_456, durable: true }
       end
 
       def publish(event, message)

@@ -1,19 +1,23 @@
 module Basquiat
   module Adapters
     class RabbitMq
-      def connection_options(opts = {})
+      def initialize
+        @options = {}
+      end
+
+      def connection_options(opts)
         @options = opts
       end
 
       def publish(event, message)
-        self.connect
+        connect
         exchange.publish(message, routing_key: event)
-        self.disconnect
+        disconnect
       end
 
       private
       def connection
-        @connection = Bunny.new(opts)
+        @connection ||= Bunny.new(@options)
       end
 
       def connect
@@ -21,13 +25,17 @@ module Basquiat
       end
 
       def disconnect
-        @connection.close_all_channels
-        @connection.close
+        connection.close_all_channels
+        connection.close
+        @channel, @exchange = nil, nil
+      end
+
+      def channel
+        @channel ||= connection.create_channel
       end
 
       def exchange
-        channel   = connection.create_channel
-        @exchange = channel.topic(Basquiat.configuration.exchange_name, durable: true)
+        @exchange ||= channel.topic(Basquiat.configuration.exchange_name, durable: true)
       end
     end
   end

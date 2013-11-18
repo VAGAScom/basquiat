@@ -6,3 +6,4 @@ class DummyClient
   subscribe 'some.event', with: ->(msg) { puts msg }
 end
 
+# DummyClient.listen
