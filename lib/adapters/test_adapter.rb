@@ -8,7 +8,11 @@ module Basquiat
       end
 
       def connect
-        self
+        @connection = Object.new
+      end
+
+      def connected?
+        @connection
       end
 
       def publish(event, message)
