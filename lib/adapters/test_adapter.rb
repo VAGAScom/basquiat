@@ -1,18 +1,10 @@
 module Basquiat
   module Adapters
-    class TestAdapter
+    class Test
       @@events = Hash.new(Array.new)
 
       def connection_options(opts)
         @options = opts
-      end
-
-      def connect
-        @connection = Object.new
-      end
-
-      def connected?
-        @connection
       end
 
       def publish(event, message)
@@ -22,6 +14,15 @@ module Basquiat
 
       def events(key)
         @@events[key]
+      end
+
+      def connected?
+        @connection
+      end
+
+      private
+      def connect
+        @connection = Object.new
       end
     end
   end
