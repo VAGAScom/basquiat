@@ -10,7 +10,6 @@ module Basquiat
 
       def event_source(opts ={})
         @adapter.connection_options(opts)
-        @adapter.connect
       end
     end
 
