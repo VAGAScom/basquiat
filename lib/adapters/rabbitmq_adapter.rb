@@ -1,12 +1,10 @@
 module Basquiat
   module Adapters
     class RabbitMq
-      def initialize
-        @options = {}
-      end
+      include Basquiat::Adapters::Base
 
-      def connection_options(opts)
-        @options = opts
+      def default_options
+        { host: 'localhost', port: 5672 }
       end
 
       def publish(event, message)

@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 describe Basquiat::Adapters::Test do
-  subject { DummyProducer.instance_variable_get(:@adapter) }
+  subject { Basquiat::Adapters::Test.new }
+  it_behaves_like 'a Basquiat::Adapter'
 
   it 'starts disconnected' do
     expect(subject).to_not be_connected

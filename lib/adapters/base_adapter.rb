@@ -9,6 +9,10 @@ module Basquiat
         options.merge! opts
       end
 
+      def default_options
+        {}
+      end
+
       private
       def options
         @options

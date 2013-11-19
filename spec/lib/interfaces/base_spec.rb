@@ -1,5 +1,4 @@
 require 'spec_helper'
-require_relative '../../../spec/support/basquiat_base_shared_examples'
 
 class SampleClass
   include Basquiat::Base

@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bunny'
   spec.add_development_dependency 'yajl-ruby'
   spec.add_development_dependency 'simplecov'
+  spec.add_development_dependency 'rb-readline' #temporary fix for a ruby-2.0-p247 issue
 
   spec.add_dependency 'multi_json', '~> 1.0'
 end
