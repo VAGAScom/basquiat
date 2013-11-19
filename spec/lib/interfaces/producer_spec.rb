@@ -1,8 +1,10 @@
 require 'spec_helper'
+require_relative '../../../spec/support/basquiat_base_shared_examples'
 
 describe Basquiat::Producer do
   # Behaves like Basquiat::Base
   subject { DummyProducer }
+  it_behaves_like 'Basquiat::Base'
 
   it '#publish' do
     expect do
