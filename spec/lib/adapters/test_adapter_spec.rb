@@ -8,5 +8,11 @@ describe Basquiat::Adapters::Test do
     expect(subject).to_not be_connected
   end
 
-  it '#publish'
+  it '#publish [enqueue a message]' do
+    expect do
+      subject.publish('messages.welcome', 'A Nice Welcome Message')
+    end.to change { subject.events('messages.welcome').size }.by(1)
+
+    expect(subject.events('messages.welcome')).to be_member('A Nice Welcome Message')
+  end
 end

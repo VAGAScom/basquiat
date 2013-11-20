@@ -3,6 +3,9 @@ shared_examples_for 'a Basquiat::Adapter' do
     expect(subject).to respond_to(:adapter_options)
   end
 
+  it '#publish' do
+    expect(subject).to respond_to(:publish)
+  end
   it '#default_options [template for option initialization]' do
     expect(subject).to respond_to(:default_options)
   end

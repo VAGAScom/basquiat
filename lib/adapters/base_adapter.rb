@@ -13,6 +13,8 @@ module Basquiat
         {}
       end
 
+      def publish; end
+
       private
       def options
         @options
