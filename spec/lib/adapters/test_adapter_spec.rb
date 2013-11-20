@@ -4,15 +4,24 @@ describe Basquiat::Adapters::Test do
   subject { Basquiat::Adapters::Test.new }
   it_behaves_like 'a Basquiat::Adapter'
 
-  it 'starts disconnected' do
-    expect(subject).to_not be_connected
+  context 'publisher' do
+    it '#publish [enqueue a message]' do
+      expect do
+        subject.publish('messages.welcome', 'A Nice Welcome Message')
+      end.to change { subject.events('messages.welcome').size }.by(1)
+
+      expect(subject.events('messages.welcome')).to be_member('A Nice Welcome Message')
+    end
   end
 
-  it '#publish [enqueue a message]' do
-    expect do
-      subject.publish('messages.welcome', 'A Nice Welcome Message')
-    end.to change { subject.events('messages.welcome').size }.by(1)
+  context 'listener' do
+    before(:each) do
+      subject.publish('some.event', 'some message')
+    end
 
-    expect(subject.events('messages.welcome')).to be_member('A Nice Welcome Message')
+    it '#subscribe_to some event' do
+      subject.subscribe_to('some.event', ->(msg) { msg.upcase })
+      expect(subject.listen).to eq('SOME MESSAGE')
+    end
   end
 end

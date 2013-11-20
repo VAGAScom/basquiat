@@ -1,3 +1,5 @@
+require 'bunny'
+
 module Basquiat
   module Adapters
     class RabbitMq
@@ -7,7 +9,7 @@ module Basquiat
         { host: 'localhost', port: 5672 }
       end
 
-      def subscribe_to(event_name, &proc)
+      def subscribe_to(event_name, proc)
         procs[event_name] = proc
         bind_queue(event_name)
       end

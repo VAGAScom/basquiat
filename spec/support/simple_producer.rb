@@ -1,8 +1,0 @@
-class DummyProducer
-  extend Basquiat::Base
-
-  self.event_adapter = Basquiat::Adapters::Test
-  self.event_source host: 'localhost', port: 5672
-end
-
-#DummyProducer.publish('vagas.mensagem.bem_vindo', candidato_id: 12345)

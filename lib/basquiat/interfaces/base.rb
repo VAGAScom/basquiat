@@ -11,7 +11,7 @@ module Basquiat
     end
 
     def subscribe(event_name, proc)
-      adapter.subscribe_to(event_name, &proc)
+      adapter.subscribe_to(event_name, proc)
     end
 
     def publish(event, message)
