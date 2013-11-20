@@ -5,8 +5,8 @@ SimpleCov.start do
   add_filter { |source| source.lines_of_code <= 3 }
   add_filter { |source| source.filename =~ /spec/ }
 
-  add_group('Adapters') { |source| source.filename =~ /lib\/adapters/ }
-  add_group('Interfaces') { |source| source.filename =~ /lib\/interfaces/ }
+  add_group('Adapters') { |source| source.filename =~ /basquiat\/adapters/ }
+  add_group('Interfaces') { |source| source.filename =~ /basquiat\/interfaces/ }
   add_group('Main Gem File') { |source| source.filename =~ %r!/lib/basquiat\.rb$! }
 end
 
