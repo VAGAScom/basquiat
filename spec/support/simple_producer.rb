@@ -1,4 +1,6 @@
-class DummyProducer < Basquiat::Producer
+class DummyProducer
+  extend Basquiat::Base
+
   self.event_adapter = Basquiat::Adapters::Test
   self.event_source host: 'localhost', port: 5672
 end

@@ -14,5 +14,7 @@ require 'yajl/json_gem'
 require 'basquiat'
 
 require 'support/simple_producer'
+require 'support/simple_client'
+
 require 'support/shared_examples/basquiat_adapter_shared_examples'
 require 'support/shared_examples/basquiat_base_shared_examples'

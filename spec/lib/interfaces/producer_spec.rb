@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Basquiat::Producer do
+describe 'a Producer' do
   # Behaves like Basquiat::Base
   subject { DummyProducer }
   it_behaves_like 'Basquiat::Base'

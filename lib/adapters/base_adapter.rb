@@ -3,6 +3,7 @@ module Basquiat
     module Base
       def initialize
         @options = default_options
+        @procs = Hash.new
       end
 
       def adapter_options(opts)
@@ -15,7 +16,13 @@ module Basquiat
 
       def publish; end
 
+      def subscribe_to(event_name, &proc); end
+
       private
+      def procs
+        @procs
+      end
+
       def options
         @options
       end

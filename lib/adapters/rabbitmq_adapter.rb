@@ -7,13 +7,31 @@ module Basquiat
         { host: 'localhost', port: 5672 }
       end
 
+      def subscribe_to(event_name, &proc)
+        procs[event_name] = proc
+        bind_queue(event_name)
+      end
+
       def publish(event, message)
-        connect
         exchange.publish(message, routing_key: event)
         disconnect
       end
 
+      def listen(lock)
+        queue.subscribe(block: lock) do |di, prop, msg|
+          procs[di.routing_key].call(msg)
+        end
+      end
+
       private
+      def bind_queue(event_name)
+        queue.bind(exchange, routing_key: event_name)
+      end
+
+      def queue
+        @queue ||= channel.queue(Basquiat.configuration.queue_name, durable: true)
+      end
+
       def connection
         @connection ||= Bunny.new(@options)
       end
@@ -29,6 +47,7 @@ module Basquiat
       end
 
       def channel
+        connect
         @channel ||= connection.create_channel
       end
 

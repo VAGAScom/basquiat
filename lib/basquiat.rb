@@ -5,8 +5,6 @@ require_relative 'adapters/base_adapter'
 require_relative 'adapters/test_adapter'
 
 require_relative 'interfaces/base'
-require_relative 'interfaces/producer'
-require_relative 'interfaces/consumer'
 
 module Basquiat
   def self.configuration
@@ -17,8 +15,16 @@ module Basquiat
     require 'singleton'
     include ::Singleton
 
+    def queue_name=(value)
+      @queue_name = value
+    end
+
+    def queue_name
+      @queue_name ||= 'vagas.queue'
+    end
+
     def exchange_name
-      @exchange_name ||= 'vagas'
+      @exchange_name ||= 'vagas.exchange'
     end
 
     def exchange_name=(value)

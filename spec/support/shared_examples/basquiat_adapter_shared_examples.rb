@@ -6,8 +6,13 @@ shared_examples_for 'a Basquiat::Adapter' do
   it '#publish' do
     expect(subject).to respond_to(:publish)
   end
+
   it '#default_options [template for option initialization]' do
     expect(subject).to respond_to(:default_options)
+  end
+
+  it '#subscribe_to' do
+    expect(subject).to respond_to(:subscribe_to)
   end
 
   it 'merges the options with the default ones' do

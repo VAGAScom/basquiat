@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 class SampleClass
-  include Basquiat::Base
+  extend Basquiat::Base
   self.event_adapter = Basquiat::Adapters::Test
 end
 
