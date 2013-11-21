@@ -14,7 +14,7 @@ module Basquiat
         {}
       end
 
-      def publish; end
+      def publish(event, message, single_message = true); end
 
       def subscribe_to(event_name, &proc); end
 

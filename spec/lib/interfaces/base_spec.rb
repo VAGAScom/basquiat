@@ -51,6 +51,12 @@ describe Basquiat::Base do
       subject.subscribe('some.event', ->(msg) { "#{msg} LAMBDA LAMBDA LAMBDA" })
       expect(subject.listen(false)).to match /LAMBDA LAMBDA LAMBDA$/
     end
+
   end
 
+  it 'trigger an event after processing a message' do
+    subject.instance_eval(%|subscribe('some.event', ->(msg) { publish('other.event', "Redirected \#{msg}") })|)
+    expect { subject.listen(false) }.to_not raise_error
+    expect(subject.adapter.events('other.event')).to have(1).item
+  end
 end

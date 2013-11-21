@@ -14,9 +14,9 @@ module Basquiat
         bind_queue(event_name)
       end
 
-      def publish(event, message)
+      def publish(event, message, single_message = true)
         exchange.publish(message, routing_key: event)
-        disconnect
+        disconnect if single_message
       end
 
       def listen(lock)
