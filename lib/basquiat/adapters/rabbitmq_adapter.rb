@@ -4,7 +4,7 @@ module Basquiat
   module Adapters
     class RabbitMq
       include Basquiat::Adapters::Base
-
+      # TODO: Make use of the various RabbitMQ options such as durable, exclusive etc.
       def default_options
         { host: 'localhost', port: 5672 }
       end

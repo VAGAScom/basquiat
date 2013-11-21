@@ -23,5 +23,13 @@ describe Basquiat::Adapters::Test do
       subject.subscribe_to('some.event', ->(msg) { msg.upcase })
       expect(subject.listen).to eq('SOME MESSAGE')
     end
+
+    it '#subscribe_to multiple events' do
+      subject.instance_eval %|subscribe_to('some.event', ->(msg) { publish 'some.other', msg.upcase; msg })|
+      subject.subscribe_to('some.other', ->(msg) { msg.downcase })
+      expect(subject.listen).to eq('some message')
+      expect(subject.events('some.other')).to be_member('SOME MESSAGE')
+      expect(subject.listen).to eq('some message')
+    end
   end
 end

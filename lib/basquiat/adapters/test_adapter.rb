@@ -7,6 +7,7 @@ module Basquiat
       attr_reader :options
 
       def default_options
+        @event_names = []
         { host: '127.0.0.1', port: 123_456, durable: true }
       end
 
@@ -19,18 +20,21 @@ module Basquiat
       end
 
       def subscribe_to(event_name, proc)
-        @event_name       = event_name
+        @event_names << event_name
         procs[event_name] = proc
       end
 
       def listen(*)
-        procs[subscribed_event].
-            call(@@events[subscribed_event].shift)
+        event = subscribed_event
+        msg = @@events[event].shift
+        msg ? procs[event].call(msg) : nil
       end
 
       private
       def subscribed_event
-        @event_name
+        event = @event_names.first
+        @event_names.rotate!
+        event
       end
     end
   end
