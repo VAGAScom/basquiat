@@ -13,11 +13,11 @@ describe Basquiat::Base do
   end
 
   it '.event_source(option_hash)' do
-    expect(subject).to respond_to(:event_source)
+    expect(subject).to respond_to(:adapter_options)
   end
 
   it 'set the adapter options' do
-    subject.event_source host: 'localhost', port: 5672, durable: true
+    subject.adapter_options host: 'localhost', port: 5672, durable: true
     expect(subject.adapter.options[:port]).to eq(5672)
     expect(subject.adapter.options[:host]).to eq('localhost')
     expect(subject.adapter.options[:durable]).to be_true

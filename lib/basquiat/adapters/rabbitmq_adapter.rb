@@ -4,9 +4,11 @@ module Basquiat
   module Adapters
     class RabbitMq
       include Basquiat::Adapters::Base
-      # TODO: Make use of the various RabbitMQ options such as durable, exclusive etc.
+
       def default_options
-        { host: 'localhost', port: 5672 }
+        { connection: { host: 'localhost', port: 5672 },
+          queue:      { durable: true, name: Basquiat.configuration.queue_name },
+          exchange:   { durable: true, name: Basquiat.configuration.exchange_name } }
       end
 
       def subscribe_to(event_name, proc)
@@ -31,11 +33,11 @@ module Basquiat
       end
 
       def queue
-        @queue ||= channel.queue(Basquiat.configuration.queue_name, durable: true)
+        @queue ||= channel.queue(options[:queue][:name], options[:queue])
       end
 
       def connection
-        @connection ||= Bunny.new(@options)
+        @connection ||= Bunny.new(options[:connection])
       end
 
       def connect
@@ -54,7 +56,7 @@ module Basquiat
       end
 
       def exchange
-        @exchange ||= channel.topic(Basquiat.configuration.exchange_name, durable: true)
+        @exchange ||= channel.topic(options[:exchange][:name], options[:exchange])
       end
     end
   end

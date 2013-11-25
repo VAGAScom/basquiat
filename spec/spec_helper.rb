@@ -10,7 +10,6 @@ SimpleCov.start do
   add_group('Main Gem File') { |source| source.filename =~ %r!/lib/basquiat\.rb$! }
 end
 
-require 'yajl/json_gem'
 require 'basquiat'
 
 require 'support/shared_examples/basquiat_adapter_shared_examples'

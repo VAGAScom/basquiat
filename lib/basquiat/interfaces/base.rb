@@ -6,7 +6,7 @@ module Basquiat
       @adapter = adapter.new
     end
 
-    def event_source(opts ={})
+    def adapter_options(opts ={})
       adapter.adapter_options(opts)
     end
 
