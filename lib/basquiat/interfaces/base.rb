@@ -10,7 +10,8 @@ module Basquiat
       adapter.adapter_options(opts)
     end
 
-    def subscribe(event_name, proc)
+    def subscribe_to(event_name, proc)
+      proc = make_callable(proc)
       adapter.subscribe_to(event_name, proc)
     end
 
@@ -20,6 +21,12 @@ module Basquiat
 
     def listen(lock = true)
       adapter.listen(lock)
+    end
+
+    private
+    def make_callable(proc)
+      return proc if proc.respond_to? :call
+      method(proc)
     end
   end
 end

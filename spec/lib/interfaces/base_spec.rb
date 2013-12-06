@@ -41,22 +41,30 @@ describe Basquiat::Base do
     end
 
     it 'reads a message from the queue' do
-      subject.subscribe 'some.event', ->(msg) { msg }
+      subject.subscribe_to 'some.event', ->(msg) { msg }
       expect do
         subject.listen(false)
       end.to change { subject.adapter.events('some.event').size }.by(-1)
     end
 
     it 'runs the proc for each message' do
-      subject.subscribe('some.event', ->(msg) { "#{msg} LAMBDA LAMBDA LAMBDA" })
+      subject.subscribe_to('some.event', ->(msg) { "#{msg} LAMBDA LAMBDA LAMBDA" })
       expect(subject.listen(false)).to match /LAMBDA LAMBDA LAMBDA$/
     end
 
+    it 'can receive a symbol that will point to a method' do
+      def subject.test_method(msg)
+        msg.scan(/e/)
+      end
+
+      subject.subscribe_to('some.event', :test_method)
+      expect(subject.listen(false)).to eq(%w(e e e))
+    end
   end
 
   it 'trigger an event after processing a message' do
     subject.publish('some.event', 'some message')
-    subject.instance_eval(%|subscribe('some.event', ->(msg) { publish('other.event', "Redirected \#{msg}") })|)
+    subject.instance_eval(%|subscribe_to('some.event', ->(msg) { publish('other.event', "Redirected \#{msg}") })|)
     expect { subject.listen(false) }.to_not raise_error
     expect(subject.adapter.events('other.event')).to have(1).item
   end
