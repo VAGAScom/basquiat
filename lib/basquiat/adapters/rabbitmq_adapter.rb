@@ -28,8 +28,9 @@ module Basquiat
       def listen(lock = true)
         procs.keys.each { |key| bind_queue(key) }
 
-        queue.subscribe(block: lock) do |di, prop, msg|
-          procs[di.routing_key].call(msg)
+        queue.subscribe(block: lock) do |di, _, msg|
+          message = MultiJson.load(msg, symbolize_keys: true)
+          procs[di.routing_key].call(message[:data])
         end
       end
 

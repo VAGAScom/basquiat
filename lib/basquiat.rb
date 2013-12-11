@@ -1,6 +1,7 @@
 require_relative 'basquiat/adapters'
 require_relative 'basquiat/version'
 require_relative 'basquiat/interfaces/base'
+require 'multi_json'
 
 module Basquiat
   def self.configuration

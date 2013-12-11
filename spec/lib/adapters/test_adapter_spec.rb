@@ -7,7 +7,7 @@ describe Basquiat::Adapters::Test do
   context 'publisher' do
     it '#publish [enqueue a message]' do
       expect do
-        subject.publish('messages.welcome', 'A Nice Welcome Message')
+        subject.publish('messages.welcome', {value: 'A Nice Welcome Message'}.to_json)
       end.to change { subject.events('messages.welcome').size }.by(1)
 
       expect(subject.events('messages.welcome')).to be_member('A Nice Welcome Message')
