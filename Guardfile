@@ -6,7 +6,7 @@ guard :bundler do
   watch('basquiat.gemspec')
 end
 
-guard :rspec, { all_on_start: true, keep_failed: true, all_after_pass: true } do
+guard :rspec, { all_on_start: true, keep: true, all_after_pass: true } do
   watch(%r{^spec/.+_spec.rb$})
   watch(%r{^lib/basquiat/(.+)\.rb$}) { |matchdata| "spec/lib/#{matchdata[1]}_spec.rb" }
   watch('spec/spec_helper.rb')       { 'spec' }

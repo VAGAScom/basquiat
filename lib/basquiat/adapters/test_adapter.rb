@@ -12,7 +12,7 @@ module Basquiat
       end
 
       def publish(event, message, single_message = true)
-        @@events[event] << message
+        @@events[event] << json_encode(message)
       end
 
       def events(key)
@@ -27,7 +27,7 @@ module Basquiat
       def listen(*)
         event = subscribed_event
         msg = @@events[event].shift
-        msg ? procs[event].call(msg) : nil
+        msg ? procs[event].call(MultiJson.load(msg, symbolize_keys: true)) : nil
       end
 
       private

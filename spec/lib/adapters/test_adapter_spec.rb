@@ -7,28 +7,28 @@ describe Basquiat::Adapters::Test do
   context 'publisher' do
     it '#publish [enqueue a message]' do
       expect do
-        subject.publish('messages.welcome', {value: 'A Nice Welcome Message'}.to_json)
+        subject.publish('messages.welcome', { value: 'A Nice Welcome Message' })
       end.to change { subject.events('messages.welcome').size }.by(1)
-
-      expect(subject.events('messages.welcome')).to be_member('A Nice Welcome Message')
+      expect(subject.events('messages.welcome')[0]).to match(/A Nice Welcome Message/)
     end
   end
 
   context 'listener' do
     before(:each) do
-      subject.publish('some.event', 'some message')
+      subject.publish('some.event', data: 'some message')
     end
 
     it '#subscribe_to some event' do
-      subject.subscribe_to('some.event', ->(msg) { msg.upcase })
-      expect(subject.listen).to eq('SOME MESSAGE')
+      subject.subscribe_to('some.event', ->(msg) { msg.values.map(&:upcase) })
+      expect(subject.listen).to eq(['SOME MESSAGE'])
     end
 
     it '#subscribe_to multiple events' do
-      subject.instance_eval %|subscribe_to('some.event', ->(msg) { publish 'some.other', msg.upcase; msg })|
-      subject.subscribe_to('some.other', ->(msg) { msg.downcase })
-      expect(subject.listen).to eq('some message')
-      expect(subject.events('some.other')).to be_member('SOME MESSAGE')
+      subject.instance_eval %|subscribe_to('some.event', ->(msg) { publish 'some.other', data: msg.values.first.upcase; msg })|
+      subject.subscribe_to('some.other', ->(msg) { msg.values.first.downcase })
+      expect(subject.listen).to eq(data: 'some message')
+      p subject.events('some.other')
+      expect(subject.events('some.other')[0]).to match(/SOME MESSAGE/)
       expect(subject.listen).to eq('some message')
     end
   end

@@ -18,14 +18,14 @@ describe Basquiat::Adapters::RabbitMq do
   context 'publisher' do
     it '#publish [enqueue a message]' do
       expect do
-        subject.publish('messages.welcome', 'A Nice Welcome Message')
+        subject.publish('messages.welcome', data: 'A Nice Welcome Message')
       end.to_not raise_error
     end
   end
 
   context 'listener' do
     before(:each) do
-      subject.publish('some.event', 'some message')
+      subject.publish('some.event', data: 'some message')
     end
 
     it '#subscribe_to some event' do

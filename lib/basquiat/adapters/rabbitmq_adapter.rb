@@ -19,7 +19,7 @@ module Basquiat
       # TODO: JSON messages
       # TODO: Channel Level Errors
       def publish(event, message, single_message = true)
-        exchange.publish(message, routing_key: event)
+        exchange.publish(json_encode(message), routing_key: event)
         disconnect if single_message
       end
 
@@ -29,7 +29,7 @@ module Basquiat
         procs.keys.each { |key| bind_queue(key) }
 
         queue.subscribe(block: lock) do |di, _, msg|
-          message = MultiJson.load(msg, symbolize_keys: true)
+          message = json_decode(msg)
           procs[di.routing_key].call(message[:data])
         end
       end

@@ -31,6 +31,18 @@ module Basquiat
       def options
         @options
       end
+
+      def json_encode(object)
+        MultiJson.dump(object)
+      rescue
+        MultiJson.dump({})
+      end
+
+      def json_decode(object)
+        MultiJson.load(object, symbolize_keys: true)
+      rescue
+        {}
+      end
     end
   end
 end
