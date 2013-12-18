@@ -13,5 +13,3 @@ end
 require 'basquiat'
 
 require 'support/shared_examples/basquiat_adapter_shared_examples'
-
-

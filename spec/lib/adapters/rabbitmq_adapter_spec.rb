@@ -26,7 +26,7 @@ describe Basquiat::Adapters::RabbitMq do
       end)
       subject.listen(false)
       sleep 0.1 # Wait for the listening thread to join.
-      expect(message_received).to eq({data: 'SOME MESSAGE'})
+      expect(message_received).to eq(data: 'SOME MESSAGE')
     end
   end
 end
