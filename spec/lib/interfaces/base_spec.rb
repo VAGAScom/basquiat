@@ -64,7 +64,9 @@ describe Basquiat::Base do
 
   it 'trigger an event after processing a message' do
     subject.publish('some.event', 'some message')
-    subject.instance_eval(%|subscribe_to('some.event', ->(msg) { publish('other.event', "Redirected \#{msg}") })|)
+    subject.instance_eval <<-METHCALL
+      subscribe_to 'some.event', ->(msg) { publish('other.event', "Redirected \#{msg}") }
+    METHCALL
     expect { subject.listen(false) }.to_not raise_error
     expect(subject.adapter.events('other.event')).to have(1).item
   end

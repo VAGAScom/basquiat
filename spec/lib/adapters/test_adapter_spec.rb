@@ -24,10 +24,11 @@ describe Basquiat::Adapters::Test do
     end
 
     it '#subscribe_to multiple events' do
-      subject.instance_eval %|subscribe_to('some.event', ->(msg) { publish 'some.other', data: msg.values.first.upcase; msg })|
+      subject.instance_eval <<-METHCALL
+        subscribe_to('some.event', ->(msg) { publish 'some.other', data: msg.values.first.upcase; msg })
+      METHCALL
       subject.subscribe_to('some.other', ->(msg) { msg.values.first.downcase })
       expect(subject.listen).to eq(data: 'some message')
-      p subject.events('some.other')
       expect(subject.events('some.other')[0]).to match(/SOME MESSAGE/)
       expect(subject.listen).to eq('some message')
     end

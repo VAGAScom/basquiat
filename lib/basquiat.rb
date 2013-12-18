@@ -8,13 +8,13 @@ module Basquiat
     Configuration.instance
   end
 
+  # This singleton hold the gem overall configuration
+  # TODO: I should change that to some kind of builder or kill it with fire
   class Configuration
     require 'singleton'
     include ::Singleton
 
-    def queue_name=(value)
-      @queue_name = value
-    end
+    attr_writer :queue_name, :exchange_name
 
     def queue_name
       @queue_name ||= 'vagas.queue'
@@ -22,10 +22,6 @@ module Basquiat
 
     def exchange_name
       @exchange_name ||= 'vagas.exchange'
-    end
-
-    def exchange_name=(value)
-      @exchange_name = value
     end
   end
 end

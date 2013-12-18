@@ -6,7 +6,7 @@ module Basquiat
       @adapter = adapter.new
     end
 
-    def adapter_options(opts ={})
+    def adapter_options(opts = {})
       adapter.adapter_options(opts)
     end
 
@@ -24,6 +24,7 @@ module Basquiat
     end
 
     private
+
     def make_callable(proc)
       return proc if proc.respond_to? :call
       method(proc)

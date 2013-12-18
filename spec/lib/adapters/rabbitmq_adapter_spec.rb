@@ -5,16 +5,6 @@ describe Basquiat::Adapters::RabbitMq do
   subject { Basquiat::Adapters::RabbitMq.new }
   it_behaves_like 'a Basquiat::Adapter'
 
-  before(:all) do
-    Basquiat.configuration.exchange_name = 'basquiat.test'
-    Basquiat.configuration.queue_name = 'basquiat.queue'
-  end
-
-  after(:all) do
-    Basquiat.configuration.exchange_name = nil
-    Basquiat.configuration.queue_name = nil
-  end
-
   context 'publisher' do
     it '#publish [enqueue a message]' do
       expect do
@@ -29,10 +19,14 @@ describe Basquiat::Adapters::RabbitMq do
     end
 
     it '#subscribe_to some event' do
-      subject.subscribe_to('some.event', ->(msg) { yield msg.upcase })
-      subject.listen(false) do |msg|
-        expect(msg).to eq('SOME MESSAGE')
-      end
+      message_received = ''
+      subject.subscribe_to('some.event', lambda do |msg|
+        msg[:data].upcase!
+        message_received = msg
+      end)
+      subject.listen(false)
+      sleep 0.1 # Wait for the listening thread to join.
+      expect(message_received).to eq({data: 'SOME MESSAGE'})
     end
   end
 end

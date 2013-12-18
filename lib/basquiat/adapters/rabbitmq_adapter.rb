@@ -2,6 +2,7 @@ require 'bunny'
 
 module Basquiat
   module Adapters
+    # The RabbitMQ adapter for Basquiat
     class RabbitMq
       include Basquiat::Adapters::Base
 
@@ -16,10 +17,9 @@ module Basquiat
       end
 
       # TODO: Publisher Confirms
-      # TODO: JSON messages
       # TODO: Channel Level Errors
       def publish(event, message, single_message = true)
-        exchange.publish(json_encode(message), routing_key: event)
+        exchange.publish(Basquiat::Adapters::Base.json_encode(message), routing_key: event)
         disconnect if single_message
       end
 
@@ -27,24 +27,16 @@ module Basquiat
       # TODO: JSON messages
       def listen(lock = true)
         procs.keys.each { |key| bind_queue(key) }
-
         queue.subscribe(block: lock) do |di, _, msg|
-          message = json_decode(msg)
-          procs[di.routing_key].call(message[:data])
+          message = Basquiat::Adapters::Base.json_decode(msg)
+          procs[di.routing_key].call(message)
         end
       end
 
       private
+
       def bind_queue(event_name)
         queue.bind(exchange, routing_key: event_name)
-      end
-
-      def queue
-        @queue ||= channel.queue(options[:queue][:name], options[:queue][:options])
-      end
-
-      def connection
-        @connection ||= Bunny.new(options[:server])
       end
 
       def connect
@@ -58,9 +50,17 @@ module Basquiat
         @channel, @exchange = nil, nil
       end
 
+      def connection
+        @connection ||= Bunny.new(options[:server])
+      end
+
       def channel
         connect
         @channel ||= connection.create_channel
+      end
+
+      def queue
+        @queue ||= channel.queue(options[:queue][:name], options[:queue][:options])
       end
 
       def exchange

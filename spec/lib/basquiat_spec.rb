@@ -7,7 +7,7 @@ describe Basquiat do
 
   context '#configuration' do
     it '#queue_name' do
-        expect(Basquiat.configuration.queue_name).to eq('vagas.queue')
+      expect(Basquiat.configuration.queue_name).to eq('vagas.queue')
     end
 
     it '#queue_name=' do

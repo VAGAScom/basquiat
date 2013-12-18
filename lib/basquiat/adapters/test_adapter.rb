@@ -3,7 +3,12 @@ module Basquiat
     class Test
       include Basquiat::Adapters::Base
 
-      @@events = Hash.new { |hash, key| hash[key] = [] }
+      class << self
+        def events
+          @events ||= Hash.new { |hash, key| hash[key] = [] }
+        end
+      end
+
       attr_reader :options
 
       def default_options
@@ -12,11 +17,11 @@ module Basquiat
       end
 
       def publish(event, message, single_message = true)
-        @@events[event] << json_encode(message)
+        self.class.events[event] << Basquiat::Adapters::Base.json_encode(message)
       end
 
       def events(key)
-        @@events[key]
+        self.class.events[key]
       end
 
       def subscribe_to(event_name, proc)
@@ -26,11 +31,12 @@ module Basquiat
 
       def listen(*)
         event = subscribed_event
-        msg = @@events[event].shift
-        msg ? procs[event].call(MultiJson.load(msg, symbolize_keys: true)) : nil
+        msg   = self.class.events[event].shift
+        msg ? procs[event].call(Basquiat::Adapters::Base.json_decode(msg)) : nil
       end
 
       private
+
       def subscribed_event
         event = @event_names.first
         @event_names.rotate!
