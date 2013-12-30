@@ -14,6 +14,6 @@ guard :rspec, { all_on_start: true, keep: true, all_after_pass: true, run_all: {
 end
 
 guard :rubocop, { cli: '-fs -c./.rubocop.yml'} do
-  watch(%r{.+\.rb$})
+  #watch(%r{.+\.rb$})
   #watch(%r{(?:.+/)?\.rubocop\.yml$}) { |m| File.dirname(m[0]) }
 end

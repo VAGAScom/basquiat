@@ -3,14 +3,15 @@ module Basquiat
     module Base
       def initialize
         @options = default_options
-        @procs = {}
+        @procs   = {}
+        @retries = 0
       end
 
       # Used to set the options for the adapter. It is merged in
       # to the default_options hash.
       # @param [Hash] opts an adapter dependant hash of options
       def adapter_options(opts)
-        options.merge! opts
+        deep_merge(opts)
       end
 
       # Default options for the adapter
@@ -19,18 +20,29 @@ module Basquiat
         {}
       end
 
-      def publish; end
+      def publish
+      end
 
-      def subscribe_to; end
+      def subscribe_to
+      end
 
       private
 
       attr_reader :procs, :options
 
+      def deep_merge(original = options, hash)
+        hash.each_pair do |key, value|
+          current = original[key]
+          if current.is_a?(Hash) && value.is_a?(Hash)
+            deep_merge(current, value)
+          else
+            original[key] = value
+          end
+        end
+      end
+
       def self.json_encode(object)
         MultiJson.dump(object)
-      rescue
-        MultiJson.dump({})
       end
 
       def self.json_decode(object)
@@ -41,16 +53,3 @@ module Basquiat
     end
   end
 end
-
-# def underscore(camel_cased_word)
-#   word = camel_cased_word.to_s.dup
-#   word.gsub!('::', '/')
-#   word.gsub!(/(?:([A-Za-z\d])|^)
-#             (#{inflections.acronym_regex})(?=\b|[^a-z])/)
-#              { "#{$1}#{$1 && '_'}#{$2.downcase}" }
-#   word.gsub!(/([A-Z\d]+)([A-Z][a-z])/,'\1_\2')
-#   word.gsub!(/([a-z\d])([A-Z])/,'\1_\2')
-#   word.tr!("-", "_")
-#   word.downcase!
-#   word
-# end

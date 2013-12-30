@@ -7,7 +7,8 @@ module Basquiat
       include Basquiat::Adapters::Base
 
       def default_options
-        { server:   { host: 'localhost', port: 5672 },
+        { failover: { default_timeout: 5, max_retries: 5 },
+          server:   { host: 'localhost', port: 5672 },
           queue:    { name: Basquiat.configuration.queue_name, options: { durable: true } },
           exchange: { name: Basquiat.configuration.exchange_name, options: { durable: true } } }
       end
@@ -21,10 +22,12 @@ module Basquiat
       def publish(event, message, single_message = true)
         exchange.publish(Basquiat::Adapters::Base.json_encode(message), routing_key: event)
         disconnect if single_message
+        # rescue channel errors / disconnections
+        # redeclare everything
+        # retry
       end
 
       # TODO: Manual ACK and Requeue
-      # TODO: JSON messages
       def listen(lock = true)
         procs.keys.each { |key| bind_queue(key) }
         queue.subscribe(block: lock) do |di, _, msg|
@@ -33,15 +36,32 @@ module Basquiat
         end
       end
 
+      # TODO: Failover
+      def connect
+        connection.start
+        retries = 0
+      rescue Bunny::TCPConnectionFailed => error # Try to connect to another server or fail
+        @retries += 1
+        raise(error) unless retries <= failover_opts[:max_retries]
+        warn("[WARN]: Connection failed retrying in #{failover_opts[:default_timeout]} seconds")
+        sleep(failover_opts[:default_timeout])
+        retry
+      end
+
       private
+
+      def handle_network_failures
+        disconnect
+        servers.rotate
+        connect_to(server)
+      end
+
+      def failover_opts
+        options[:failover]
+      end
 
       def bind_queue(event_name)
         queue.bind(exchange, routing_key: event_name)
-      end
-
-      def connect
-        connection.start
-        # rescue Bunny::TCPConnectionFailed => error; Try to connect to another server or fail
       end
 
       def disconnect
@@ -51,7 +71,7 @@ module Basquiat
       end
 
       def connection
-        @connection ||= Bunny.new(options[:server])
+        @connection ||= Bunny.new(options[:server]) # , automatic_recovery: false)
       end
 
       def channel

@@ -5,6 +5,14 @@ describe Basquiat::Adapters::RabbitMq do
   subject { Basquiat::Adapters::RabbitMq.new }
   it_behaves_like 'a Basquiat::Adapter'
 
+  context 'failover' do
+    it 'tries a reconnection after a few seconds' do
+      subject.adapter_options({ server:   { port: 1234 },
+                                failover: { default_timeout: 0.2, max_retries: 1 } })
+      expect { subject.connect }.to raise_exception(Bunny::TCPConnectionFailed)
+    end
+  end
+
   context 'publisher' do
     it '#publish [enqueue a message]' do
       expect do
