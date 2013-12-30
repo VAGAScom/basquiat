@@ -38,7 +38,7 @@ module Basquiat
 
       def connect
         connection.start
-        retries = 0
+        @retries = 0
       rescue Bunny::TCPConnectionFailed => error # Try to connect to another server or fail
         @retries += 1
         raise(error) unless @retries <= failover_opts[:max_retries]
@@ -49,13 +49,12 @@ module Basquiat
 
       private
 
-      def servers
-        options[:server]
-      end
-
       def handle_network_failures
         disconnect
-        servers.rotate
+
+        # servers should be an array of urls or server options
+        # Probably will make the server key an array named servers
+        servers.rotate!
         connect_to(server)
       end
 
