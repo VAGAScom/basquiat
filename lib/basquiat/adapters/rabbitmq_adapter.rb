@@ -8,7 +8,7 @@ module Basquiat
 
       def default_options
         { failover: { default_timeout: 5, max_retries: 5 },
-          server:   { host: 'localhost', port: 5672 },
+          servers:  [{ host: 'localhost', port: 5672 }],
           queue:    { name: Basquiat.configuration.queue_name, options: { durable: true } },
           exchange: { name: Basquiat.configuration.exchange_name, options: { durable: true } } }
       end
@@ -22,9 +22,9 @@ module Basquiat
       def publish(event, message, single_message = true)
         exchange.publish(Basquiat::Adapters::Base.json_encode(message), routing_key: event)
         disconnect if single_message
-        # rescue channel errors / disconnections
-        # redeclare everything
-        # retry
+      rescue # channel errors / disconnections
+        handle_network_failures
+        retry
       end
 
       # TODO: Manual ACK and Requeue
@@ -51,11 +51,7 @@ module Basquiat
 
       def handle_network_failures
         disconnect
-
-        # servers should be an array of urls or server options
-        # Probably will make the server key an array named servers
-        servers.rotate!
-        connect_to(server)
+        option[:servers].rotate! if can_failover?
       end
 
       def failover_opts
@@ -69,11 +65,11 @@ module Basquiat
       def disconnect
         connection.close_all_channels
         connection.close
-        @channel, @exchange = nil, nil
+        @connection, @channel, @exchange = nil, nil, nil
       end
 
       def connection
-        @connection ||= Bunny.new(options[:server]) # , automatic_recovery: false)
+        @connection ||= Bunny.new(current_server)
       end
 
       def channel
@@ -87,6 +83,14 @@ module Basquiat
 
       def exchange
         @exchange ||= channel.topic(options[:exchange][:name], options[:exchange][:options])
+      end
+
+      def current_server
+        options[:servers].first
+      end
+
+      def can_failover?
+        options[:servers].size > 1
       end
     end
   end

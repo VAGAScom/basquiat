@@ -7,7 +7,7 @@ describe Basquiat::Adapters::RabbitMq do
 
   context 'failover' do
     it 'tries a reconnection after a few seconds' do
-      subject.adapter_options({ server:   { port: 1234 },
+      subject.adapter_options({ servers:  [{ host: 'localhost', port: 1234 }],
                                 failover: { default_timeout: 0.2, max_retries: 1 } })
       expect { subject.connect }.to raise_exception(Bunny::TCPConnectionFailed)
     end
