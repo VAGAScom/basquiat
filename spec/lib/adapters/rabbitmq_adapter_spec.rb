@@ -11,6 +11,14 @@ describe Basquiat::Adapters::RabbitMq do
                               failover: { default_timeout: 0.2, max_retries: 1 })
       expect { subject.connect }.to raise_exception(Bunny::TCPConnectionFailed)
     end
+
+    it 'uses another server after all retries on a single one' do
+      subject.adapter_options(servers:  [{ host: 'localhost', port: 1234 }, { host: 'localhost', port: 5672 }],
+                              failover: { default_timeout: 0.2, max_retries: 2 })
+      expect { subject.connect }.to_not raise_error
+      expect { subject.connect.port }.to eq(5672)
+    end
+
   end
 
   context 'publisher' do

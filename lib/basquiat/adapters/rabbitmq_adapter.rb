@@ -38,20 +38,23 @@ module Basquiat
 
       def connect
         connection.start
-        @retries = 0
-      rescue Bunny::TCPConnectionFailed => error # Try to connect to another server or fail
-        @retries += 1
-        raise(error) unless @retries <= failover_opts[:max_retries]
-        warn("[WARN]: Connection failed retrying in #{failover_opts[:default_timeout]} seconds")
-        sleep(failover_opts[:default_timeout])
-        retry
       end
 
       private
 
       def handle_network_failures
-        disconnect
-        option[:servers].rotate! if can_failover?
+        @retries += 1
+        if @retries <= failover_opts[:max_retries]
+          warn("[WARN]: Connection failed retrying in #{failover_opts[:default_timeout]} seconds")
+          sleep(failover_opts[:default_timeout])
+        else
+          #disconnect if connection && connection.started?
+          p options[:servers]
+          options[:servers].rotate! if can_failover?
+          p options[:servers]
+          @retries = 0
+        end
+
       end
 
       def failover_opts
@@ -70,6 +73,14 @@ module Basquiat
 
       def connection
         @connection ||= Bunny.new(current_server)
+        @retries    = 0
+      rescue Bunny::TCPConnectionFailed => error # Try to connect to another server or fail
+        handle_network_failures
+        if @retries >= failover_opts[:max_retries]
+          raise(error)
+        else
+          retry
+        end
       end
 
       def channel
