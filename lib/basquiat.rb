@@ -3,6 +3,7 @@ require_relative 'basquiat/version'
 require_relative 'basquiat/interfaces/base'
 require 'multi_json'
 
+# Overall namespace And config class
 module Basquiat
   def self.configuration
     Configuration.instance

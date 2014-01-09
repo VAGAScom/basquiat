@@ -1,5 +1,6 @@
 module Basquiat
   module Adapters
+    # Base implementation for an adapter
     module Base
       def initialize
         @options = default_options

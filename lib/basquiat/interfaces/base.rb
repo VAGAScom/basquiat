@@ -1,4 +1,5 @@
 module Basquiat
+  # base module extend the classes that will use the event infrastructure
   module Base
     attr_reader :adapter
 

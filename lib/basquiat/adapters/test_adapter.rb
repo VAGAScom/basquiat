@@ -1,5 +1,6 @@
 module Basquiat
   module Adapters
+    # An adapter to be used in testing
     class Test
       include Basquiat::Adapters::Base
 

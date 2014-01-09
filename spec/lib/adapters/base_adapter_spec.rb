@@ -1,5 +1,6 @@
 require 'spec_helper'
 
+# Sample class used for testing
 class SampleAdapter
   include Basquiat::Adapters::Base
 end
