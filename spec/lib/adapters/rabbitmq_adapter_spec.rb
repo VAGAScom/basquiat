@@ -19,7 +19,6 @@ describe Basquiat::Adapters::RabbitMq do
       expect { subject.connect }.to_not raise_error
       expect(subject.connect.port).to eq(5672)
     end
-
   end
 
   context 'publisher' do

@@ -22,9 +22,6 @@ module Basquiat
       def publish(event, message, single_message = true)
         exchange.publish(Basquiat::Adapters::Base.json_encode(message), routing_key: event)
         disconnect if single_message
-      rescue # channel errors / disconnections
-        handle_network_failures
-        retry
       end
 
       # TODO: Manual ACK and Requeue
@@ -56,24 +53,25 @@ module Basquiat
         @connection, @channel, @exchange = nil, nil, nil
       end
 
+      def rotate_servers
+        return if options[:servers].size <= 1
+        options[:servers].rotate!
+        @retries = 0
+      end
+
       def handle_network_failures
         @retries += 1
-        # retry_same_server
-        # connect_to_another_server
         if @retries <= failover_opts[:max_retries]
           warn("[WARN]: Connection failed retrying in #{failover_opts[:default_timeout]} seconds")
           sleep(failover_opts[:default_timeout])
         else
-          if can_failover?
-            options[:servers].rotate!
-            @retries = 0
-          end
+          rotate_servers
         end
       end
 
       def connection
         @connection ||= Bunny.new(current_server)
-      rescue Bunny::TCPConnectionFailed => error # Try to connect to another server or fail
+      rescue Bunny::TCPConnectionFailed => error
         handle_network_failures
         if @retries > failover_opts[:max_retries]
           raise(error)
@@ -97,10 +95,6 @@ module Basquiat
 
       def current_server
         options[:servers].first
-      end
-
-      def can_failover?
-        options[:servers].size > 1
       end
     end
   end
