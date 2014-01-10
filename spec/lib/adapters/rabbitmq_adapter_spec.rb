@@ -40,8 +40,8 @@ describe Basquiat::Adapters::RabbitMq do
         msg[:data].upcase!
         message_received = msg
       end)
-      subject.listen(false)
-      sleep 0.1 # Wait for the listening thread to join.
+      subject.listen(block: false)
+      sleep 0.1 # Wait for the listening thread.
       expect(message_received).to eq(data: 'SOME MESSAGE')
     end
   end

@@ -50,7 +50,7 @@ describe Basquiat::Base do
 
     it 'runs the proc for each message' do
       subject.subscribe_to('some.event', ->(msg) { "#{msg} LAMBDA LAMBDA LAMBDA" })
-      expect(subject.listen(false)).to match /LAMBDA LAMBDA LAMBDA$/
+      expect(subject.listen(false)).to match(/LAMBDA LAMBDA LAMBDA$/)
     end
 
     it 'can receive a symbol that will point to a method' do

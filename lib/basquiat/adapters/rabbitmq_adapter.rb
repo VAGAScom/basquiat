@@ -19,15 +19,15 @@ module Basquiat
 
       # TODO: Publisher Confirms
       # TODO: Channel Level Errors
-      def publish(event, message, single_message = true)
+      def publish(event, message, keep_open: false)
         exchange.publish(Basquiat::Adapters::Base.json_encode(message), routing_key: event)
-        disconnect if single_message
+        disconnect unless keep_open
       end
 
       # TODO: Manual ACK and Requeue
-      def listen(lock = true)
+      def listen(block: true)
         procs.keys.each { |key| bind_queue(key) }
-        queue.subscribe(block: lock) do |di, _, msg|
+        queue.subscribe(block: block) do |di, _, msg|
           message = Basquiat::Adapters::Base.json_decode(msg)
           procs[di.routing_key].call(message)
         end
