@@ -20,7 +20,7 @@ module Basquiat
       # TODO: Publisher Confirms
       # TODO: Channel Level Errors
       def publish(event, message, single_message = true)
-        exchange.publish(Basquiat::Adapters::Base.json_encode(message), routing_key: event)
+        exchange.publish(Basquiat::Adapters::Base.json_encode(message), routing_key: event, persistent: true)
         disconnect if single_message
       end
 
