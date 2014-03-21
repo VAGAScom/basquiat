@@ -4,3 +4,8 @@ require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:spec)
 
 task :default => :spec
+
+desc 'Loads IRB with the gem already required'
+task :console do
+  system 'irb -I./lib -rbasquiat'
+end

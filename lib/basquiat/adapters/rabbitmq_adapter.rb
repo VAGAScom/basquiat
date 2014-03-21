@@ -7,10 +7,11 @@ module Basquiat
       include Basquiat::Adapters::Base
 
       def default_options
-        { failover: { default_timeout: 5, max_retries: 5 },
-          servers:  [{ host: 'localhost', port: 5672 }],
-          queue:    { name: Basquiat.configuration.queue_name, options: { durable: true } },
-          exchange: { name: Basquiat.configuration.exchange_name, options: { durable: true } } }
+        { failover:  { default_timeout: 5, max_retries: 5 },
+          servers:   [{ host: 'localhost', port: 5672 }],
+          queue:     { name: Basquiat.configuration.queue_name, options: { durable: true } },
+          exchange:  { name: Basquiat.configuration.exchange_name, options: { durable: true } },
+          publisher: { confirm: true } }
       end
 
       def subscribe_to(event_name, proc)
@@ -20,6 +21,7 @@ module Basquiat
       # TODO: Publisher Confirms
       # TODO: Channel Level Errors
       def publish(event, message, keep_open: false)
+        channel.confirm_select if options[:publisher][:confirm]
         exchange.publish(Basquiat::Adapters::Base.json_encode(message), routing_key: event)
         disconnect unless keep_open
       end
