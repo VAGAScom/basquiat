@@ -1,4 +1,4 @@
-require 'bunny'
+ require 'bunny'
 
 module Basquiat
   module Adapters
@@ -11,7 +11,8 @@ module Basquiat
           servers:   [{ host: 'localhost', port: 5672 }],
           queue:     { name: Basquiat.configuration.queue_name, options: { durable: true } },
           exchange:  { name: Basquiat.configuration.exchange_name, options: { durable: true } },
-          publisher: { confirm: true } }
+          publisher: { confirm: true },
+          auth: { user: 'guest', password: 'guest'} }
       end
 
       def subscribe_to(event_name, proc)
@@ -107,7 +108,8 @@ module Basquiat
       end
 
       def current_server_uri
-        "amqp://ruby:ruby@#{current_server[:host]}:#{current_server[:port]}"
+        auth = current_server[:auth] || options[:auth]
+        "amqp://#{auth[:user]}:#{auth[:password]}@#{current_server[:host]}:#{current_server[:port]}"
       end
     end
   end
