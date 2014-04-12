@@ -20,8 +20,8 @@ module Basquiat
       adapter.subscribe_to(event_name, proc)
     end
 
-    def listen(lock = true)
-      adapter.listen(lock)
+    def listen(block: true)
+      adapter.listen(block: block)
     end
 
     private
