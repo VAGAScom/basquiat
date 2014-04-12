@@ -6,6 +6,7 @@ describe Basquiat do
   end
 
   context '#configuration' do
+    before(:each) { Basquiat.reset }
     it '#queue_name' do
       expect(Basquiat.configuration.queue_name).to eq('vagas.queue')
     end
@@ -13,6 +14,9 @@ describe Basquiat do
     it '#queue_name=' do
       Basquiat.configuration.queue_name = 'vagas.test'
       expect(Basquiat.configuration.queue_name).to eq('vagas.test')
+
+      Basquiat.configure { |config| config.queue_name = 'vagas.block_config' }
+      expect(Basquiat.configuration.queue_name).to eq('vagas.block_config')
 
       Basquiat.configuration.queue_name = nil
       expect(Basquiat.configuration.queue_name).to eq('vagas.queue')

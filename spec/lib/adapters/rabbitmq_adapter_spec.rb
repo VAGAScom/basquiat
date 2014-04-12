@@ -17,7 +17,7 @@ describe Basquiat::Adapters::RabbitMq do
                                          { host: 'localhost', port: 5672 }],
                               failover: { default_timeout: 0.2, max_retries: 2 })
       expect { subject.connect }.to_not raise_error
-      expect(subject.connect.port).to eq(5672)
+      expect(subject.connection_uri).to match(/5672/)
     end
   end
 
@@ -40,8 +40,8 @@ describe Basquiat::Adapters::RabbitMq do
         msg[:data].upcase!
         message_received = msg
       end)
-      subject.listen(false)
-      sleep 0.1 # Wait for the listening thread to join.
+      subject.listen(block: false)
+      sleep 0.1 # Wait for the listening thread.
       expect(message_received).to eq(data: 'SOME MESSAGE')
     end
   end
