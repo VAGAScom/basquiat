@@ -37,6 +37,19 @@ module Basquiat
 
       def connect
         connection.start
+        current_server[:retries] = 0
+      rescue Bunny::TCPConnectionFailed => error
+        if current_server.fetch(:retries, 0) <= failover_opts[:max_retries]
+          disconnect
+          handle_network_failures
+          retry
+        else
+          raise(error)
+        end
+      end
+
+      def connection_uri
+        current_server_uri
       end
 
       private
@@ -52,18 +65,19 @@ module Basquiat
       def disconnect
         connection.close_all_channels
         connection.close
+      ensure
         @connection, @channel, @exchange = nil, nil, nil
       end
 
       def rotate_servers
-        return if options[:servers].size <= 1
+        return unless options[:servers].any? {|server| server.fetch(:retries, 0) < failover_opts[:max_retries] }
         options[:servers].rotate!
-        @retries = 0
       end
 
       def handle_network_failures
-        @retries += 1
-        if @retries <= failover_opts[:max_retries]
+        retries = current_server.fetch(:retries, 0)
+        current_server[:retries] = retries + 1
+        if retries < failover_opts[:max_retries]
           warn("[WARN]: Connection failed retrying in #{failover_opts[:default_timeout]} seconds")
           sleep(failover_opts[:default_timeout])
         else
@@ -72,14 +86,7 @@ module Basquiat
       end
 
       def connection
-        @connection ||= Bunny.new(current_server)
-      rescue Bunny::TCPConnectionFailed => error
-        handle_network_failures
-        if @retries > failover_opts[:max_retries]
-          raise(error)
-        else
-          retry
-        end
+        @connection ||= Bunny.new(current_server_uri)
       end
 
       def channel
@@ -97,6 +104,10 @@ module Basquiat
 
       def current_server
         options[:servers].first
+      end
+
+      def current_server_uri
+        "amqp://ruby:ruby@#{current_server[:host]}:#{current_server[:port]}"
       end
     end
   end
