@@ -10,6 +10,12 @@ describe Basquiat::Adapters::RabbitMq do
   end
 
   context 'failover' do
+    let(:failover_settings) do
+      { servers:  [{ host: 'localhost', port: 1234 },
+                   { host: 'localhost', port: 5672 }],
+        failover: { default_timeout: 0.2, max_retries: 2 } }
+    end
+
     it 'tries a reconnection after a few seconds' do
       subject.adapter_options(servers:  [host: 'localhost', port: 1234],
                               failover: { default_timeout: 0.2, max_retries: 1 })
@@ -17,9 +23,7 @@ describe Basquiat::Adapters::RabbitMq do
     end
 
     it 'uses another server after all retries on a single one' do
-      subject.adapter_options(servers:  [{ host: 'localhost', port: 1234 },
-                                         { host: 'localhost', port: 5672 }],
-                              failover: { default_timeout: 0.2, max_retries: 2 })
+      subject.adapter_options(failover_settings)
       expect { subject.connect }.to_not raise_error
       expect(subject.connection_uri).to match(/5672/)
     end

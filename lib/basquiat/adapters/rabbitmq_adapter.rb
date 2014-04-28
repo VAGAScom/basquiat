@@ -21,35 +21,28 @@ module Basquiat
 
       # TODO: Channel Level Errors
       def publish(event, message, keep_open: false)
-        channel.confirm_select if options[:publisher][:confirm]
-        exchange.publish(Basquiat::Adapters::Base.json_encode(message), routing_key: event)
-        disconnect unless keep_open
-      rescue Bunny::ConnectionForced, Bunny::NetworkFailure
-        handle_network_failures
+        with_network_failure_handler do
+          channel.confirm_select if options[:publisher][:confirm]
+          exchange.publish(Basquiat::Adapters::Base.json_encode(message), routing_key: event)
+          disconnect unless keep_open
+        end
       end
 
       # TODO: Manual ACK and Requeue
       def listen(block: true)
-        procs.keys.each { |key| bind_queue(key) }
-        queue.subscribe(block: block) do |di, _, msg|
-          message = Basquiat::Adapters::Base.json_decode(msg)
-          procs[di.routing_key].call(message)
+        with_network_failure_handler do
+          procs.keys.each { |key| bind_queue(key) }
+          queue.subscribe(block: block) do |di, _, msg|
+            message = Basquiat::Adapters::Base.json_decode(msg)
+            procs[di.routing_key].call(message)
+          end
         end
-      rescue Bunny::ConnectionForced, Bunny::NetworkFailure, StandardError => error
-        handle_network_failures
-        warn "Retrying the listener => #{error.class}"
-        retry
       end
 
       def connect
-        connection.start
-        current_server[:retries] = 0
-      rescue Bunny::ConnectionForced, Bunny::TCPConnectionFailed => error
-        if current_server.fetch(:retries, 0) <= failover_opts[:max_retries]
-          handle_network_failures
-          retry
-        else
-          raise(error)
+        with_network_failure_handler do
+          connection.start
+          current_server[:retries] = 0
         end
       end
 
@@ -57,7 +50,23 @@ module Basquiat
         current_server_uri
       end
 
+      def disconnect
+        connection.close_all_channels
+        connection.close
+        reset_connection
+      end
+
       private
+      def with_network_failure_handler
+        yield if block_given?
+      rescue Bunny::ConnectionForced, Bunny::TCPConnectionFailed, Bunny::NetworkFailure => error
+        if current_server.fetch(:retries, 0) <= failover_opts[:max_retries]
+          handle_network_failures
+          retry
+        else
+          raise(error)
+        end
+      end
 
       def failover_opts
         options[:failover]
@@ -71,11 +80,6 @@ module Basquiat
         @connection, @channel, @exchange, @queue = nil, nil, nil, nil
       end
 
-      def disconnect
-        connection.close_all_channels
-        connection.close
-        reset_connection
-      end
 
       def rotate_servers
         return unless options[:servers].any? { |server| server.fetch(:retries, 0) < failover_opts[:max_retries] }
@@ -84,7 +88,7 @@ module Basquiat
 
       def handle_network_failures
         warn "[WARN] Handling connection to #{current_server_uri}"
-        retries = current_server.fetch(:retries, 0)
+        retries                  = current_server.fetch(:retries, 0)
         current_server[:retries] = retries + 1
         if retries < failover_opts[:max_retries]
           warn("[WARN]: Connection failed retrying in #{failover_opts[:default_timeout]} seconds")
