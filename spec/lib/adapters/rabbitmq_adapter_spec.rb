@@ -5,6 +5,10 @@ describe Basquiat::Adapters::RabbitMq do
   subject { Basquiat::Adapters::RabbitMq.new }
   it_behaves_like 'a Basquiat::Adapter'
 
+  after(:each) do
+    remove_queues_and_exchanges
+  end
+
   context 'failover' do
     it 'tries a reconnection after a few seconds' do
       subject.adapter_options(servers:  [host: 'localhost', port: 1234],
@@ -30,10 +34,6 @@ describe Basquiat::Adapters::RabbitMq do
   end
 
   context 'listener' do
-    before(:each) do
-      subject.publish('some.event', data: 'some message')
-    end
-
     it '#subscribe_to some event' do
       message_received = ''
       subject.subscribe_to('some.event', lambda do |msg|
@@ -41,8 +41,20 @@ describe Basquiat::Adapters::RabbitMq do
         message_received = msg
       end)
       subject.listen(block: false)
+
+      subject.publish('some.event', data: 'coisa')
       sleep 0.1 # Wait for the listening thread.
-      expect(message_received).to eq(data: 'SOME MESSAGE')
+
+      expect(message_received).to eq(data: 'COISA')
     end
+  end
+
+  def remove_queues_and_exchanges
+    subject.send(:queue).delete
+    subject.send(:exchange).delete
+  rescue Bunny::TCPConnectionFailed
+    true
+  ensure
+    subject.send(:disconnect)
   end
 end

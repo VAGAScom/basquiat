@@ -8,14 +8,14 @@ Gem::Specification.new do |spec|
   spec.version       = Basquiat::VERSION
   spec.authors       = ['Marcello Rocha']
   spec.email         = %w(marcello.rocha@vagas.com.br)
-  spec.description   = %q{Lib para abstrair a interação com diferentes serviços de messageria}
-  spec.summary       = %q{Lib para abstrair a interação com diferentes serviços de messageria}
+  spec.description   = %q(Lib para abstrair a interação com diferentes serviços de messageria)
+  spec.summary       = %q(Lib para abstrair a interação com diferentes serviços de messageria)
   spec.homepage      = 'http://vagas.com.br'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($/)
-  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
+  spec.executables   = spec.files.grep(/^bin\//) { |f| File.basename(f) }
+  spec.test_files    = spec.files.grep(/^(test|spec|features)\//)
   spec.require_paths = %w(lib)
 
   spec.add_development_dependency 'bundler'

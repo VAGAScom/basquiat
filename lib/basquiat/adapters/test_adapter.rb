@@ -17,7 +17,7 @@ module Basquiat
         { host: '127.0.0.1', port: 123_456, durable: true }
       end
 
-      def publish(event, message, single_message = true)
+      def publish(event, message, _single_message = true)
         self.class.events[event] << Basquiat::Adapters::Base.json_encode(message)
       end
 

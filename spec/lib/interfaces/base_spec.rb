@@ -2,7 +2,7 @@ require 'spec_helper'
 
 # Sample class used for testing
 class SampleClass
-  extend Basquiat::Consumer
+  extend Basquiat::Base
   self.event_adapter = Basquiat::Adapters::Test
 end
 
@@ -44,13 +44,13 @@ describe Basquiat::Base do
     it 'reads a message from the queue' do
       subject.subscribe_to 'some.event', ->(msg) { msg }
       expect do
-        subject.listen(false)
+        subject.listen(block: false)
       end.to change { subject.adapter.events('some.event').size }.by(-1)
     end
 
     it 'runs the proc for each message' do
       subject.subscribe_to('some.event', ->(msg) { "#{msg} LAMBDA LAMBDA LAMBDA" })
-      expect(subject.listen(false)).to match(/LAMBDA LAMBDA LAMBDA$/)
+      expect(subject.listen(block: false)).to match(/LAMBDA LAMBDA LAMBDA$/)
     end
 
     it 'can receive a symbol that will point to a method' do
@@ -59,7 +59,7 @@ describe Basquiat::Base do
       end
 
       subject.subscribe_to('some.event', :test_method)
-      expect(subject.listen(false)).to eq(%w(e e e))
+      expect(subject.listen(block: false)).to eq(%w(e e e))
     end
   end
 
@@ -68,7 +68,7 @@ describe Basquiat::Base do
     subject.instance_eval <<-METHCALL
       subscribe_to 'some.event', ->(msg) { publish('other.event', "Redirected \#{msg}") }
     METHCALL
-    expect { subject.listen(false) }.to_not raise_error
+    expect { subject.listen(block: false) }.to_not raise_error
     expect(subject.adapter.events('other.event')).to have(1).item
   end
 end
