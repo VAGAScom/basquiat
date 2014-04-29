@@ -56,6 +56,10 @@ module Basquiat
         reset_connection
       end
 
+      def connected?
+        @connection
+      end
+
       private
       def with_network_failure_handler
         yield if block_given?

@@ -29,6 +29,12 @@ describe Basquiat::Adapters::RabbitMq do
     end
   end
 
+  it '#connected?' do
+    expect(subject.connected?).to be_nil
+    subject.connect
+    expect(subject.connected?).to_not be_nil
+  end
+
   context 'publisher' do
     it '#publish [enqueue a message]' do
       expect do
