@@ -11,7 +11,7 @@ module Basquiat
           servers:   [{ host: 'localhost', port: 5672 }],
           queue:     { name: Basquiat.configuration.queue_name, options: { durable: true } },
           exchange:  { name: Basquiat.configuration.exchange_name, options: { durable: true } },
-          publisher: { confirm: true },
+          publisher: { confirm: true, persistent: false },
           auth:      { user: 'guest', password: 'guest' } }
       end
 
@@ -19,8 +19,7 @@ module Basquiat
         procs[event_name] = proc
       end
 
-      # TODO: Channel Level Errors
-      def publish(event, message, keep_open: false)
+      def publish(event, message, keep_open: options[:publisher][:persistent])
         with_network_failure_handler do
           channel.confirm_select if options[:publisher][:confirm]
           exchange.publish(Basquiat::Adapters::Base.json_encode(message), routing_key: event)
@@ -95,7 +94,7 @@ module Basquiat
         retries                  = current_server.fetch(:retries, 0)
         current_server[:retries] = retries + 1
         if retries < failover_opts[:max_retries]
-          warn("[WARN]: Connection failed retrying in #{failover_opts[:default_timeout]} seconds")
+          warn("[WARN] Connection failed retrying in #{failover_opts[:default_timeout]} seconds")
           sleep(failover_opts[:default_timeout])
         else
           rotate_servers
