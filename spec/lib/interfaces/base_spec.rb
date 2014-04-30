@@ -24,6 +24,14 @@ describe Basquiat::Base do
     expect(subject.adapter.options[:durable]).to be_true
   end
 
+  it 'delegates disconnect and connected? to the adapter' do
+    subject.adapter.should_receive(:connected?)
+    subject.connected?
+
+    subject.adapter.should_receive(:disconnect)
+    subject.disconnect
+  end
+
   context 'as a Producer' do
     it '#publish' do
       expect do

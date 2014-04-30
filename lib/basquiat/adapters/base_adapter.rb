@@ -27,6 +27,12 @@ module Basquiat
       def subscribe_to
       end
 
+      def disconnect
+      end
+
+      def disconnected?
+      end
+
       private
 
       attr_reader :procs, :options

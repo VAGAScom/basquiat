@@ -20,6 +20,14 @@ module Basquiat
       adapter.subscribe_to(event_name, proc)
     end
 
+    def disconnect
+      adapter.disconnect
+    end
+
+    def connected?
+      adapter.connected?
+    end
+
     def listen(block: true)
       adapter.listen(block: block)
     end
