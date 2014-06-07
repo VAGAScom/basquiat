@@ -21,14 +21,14 @@ describe Basquiat::Base do
     subject.adapter_options host: 'localhost', port: 5672, durable: true
     expect(subject.adapter.options[:port]).to eq(5672)
     expect(subject.adapter.options[:host]).to eq('localhost')
-    expect(subject.adapter.options[:durable]).to be_true
+    expect(subject.adapter.options[:durable]).to be_truthy
   end
 
   it 'delegates disconnect and connected? to the adapter' do
-    subject.adapter.should_receive(:connected?)
+    expect(subject.adapter).to receive(:connected?)
     subject.connected?
 
-    subject.adapter.should_receive(:disconnect)
+    expect(subject.adapter).to receive(:disconnect)
     subject.disconnect
   end
 
@@ -77,6 +77,6 @@ describe Basquiat::Base do
       subscribe_to 'some.event', ->(msg) { publish('other.event', "Redirected \#{msg}") }
     METHCALL
     expect { subject.listen(block: false) }.to_not raise_error
-    expect(subject.adapter.events('other.event')).to have(1).item
+    expect(subject.adapter.events('other.event').size).to eq(1)
   end
 end

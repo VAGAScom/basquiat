@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Basquiat do
   it 'should have a version number' do
-    Basquiat::VERSION.should_not be_nil
+    expect(Basquiat::VERSION).not_to be_nil
   end
 
   context '#configuration' do
@@ -32,6 +32,15 @@ describe Basquiat do
 
       Basquiat.configuration.exchange_name = nil
       expect(Basquiat.configuration.exchange_name).to eq('vagas.exchange')
+    end
+
+    it '#logger' do
+      expect(Basquiat.configuration.logger).not_to be_nil
+    end
+
+    it '#logger=' do
+      Basquiat.configuration.logger = Logger.new('/dev/null')
+      expect(Basquiat.configuration.logger).to be_a Logger
     end
   end
 end

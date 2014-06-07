@@ -37,6 +37,10 @@ module Basquiat
 
       attr_reader :procs, :options
 
+      def logger
+        Basquiat.configuration.logger
+      end
+
       def deep_merge(original = options, hash)
         hash.each_pair do |key, value|
           current = original[key]

@@ -20,7 +20,7 @@ Or install it yourself as:
 
 You will also need the right gem for your MQ system. Bundled in this gem you will find 2 adapters for RabbitMQ and ActiveMQ which depends on the gems _bunny_ and _ruby-stomp_ respectively.
 
-## Usage
+## Basic Usage
 
 First of all require the gem, the dependecy for the adapter and the adapter itself
 
@@ -45,6 +45,25 @@ And you can subscribe to one or more events using a proc that will get called wh
 
       subscribe_to 'some.nifty.event', ->(msg) { msg.fetch(:of, '').upcase }
     end
+
+## Configuration
+
+You can setup Basquiat using the configure method. This method will yield a Configuration object:
+
+    Basquiat.configure do |config|
+      config.exchange_name = 'my_exchange'
+    end
+
+The available options are:
+
+- config_file= Receive a path to an YAML file (example here)
+- queue_name= The default queue name
+- exchange_name= The default exchange name
+- environment= Forces the environment to something other than the value of BASQUIAT_ENV
+- logger= The logger to be used. Defaults to a null logger.
+
+The configuration can be reset using the Basquiat.reset method.
+
 ## Contributing
 
 1. Fork it

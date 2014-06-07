@@ -31,6 +31,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'metric_fu'
   spec.add_development_dependency 'rubocop'
+  spec.add_development_dependency 'rails', '~> 3.2.18'
 
   spec.add_dependency 'multi_json'
+  spec.add_dependency 'naught'
 end

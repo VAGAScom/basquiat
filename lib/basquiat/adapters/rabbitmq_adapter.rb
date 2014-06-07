@@ -90,11 +90,11 @@ module Basquiat
       end
 
       def handle_network_failures
-        warn "[WARN] Handling connection to #{current_server_uri}"
+        logger.warn "[WARN] Handling connection to #{current_server_uri}"
         retries                  = current_server.fetch(:retries, 0)
         current_server[:retries] = retries + 1
         if retries < failover_opts[:max_retries]
-          warn("[WARN] Connection failed retrying in #{failover_opts[:default_timeout]} seconds")
+          logger.warn("[WARN] Connection failed retrying in #{failover_opts[:default_timeout]} seconds")
           sleep(failover_opts[:default_timeout])
         else
           rotate_servers

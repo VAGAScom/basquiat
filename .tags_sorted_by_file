@@ -31,6 +31,7 @@ MainGemFile	coverage/index.html	/^  <a name="MainGemFile"><\/a>$/;"	a
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 Basquiat	lib/basquiat.rb	/^module Basquiat$/;"	m
 Configuration	lib/basquiat.rb	/^  class Configuration$/;"	c
+config_file	lib/basquiat.rb	/^    def config_file(path)$/;"	f	class:Configuration
 configuration	lib/basquiat.rb	/^    def configuration$/;"	f	class:Basquiat
 configure	lib/basquiat.rb	/^    def configure$/;"	f	class:Basquiat
 exchange_name	lib/basquiat.rb	/^    def exchange_name$/;"	f	class:Configuration
@@ -43,6 +44,8 @@ Basquiat	lib/basquiat/adapters/base_adapter.rb	/^module Basquiat$/;"	m
 adapter_options	lib/basquiat/adapters/base_adapter.rb	/^      def adapter_options(opts)$/;"	f	class:Basquiat.Adapters.Base
 deep_merge	lib/basquiat/adapters/base_adapter.rb	/^      def deep_merge(original = options, hash)$/;"	f	class:Basquiat.Adapters.Base
 default_options	lib/basquiat/adapters/base_adapter.rb	/^      def default_options$/;"	f	class:Basquiat.Adapters.Base
+disconnect	lib/basquiat/adapters/base_adapter.rb	/^      def disconnect$/;"	f	class:Basquiat.Adapters.Base
+disconnected?	lib/basquiat/adapters/base_adapter.rb	/^      def disconnected?$/;"	f	class:Basquiat.Adapters.Base
 initialize	lib/basquiat/adapters/base_adapter.rb	/^      def initialize$/;"	f	class:Basquiat.Adapters.Base
 json_decode	lib/basquiat/adapters/base_adapter.rb	/^      def self.json_decode(object)$/;"	F	class:Basquiat.Adapters.Base
 json_encode	lib/basquiat/adapters/base_adapter.rb	/^      def self.json_encode(object)$/;"	F	class:Basquiat.Adapters.Base
@@ -54,6 +57,7 @@ RabbitMq	lib/basquiat/adapters/rabbitmq_adapter.rb	/^    class RabbitMq$/;"	c	cl
 bind_queue	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def bind_queue(event_name)$/;"	f	class:Basquiat.Adapters.RabbitMq
 channel	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def channel$/;"	f	class:Basquiat.Adapters.RabbitMq
 connect	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def connect$/;"	f	class:Basquiat.Adapters.RabbitMq
+connected?	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def connected?$/;"	f	class:Basquiat.Adapters.RabbitMq
 connection	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def connection$/;"	f	class:Basquiat.Adapters.RabbitMq
 connection_uri	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def connection_uri$/;"	f	class:Basquiat.Adapters.RabbitMq
 current_server	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def current_server$/;"	f	class:Basquiat.Adapters.RabbitMq
@@ -64,11 +68,12 @@ exchange	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def exchange$/;"	f	cl
 failover_opts	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def failover_opts$/;"	f	class:Basquiat.Adapters.RabbitMq
 handle_network_failures	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def handle_network_failures$/;"	f	class:Basquiat.Adapters.RabbitMq
 listen	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def listen(block: true)$/;"	f	class:Basquiat.Adapters.RabbitMq
-publish	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def publish(event, message, keep_open: false)$/;"	f	class:Basquiat.Adapters.RabbitMq
+publish	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def publish(event, message, keep_open: options[:publisher][:persistent])$/;"	f	class:Basquiat.Adapters.RabbitMq
 queue	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def queue$/;"	f	class:Basquiat.Adapters.RabbitMq
 reset_connection	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def reset_connection$/;"	f	class:Basquiat.Adapters.RabbitMq
 rotate_servers	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def rotate_servers$/;"	f	class:Basquiat.Adapters.RabbitMq
 subscribe_to	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def subscribe_to(event_name, proc)$/;"	f	class:Basquiat.Adapters.RabbitMq
+with_network_failure_handler	lib/basquiat/adapters/rabbitmq_adapter.rb	/^      def with_network_failure_handler$/;"	f	class:Basquiat.Adapters.RabbitMq
 Adapters	lib/basquiat/adapters/test_adapter.rb	/^  module Adapters$/;"	m	class:Basquiat
 Basquiat	lib/basquiat/adapters/test_adapter.rb	/^module Basquiat$/;"	m
 Test	lib/basquiat/adapters/test_adapter.rb	/^    class Test$/;"	c	class:Basquiat.Adapters
@@ -82,11 +87,15 @@ subscribed_event	lib/basquiat/adapters/test_adapter.rb	/^      def subscribed_ev
 Base	lib/basquiat/interfaces/base.rb	/^  module Base$/;"	m	class:Basquiat
 Basquiat	lib/basquiat/interfaces/base.rb	/^module Basquiat$/;"	m
 adapter_options	lib/basquiat/interfaces/base.rb	/^    def adapter_options(opts = {})$/;"	f	class:Basquiat.Base
+connected?	lib/basquiat/interfaces/base.rb	/^    def connected?$/;"	f	class:Basquiat.Base
+disconnect	lib/basquiat/interfaces/base.rb	/^    def disconnect$/;"	f	class:Basquiat.Base
 event_adapter=	lib/basquiat/interfaces/base.rb	/^    def event_adapter=(adapter)$/;"	f	class:Basquiat.Base
 listen	lib/basquiat/interfaces/base.rb	/^    def listen(block: true)$/;"	f	class:Basquiat.Base
 make_callable	lib/basquiat/interfaces/base.rb	/^    def make_callable(proc)$/;"	f	class:Basquiat.Base
 publish	lib/basquiat/interfaces/base.rb	/^    def publish(event, message)$/;"	f	class:Basquiat.Base
 subscribe_to	lib/basquiat/interfaces/base.rb	/^    def subscribe_to(event_name, proc)$/;"	f	class:Basquiat.Base
+Basquiat	lib/basquiat/rails/railtie.rb	/^module Basquiat$/;"	m
+Railtie	lib/basquiat/rails/railtie.rb	/^  class Railtie < ::Rails::Railtie$/;"	c	class:Basquiat
 Basquiat	lib/basquiat/version.rb	/^module Basquiat$/;"	m
 SampleAdapter	spec/lib/adapters/base_adapter_spec.rb	/^class SampleAdapter$/;"	c
 remove_queues_and_exchanges	spec/lib/adapters/rabbitmq_adapter_spec.rb	/^  def remove_queues_and_exchanges$/;"	f
