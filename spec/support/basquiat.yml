@@ -1,0 +1,10 @@
+test:
+  exchange_name: 'my.test_exchange'
+  queue_name: 'my.nice_queue'
+  default_adapter: Basquiat::Adapters::Test
+
+  adapter_options:
+      :servers:
+        -
+          :host: 'localhost'
+          :port: '5672'

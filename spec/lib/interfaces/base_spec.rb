@@ -32,6 +32,24 @@ describe Basquiat::Base do
     subject.disconnect
   end
 
+  context 'using the defaults' do
+    class DefaultClass
+      extend Basquiat::Base
+    end
+
+    subject(:defaults) { DefaultClass }
+
+    it 'has an event_adapter' do
+      expect(defaults.adapter).to be_a(Basquiat::Adapters::Test)
+    end
+
+    it 'publishes to the configured queue and exchanges' do
+      expect do
+        subject.publish('test.message', message: 'useful test message')
+      end.to change { subject.adapter.events('test.message').size }.by(1)
+    end
+  end
+
   context 'as a Producer' do
     it '#publish' do
       expect do
@@ -74,7 +92,7 @@ describe Basquiat::Base do
   it 'trigger an event after processing a message' do
     subject.publish('some.event', 'some message')
     subject.instance_eval <<-METHCALL
-      subscribe_to 'some.event', ->(msg) { publish('other.event', "Redirected \#{msg}") }
+    subscribe_to 'some.event', ->(msg) { publish('other.event', "Redirected \#{msg}") }
     METHCALL
     expect { subject.listen(block: false) }.to_not raise_error
     expect(subject.adapter.events('other.event').size).to eq(1)

@@ -1,13 +1,32 @@
+require 'set'
+
 module Basquiat
   # base module extend the classes that will use the event infrastructure
   module Base
-    attr_reader :adapter
+
+    class << self
+      def extended(klass)
+        descendants.push klass
+      end
+
+      def descendants
+        @descendants ||= Array.new
+      end
+    end
+
+    def clear_adapter
+      @adapter = nil
+    end
 
     def event_adapter=(adapter)
       @adapter = adapter.new
     end
 
-    def adapter_options(opts = {})
+    def adapter
+      @adapter ||= Kernel.const_get(Basquiat.configuration.default_adapter).new
+    end
+
+    def adapter_options(opts = Basquiat.configuration.adapter_options)
       adapter.adapter_options(opts)
     end
 

@@ -10,6 +10,9 @@ SimpleCov.start do
   add_group('Main Gem File') { |source| source.filename =~ %r{\/lib\/basquiat\.rb$} }
 end
 
+ENV['BASQUIAT_ENV'] = 'test'
 require 'basquiat'
+
+Basquiat.configure {|config| config.config_file = File.expand_path('../support/basquiat.yml', __FILE__) }
 
 require 'support/shared_examples/basquiat_adapter_shared_examples'

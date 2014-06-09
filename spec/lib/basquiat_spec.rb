@@ -1,46 +1,26 @@
 require 'spec_helper'
 
 describe Basquiat do
+  after(:all) do
+    Basquiat.configure {|config| config.config_file = File.expand_path('../../support/basquiat.yml', __FILE__) }
+  end
+
   it 'should have a version number' do
     expect(Basquiat::VERSION).not_to be_nil
   end
 
-  context '#configuration' do
-    before(:each) { Basquiat.reset }
-    it '#queue_name' do
-      expect(Basquiat.configuration.queue_name).to eq('vagas.queue')
-    end
+  it '#configure yields to a block' do
+    block = ->(conf) { puts conf }
+    expect {|block| Basquiat.configure(&block) }.to yield_control
+  end
 
-    it '#queue_name=' do
-      Basquiat.configuration.queue_name = 'vagas.test'
-      expect(Basquiat.configuration.queue_name).to eq('vagas.test')
+  it '#configuration' do
+    expect(Basquiat.configuration).to be_a Basquiat::Configuration
+  end
 
-      Basquiat.configure { |config| config.queue_name = 'vagas.block_config' }
-      expect(Basquiat.configuration.queue_name).to eq('vagas.block_config')
-
-      Basquiat.configuration.queue_name = nil
-      expect(Basquiat.configuration.queue_name).to eq('vagas.queue')
-    end
-
-    it '#exchange_name' do
-      expect(Basquiat.configuration.exchange_name).to eq('vagas.exchange')
-    end
-
-    it '#exchange_name=' do
-      Basquiat.configuration.exchange_name = 'test'
-      expect(Basquiat.configuration.exchange_name).to eq('test')
-
-      Basquiat.configuration.exchange_name = nil
-      expect(Basquiat.configuration.exchange_name).to eq('vagas.exchange')
-    end
-
-    it '#logger' do
-      expect(Basquiat.configuration.logger).not_to be_nil
-    end
-
-    it '#logger=' do
-      Basquiat.configuration.logger = Logger.new('/dev/null')
-      expect(Basquiat.configuration.logger).to be_a Logger
-    end
+  it '#reset' do
+    config = Basquiat.configuration
+    Basquiat.reset
+    expect(Basquiat.configuration).not_to equal(config)
   end
 end

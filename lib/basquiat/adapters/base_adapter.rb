@@ -21,6 +21,9 @@ module Basquiat
         {}
       end
 
+      def update_config
+      end
+
       def publish
       end
 
