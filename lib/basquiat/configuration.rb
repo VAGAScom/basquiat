@@ -33,7 +33,7 @@ module Basquiat
 
     def reload_classes
       Basquiat::Base.descendants.each do |klass|
-        klass.adapter.update_config
+        klass.clear_adapter
       end
     end
 

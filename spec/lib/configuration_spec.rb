@@ -63,18 +63,8 @@ describe Basquiat::Configuration do
     expect(config.exchange_name).to eq('super.nice_exchange')
   end
 
-  xit '#reload_classes' do
-    require 'basquiat/adapters/rabbitmq_adapter'
-
-    class ReloadedClass
-      extend Basquiat::Base
-
-      self.event_adapter = Basquiat::Adapters::RabbitMq
-    end
-
-    config.config_file = File.join(File.dirname(__FILE__), '../support/basquiat.yml')
+  it '#reload_classes' do
+    expect(Basquiat::Base).to receive(:descendants).and_return([])
     config.reload_classes
-
-    expect(ReloadedClass.adapter).to be_a Basquiat::Adapters::Test
   end
 end

@@ -2,6 +2,8 @@ module Basquiat
   module Adapters
     # Base implementation for an adapter
     module Base
+      using Basquiat::HashRefinements
+
       def initialize
         @options = default_options
         @procs   = {}
@@ -12,7 +14,7 @@ module Basquiat
       # to the default_options hash.
       # @param [Hash] opts an adapter dependant hash of options
       def adapter_options(opts)
-        deep_merge(opts)
+        @options.deep_merge(opts)
       end
 
       # Default options for the adapter
@@ -37,22 +39,10 @@ module Basquiat
       end
 
       private
-
       attr_reader :procs, :options
 
       def logger
         Basquiat.configuration.logger
-      end
-
-      def deep_merge(original = options, hash)
-        hash.each_pair do |key, value|
-          current = original[key]
-          if current.is_a?(Hash) && value.is_a?(Hash)
-            deep_merge(current, value)
-          else
-            original[key] = value
-          end
-        end
       end
 
       def self.json_encode(object)

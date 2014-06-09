@@ -1,6 +1,7 @@
 require 'multi_json'
 require 'naught'
 
+require_relative 'basquiat/hash_refinements'
 require_relative 'basquiat/configuration'
 require_relative 'basquiat/adapters'
 require_relative 'basquiat/version'
