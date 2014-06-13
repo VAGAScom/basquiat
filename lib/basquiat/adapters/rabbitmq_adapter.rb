@@ -19,15 +19,14 @@ module Basquiat
         procs[event_name] = proc
       end
 
-      def publish(event, message, keep_open: options[:publisher][:persistent])
+      def publish(event, message, persistent: options[:publisher][:persistent])
         with_network_failure_handler do
           channel.confirm_select if options[:publisher][:confirm]
           exchange.publish(Basquiat::Adapters::Base.json_encode(message), routing_key: event)
-          disconnect unless keep_open
+          disconnect unless persistent
         end
       end
 
-      # TODO: Manual ACK and Requeue
       def listen(block: true)
         with_network_failure_handler do
           procs.keys.each { |key| bind_queue(key) }

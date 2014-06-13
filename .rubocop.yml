@@ -1,2 +1,8 @@
-LineLength:
+Style/LineLength:
   Max: 109
+
+Style/AlignHash:
+  EnforcedHashRocketStyle: table
+
+Style/Documentation:
+  Enabled: false
