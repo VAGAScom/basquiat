@@ -22,7 +22,7 @@ module Basquiat
       def publish(event, message, persistent: options[:publisher][:persistent])
         with_network_failure_handler do
           channel.confirm_select if options[:publisher][:confirm]
-          exchange.publish(Basquiat::Adapters::Base.json_encode(message), routing_key: event)
+          exchange.publish(Basquiat::Json.encode(message), routing_key: event)
           disconnect unless persistent
         end
       end
@@ -31,7 +31,7 @@ module Basquiat
         with_network_failure_handler do
           procs.keys.each { |key| bind_queue(key) }
           queue.subscribe(block: block) do |di, _, msg|
-            message = Basquiat::Adapters::Base.json_decode(msg)
+            message = Basquiat::Json.decode(msg)
             procs[di.routing_key].call(message)
           end
         end
@@ -81,7 +81,6 @@ module Basquiat
       def reset_connection
         @connection, @channel, @exchange, @queue = nil, nil, nil, nil
       end
-
 
       def rotate_servers
         return unless options[:servers].any? { |server| server.fetch(:retries, 0) < failover_opts[:max_retries] }

@@ -18,7 +18,7 @@ module Basquiat
       end
 
       def publish(event, message, _single_message = true)
-        self.class.events[event] << Basquiat::Adapters::Base.json_encode(message)
+        self.class.events[event] << Basquiat::Json.encode(message)
       end
 
       def events(key)
@@ -33,7 +33,7 @@ module Basquiat
       def listen(*)
         event = subscribed_event
         msg   = self.class.events[event].shift
-        msg ? procs[event].call(Basquiat::Adapters::Base.json_decode(msg)) : nil
+        msg ? procs[event].call(Basquiat::Json.decode(msg)) : nil
       end
 
       private

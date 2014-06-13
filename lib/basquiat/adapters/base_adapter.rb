@@ -44,16 +44,6 @@ module Basquiat
       def logger
         Basquiat.configuration.logger
       end
-
-      def self.json_encode(object)
-        MultiJson.dump(object)
-      end
-
-      def self.json_decode(object)
-        MultiJson.load(object, symbolize_keys: true)
-      rescue
-        {}
-      end
     end
   end
 end

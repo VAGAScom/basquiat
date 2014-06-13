@@ -3,14 +3,13 @@ require 'set'
 module Basquiat
   # base module extend the classes that will use the event infrastructure
   module Base
-
     class << self
       def extended(klass)
         descendants.push klass
       end
 
       def descendants
-        @descendants ||= Array.new
+        @descendants ||= []
       end
     end
 

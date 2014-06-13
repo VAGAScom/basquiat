@@ -6,7 +6,6 @@ require_relative 'basquiat/adapters'
 require_relative 'basquiat/version'
 require_relative 'basquiat/interfaces/base'
 
-
 # Overall namespace And config class
 module Basquiat
   class << self
