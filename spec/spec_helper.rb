@@ -7,6 +7,7 @@ SimpleCov.start do
 
   add_group('Adapters') { |source| source.filename =~ /basquiat\/adapters/ }
   add_group('Interfaces') { |source| source.filename =~ /basquiat\/interfaces/ }
+  add_group('Support') { |source| source.filename =~ /basquiat\/support/ }
   add_group('Main Gem File') { |source| source.filename =~ %r{\/lib\/basquiat\.rb$} }
 end
 
