@@ -44,11 +44,11 @@ module Basquiat
 
     def load_yaml(path)
       yaml_data = File.readlines(path).join
-      @yaml = YAML.load(yaml_data)
+      @yaml     = YAML.load(yaml_data)
     end
 
     def setup_basic_options
-      @queue_name ||= config.fetch('queue_name')
+      @queue_name    ||= config.fetch('queue_name')
       @exchange_name ||= config.fetch('exchange_name')
     end
   end
