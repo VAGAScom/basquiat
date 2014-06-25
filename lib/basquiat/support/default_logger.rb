@@ -1,3 +1,5 @@
 require 'logger'
 
-Basquiat::DefaultLogger = Naught.build { |builder| builder.mimic Logger }
+module Basquiat
+  DefaultLogger = Naught.build { |builder| builder.mimic Logger }
+end
