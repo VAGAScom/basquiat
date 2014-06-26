@@ -64,10 +64,32 @@ The available options are:
 
 The configuration can be reset using the Basquiat.reset method.
 
-## Contributing
+Yaml File configuration example:
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+    test:                                       #environment
+      exchange_name: 'my.test_exchange'         #required
+      queue_name: 'my.nice_queue'               #required
+      default_adapter: Basquiat::Adapters::Test #it will overwrite the adapter on all classes that extend Basquiat::Base
+      adapter_options:                          #Adapter specific options
+        :servers:
+          -
+            :host: 'localhost'
+            :port: '5672'
+    development:                                #full example of the RabbitMq options 
+      exchange_name: 'my.exchange'
+      queue_name: 'my.queue'
+      default_adapter: Basquiat::Adapters::RabbitMq
+      adapter_options:
+        :servers:
+          -
+            :host: 'localhost'
+            :port: '5672'
+        :failover:
+          :default_timeout: 5
+          :max_retries: 5
+        :publisher: 
+          :confirm: true
+          :persistent: true
+        :auth:
+          :user: 'guest'
+          :password: 'guest' 
