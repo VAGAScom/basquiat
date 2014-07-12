@@ -64,7 +64,10 @@ describe Basquiat::Configuration do
   end
 
   it '#reload_classes' do
-    expect(Basquiat::Base).to receive(:descendants).and_return([])
+    class MyTest
+      extend Basquiat::Base
+    end
+
     config.reload_classes
   end
 end
