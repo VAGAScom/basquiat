@@ -13,9 +13,11 @@ module Basquiat
       end
     end
 
-    def clear_adapter
-      @adapter = nil
+    def reload_adapter_from_configuration
+      @adapter = Kernel.const_get(Basquiat.configuration.default_adapter).new
+      @adapter.adapter_options Basquiat.configuration.adapter_options
     end
+
 
     def event_adapter=(adapter)
       @adapter = adapter.new
