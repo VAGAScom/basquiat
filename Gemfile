@@ -1,4 +1,4 @@
-source 'http://gems.vagas-prod.net'
+source 'http://localhost'
 
 # Specify your gem's dependencies in basquiat.gemspec
 gemspec
