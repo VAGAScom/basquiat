@@ -5,7 +5,7 @@ module Basquiat
       using Basquiat::HashRefinements
 
       def initialize
-        @options = default_options
+        @options = base_options
         @procs   = {}
         @retries = 0
       end
@@ -14,11 +14,15 @@ module Basquiat
       # to the default_options hash.
       # @param [Hash] opts an adapter dependant hash of options
       def adapter_options(opts)
-        @options.deep_merge(opts)
+        @options.deep_merge!(opts)
       end
 
       # Default options for the adapter
       # @return [Hash]
+      def base_options
+        default_options.merge(Basquiat.configuration.adapter_options)
+      end
+
       def default_options
         {}
       end
