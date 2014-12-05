@@ -33,7 +33,7 @@ module Basquiat
 
     def reload_classes
       Basquiat::Base.descendants.each do |klass|
-        klass.clear_adapter
+        klass.reload_adapter_from_configuration
       end
     end
 
@@ -43,13 +43,12 @@ module Basquiat
     end
 
     def load_yaml(path)
-      yaml_data = File.readlines(path).join
-      @yaml     = YAML.load(yaml_data)
+      @yaml     = YAML.load_file(path)
     end
 
     def setup_basic_options
-      @queue_name    ||= config.fetch('queue_name')
-      @exchange_name ||= config.fetch('exchange_name')
+      @queue_name    ||= config.fetch('queue_name') { 'vagas.exchange' }
+      @exchange_name ||= config.fetch('exchange_name') { 'vagas.queue' }
     end
   end
 end
