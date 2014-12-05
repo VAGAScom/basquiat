@@ -8,9 +8,9 @@ describe Basquiat::HashRefinements do
   end
 
   it '#deep_merge' do
-    merged_hash = hash.deep_merge({ 'hash' => { 'inner_key' => 7, 'other_inner_key' => 10 } })
-    expect(merged_hash['hash']).to have_key('other_inner_key')
-    expect(merged_hash['hash']['inner_key']).to eq(7)
+    hash.deep_merge({ 'hash' => { 'inner_key' => 7, 'other_inner_key' => 10 } })
+    expect(hash['hash']).to have_key('other_inner_key')
+    expect(hash['hash']['inner_key']).to eq(7)
   end
 
   it '#symbolize_keys' do
