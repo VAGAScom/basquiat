@@ -8,6 +8,10 @@ module Basquiat
         def events
           @events ||= Hash.new { |hash, key| hash[key] = [] }
         end
+
+        def clean
+          @events.clear if @events
+        end
       end
 
       attr_reader :options

@@ -33,4 +33,29 @@ describe Basquiat::Adapters::Test do
       expect(subject.listen).to eq('some message')
     end
   end
+
+  describe '#clean' do
+    context 'when no event has been published' do
+
+      it 'should have no event registered' do
+        Basquiat::Adapters::Test.clean
+
+        expect(Basquiat::Adapters::Test.events).to be_empty
+      end
+    end
+
+    context 'when some events have been published' do
+      before do
+        subject.publish('some.message', value: 'A Nice Welcome Message')
+        subject.publish('some.message', value: 'A Nasty Welcome Message')
+        subject.publish('other.message', value: 'A Random Welcome Message')
+      end
+
+      it 'should have no event registered' do
+        Basquiat::Adapters::Test.clean
+
+        expect(Basquiat::Adapters::Test.events).to be_empty
+      end
+    end
+  end
 end
