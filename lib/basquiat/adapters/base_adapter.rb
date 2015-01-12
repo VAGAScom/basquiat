@@ -14,7 +14,7 @@ module Basquiat
       # to the default_options hash.
       # @param [Hash] opts an adapter dependant hash of options
       def adapter_options(opts)
-        @options.deep_merge!(opts)
+        @options.deep_merge(opts)
       end
 
       # Default options for the adapter

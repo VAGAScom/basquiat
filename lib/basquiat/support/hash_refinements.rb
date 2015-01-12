@@ -11,6 +11,14 @@ module Basquiat
           end
         end
       end
+
+      def symbolize_keys
+        each_with_object({}) do |(key, value), new_hash|
+          new_key = key.to_sym rescue key
+          new_value = (value.is_a? Hash) ? value.symbolize_keys : value
+          new_hash[new_key] = new_value
+        end
+      end
     end
   end
 end
