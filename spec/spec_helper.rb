@@ -1,6 +1,7 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
 require 'simplecov'
+
 SimpleCov.start do
   add_filter { |source| source.lines_of_code <= 3 }
   add_filter { |source| source.filename =~ /spec/ }
