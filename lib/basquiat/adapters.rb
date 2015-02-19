@@ -1,2 +1,2 @@
-require_relative 'adapters/base_adapter'
-require_relative 'adapters/test_adapter'
+require 'basquiat/adapters/base_adapter'
+require 'basquiat/adapters/test_adapter'

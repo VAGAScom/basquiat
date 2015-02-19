@@ -1,4 +1,3 @@
-require_relative 'support/default_logger'
-require_relative 'support/hash_refinements'
-require_relative 'support/configuration'
-require_relative 'support/json'
+require 'basquiat/support/hash_refinements'
+require 'basquiat/support/configuration'
+require 'basquiat/support/json'

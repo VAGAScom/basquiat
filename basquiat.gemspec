@@ -6,11 +6,13 @@ require 'basquiat/version'
 Gem::Specification.new do |spec|
   spec.name          = 'basquiat'
   spec.version       = Basquiat::VERSION
-  spec.authors       = ['Marcello Rocha']
-  spec.email         = %w(marcello.rocha@vagas.com.br)
-  spec.description   = %q(Lib para abstrair a interação com diferentes serviços de messageria)
-  spec.summary       = %q(Lib para abstrair a interação com diferentes serviços de messageria)
-  spec.homepage      = 'http://vagas.com.br'
+  spec.authors       = ['Marcello "mereghost" Rocha']
+  spec.email         = %w(marcello.rocha@gmail.com.br)
+  spec.description   = <<EOD
+Basquiat is a library that intends to abstract all the complexity of working with message queues
+EOD
+  spec.summary       = 'A pluggable library that aims to hide message queue complexity'
+  spec.homepage      = 'http://www.vagas.com.br/'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($RS)
