@@ -1,0 +1,11 @@
+basquiat:
+  build: docker
+  command: /basquiat/docker/basquiat_start.sh
+  volumes:
+    - ./:/basquiat
+  links:
+    - rabbitmq
+  tty: true
+
+rabbitmq:
+  image: mereghost/rabbitmq:latest
