@@ -1,5 +1,6 @@
 require 'multi_json'
 require 'naught'
+require 'yaml'
 
 require_relative 'basquiat/support'
 require_relative 'basquiat/adapters'
