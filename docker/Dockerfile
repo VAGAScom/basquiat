@@ -1,7 +1,11 @@
 FROM mereghost/ruby:latest
 
-ENV REFRESHED_AT 2014-09-23
+RUN useradd -m -g users dev
 
-USER dev
 VOLUME /basquiat
 WORKDIR /basquiat
+
+USER dev
+ENV REFRESHED_AT 2015-03-29
+COPY ../Gemfile /tmp/Gemfile
+RUN bundle install

@@ -3,7 +3,17 @@ require 'basquiat/adapters/rabbitmq_adapter'
 
 describe Basquiat::Adapters::RabbitMq do
   subject { Basquiat::Adapters::RabbitMq.new }
+
   it_behaves_like 'a Basquiat::Adapter'
+
+  let(:base_options) do
+    { servers: [{ host: ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' },
+                  port: ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } }] }
+  end
+
+  before(:each) do
+    subject.adapter_options(base_options)
+  end
 
   after(:each) do
     remove_queues_and_exchanges
@@ -11,9 +21,8 @@ describe Basquiat::Adapters::RabbitMq do
 
   context 'failover' do
     let(:failover_settings) do
-      { servers:  [{ host: 'localhost', port: 1234 },
-                   { host: 'localhost', port: 5672 }],
-        failover: { default_timeout: 0.2, max_retries: 2 } }
+      base_options[:servers].unshift({ host: 'localhost', port: 1234 })
+      base_options.merge(failover: { default_timeout: 0.2, max_retries: 2 })
     end
 
     it 'tries a reconnection after a few seconds' do
@@ -47,9 +56,9 @@ describe Basquiat::Adapters::RabbitMq do
     it '#subscribe_to some event' do
       message_received = ''
       subject.subscribe_to('some.event', lambda do |msg|
-        msg[:data].upcase!
-        message_received = msg
-      end)
+                                         msg[:data].upcase!
+                                         message_received = msg
+                                       end)
       subject.listen(block: false)
 
       subject.publish('some.event', data: 'coisa')

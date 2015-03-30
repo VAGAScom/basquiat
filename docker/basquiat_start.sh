@@ -5,5 +5,5 @@ bundle install --binstubs
 echo '#### Starting guard ####'
 (
   cd /basquiat
-  bin/guard start
+  bin/guard start -c --no-notify -p
 )
