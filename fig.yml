@@ -1,8 +1,0 @@
-basquiat:
-  build: .
-  volumes:
-    - ./:/basquiat
-  links:
-    - rabbitmq
-rabbitmq:
-  image: mereghost/rabbitmq

@@ -5,28 +5,28 @@ describe Basquiat::Configuration do
 
   context 'accessors' do
     it '#environment' do
-      expect(config.environment).to eq('test')
+      expect(config.environment).to eq(:test)
     end
 
     it '#environment=' do
       config.environment = 'test'
-      expect(config.environment).to eq('test')
+      expect(config.environment).to eq(:test)
     end
 
     it '#queue_name' do
-      expect(config.queue_name).to eq('vagas.queue')
+      expect(config.queue_name).to eq('basquiat.queue')
     end
 
     it '#queue_name=' do
-      config.queue_name = 'vagas.test'
-      expect(config.queue_name).to eq('vagas.test')
+      config.queue_name = 'basquiat.test'
+      expect(config.queue_name).to eq('basquiat.test')
 
       config.queue_name = nil
-      expect(config.queue_name).to eq('vagas.queue')
+      expect(config.queue_name).to eq('basquiat.queue')
     end
 
     it '#exchange_name' do
-      expect(config.exchange_name).to eq('vagas.exchange')
+      expect(config.exchange_name).to eq('basquiat.exchange')
     end
 
     it '#exchange_name=' do
@@ -34,7 +34,7 @@ describe Basquiat::Configuration do
       expect(config.exchange_name).to eq('test')
 
       config.exchange_name = nil
-      expect(config.exchange_name).to eq('vagas.exchange')
+      expect(config.exchange_name).to eq('basquiat.exchange')
     end
 
     it '#logger' do
