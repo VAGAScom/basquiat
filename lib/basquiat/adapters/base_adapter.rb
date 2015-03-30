@@ -43,6 +43,7 @@ module Basquiat
       end
 
       private
+
       attr_reader :procs, :options
 
       def logger

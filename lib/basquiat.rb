@@ -2,10 +2,10 @@ require 'multi_json'
 require 'naught'
 require 'yaml'
 
-require_relative 'basquiat/support'
-require_relative 'basquiat/adapters'
-require_relative 'basquiat/version'
-require_relative 'basquiat/interfaces/base'
+require 'basquiat/support'
+require 'basquiat/adapters'
+require 'basquiat/version'
+require 'basquiat/interfaces/base'
 
 # Overall namespace And config class
 module Basquiat

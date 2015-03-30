@@ -1,13 +1,21 @@
+require 'basquiat/support/hash_refinements'
+require 'naught'
+require 'erb'
+
 module Basquiat
+  DefaultLogger = Naught.build { |config| config.mimic Logger }
+
   class Configuration
+    using HashRefinements
+
     attr_writer :queue_name, :exchange_name, :logger, :environment
 
     def queue_name
-      @queue_name || 'vagas.queue'
+      @queue_name || 'basquiat.queue'
     end
 
     def exchange_name
-      @exchange_name || 'vagas.exchange'
+      @exchange_name || 'basquiat.exchange'
     end
 
     def logger
@@ -15,7 +23,7 @@ module Basquiat
     end
 
     def environment
-      @environment || ENV['BASQUIAT_ENV'] || 'development'
+      (@environment || ENV['BASQUIAT_ENV'] || 'development').to_sym
     end
 
     def config_file=(path)
@@ -24,11 +32,11 @@ module Basquiat
     end
 
     def adapter_options
-      config.fetch('adapter_options') { Hash.new }
+      config.fetch(:adapter_options) { Hash.new }
     end
 
     def default_adapter
-      config.fetch('default_adapter') { nil }
+      config.fetch(:default_adapter) { Basquiat::Adapter::Test }
     end
 
     def reload_classes
@@ -43,12 +51,12 @@ module Basquiat
     end
 
     def load_yaml(path)
-      @yaml     = YAML.load_file(path)
+      @yaml     = YAML.load(ERB.new(IO.readlines(path).join).result).symbolize_keys
     end
 
     def setup_basic_options
-      @queue_name    ||= config.fetch('queue_name') { 'vagas.exchange' }
-      @exchange_name ||= config.fetch('exchange_name') { 'vagas.queue' }
+      @queue_name    ||= config.fetch(:queue_name) { 'basquiat.exchange' }
+      @exchange_name ||= config.fetch(:exchange_name) { 'basquiat.queue' }
     end
   end
 end

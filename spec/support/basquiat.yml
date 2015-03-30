@@ -2,9 +2,8 @@ test:
   exchange_name: 'my.test_exchange'
   queue_name: 'my.nice_queue'
   default_adapter: Basquiat::Adapters::Test
-
   adapter_options:
-      :servers:
+      servers:
         -
-          :host: 'localhost'
-          :port: '5672'
+          host: <%= ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' } %>
+          port: <%= ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } %>
