@@ -59,6 +59,7 @@ module Basquiat
       end
 
       private
+
       def with_network_failure_handler
         yield if block_given?
       rescue Bunny::ConnectionForced, Bunny::TCPConnectionFailed, Bunny::NetworkFailure => error

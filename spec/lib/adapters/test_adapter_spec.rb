@@ -36,10 +36,8 @@ describe Basquiat::Adapters::Test do
 
   describe '#clean' do
     context 'when no event has been published' do
-
       it 'should have no event registered' do
         Basquiat::Adapters::Test.clean
-
         expect(Basquiat::Adapters::Test.events).to be_empty
       end
     end
@@ -53,7 +51,6 @@ describe Basquiat::Adapters::Test do
 
       it 'should have no event registered' do
         Basquiat::Adapters::Test.clean
-
         expect(Basquiat::Adapters::Test.events).to be_empty
       end
     end

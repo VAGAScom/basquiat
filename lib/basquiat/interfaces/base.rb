@@ -18,7 +18,6 @@ module Basquiat
       @adapter.adapter_options Basquiat.configuration.adapter_options
     end
 
-
     def event_adapter=(adapter)
       @adapter = adapter.new
     end

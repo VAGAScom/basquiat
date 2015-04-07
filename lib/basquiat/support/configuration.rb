@@ -3,6 +3,7 @@ require 'naught'
 require 'erb'
 
 module Basquiat
+  require 'logger'
   DefaultLogger = Naught.build { |config| config.mimic Logger }
 
   class Configuration
@@ -40,18 +41,17 @@ module Basquiat
     end
 
     def reload_classes
-      Basquiat::Base.descendants.each do |klass|
-        klass.reload_adapter_from_configuration
-      end
+      Basquiat::Base.descendants.each(&:reload_adapter_from_configuration)
     end
 
     private
+
     def config
       @yaml.fetch(environment)
     end
 
     def load_yaml(path)
-      @yaml     = YAML.load(ERB.new(IO.readlines(path).join).result).symbolize_keys
+      @yaml = YAML.load(ERB.new(IO.readlines(path).join).result).symbolize_keys
     end
 
     def setup_basic_options

@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
 Basquiat is a library that intends to abstract all the complexity of working with message queues
 EOD
   spec.summary       = 'A pluggable library that aims to hide message queue complexity'
-  spec.homepage      = 'http://www.vagas.com.br/'
+  spec.homepage      = 'http://github.com/VAGAScom/basquiat'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($RS)

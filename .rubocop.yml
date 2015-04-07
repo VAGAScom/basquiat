@@ -2,7 +2,8 @@ AllCops:
   Exclude:
     - 'bin/*'
     - 'docker/*'
-Style/LineLength:
+    - 'Guardfile'
+Metrics/LineLength:
   Max: 109
 
 Style/AlignHash:

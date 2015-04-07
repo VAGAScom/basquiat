@@ -21,7 +21,7 @@ describe Basquiat::Adapters::RabbitMq do
 
   context 'failover' do
     let(:failover_settings) do
-      base_options[:servers].unshift({ host: 'localhost', port: 1234 })
+      base_options[:servers].unshift(host: 'localhost', port: 1234)
       base_options.merge(failover: { default_timeout: 0.2, max_retries: 2 })
     end
 
@@ -55,10 +55,11 @@ describe Basquiat::Adapters::RabbitMq do
   context 'listener' do
     it '#subscribe_to some event' do
       message_received = ''
-      subject.subscribe_to('some.event', lambda do |msg|
-                                         msg[:data].upcase!
-                                         message_received = msg
-                                       end)
+      subject.subscribe_to('some.event',
+                           lambda do |msg|
+                             msg[:data].upcase!
+                             message_received = msg
+                           end)
       subject.listen(block: false)
 
       subject.publish('some.event', data: 'coisa')

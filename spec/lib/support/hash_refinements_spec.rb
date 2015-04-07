@@ -8,7 +8,7 @@ describe Basquiat::HashRefinements do
   end
 
   it '#deep_merge' do
-    hash.deep_merge({ 'hash' => { 'inner_key' => 7, 'other_inner_key' => 10 } })
+    hash.deep_merge('hash' => { 'inner_key' => 7, 'other_inner_key' => 10 })
     expect(hash['hash']).to have_key('other_inner_key')
     expect(hash['hash']['inner_key']).to eq(7)
   end
@@ -20,5 +20,4 @@ describe Basquiat::HashRefinements do
     expect(symbol_hash).to have_key(:hash)
     expect(symbol_hash[:hash]).to have_key(:inner_key)
   end
-
 end

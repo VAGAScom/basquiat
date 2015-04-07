@@ -1,11 +1,12 @@
 basquiat:
   build: docker
-  command: /basquiat/docker/basquiat_start.sh
+  command: /basquiat/docker/guard_start.sh
   volumes:
     - ./:/basquiat
   links:
     - rabbitmq
   tty: true
+  stdin_open: true
 
 rabbitmq:
   image: mereghost/rabbitmq:latest
