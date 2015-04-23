@@ -30,10 +30,18 @@ module Basquiat
       def listen(block: true)
         with_network_failure_handler do
           procs.keys.each { |key| bind_queue(key) }
+          logger.warn 'assinando as mensagens'
           queue.subscribe(block: block) do |di, _, msg|
-            message = Basquiat::Json.decode(msg)
-            procs[di.routing_key].call(message)
+            process_message(di, msg)
           end
+        end
+      end
+
+      def process_message(di, msg)
+        logger.warn 'In your method, eating your messages'
+        message = Basquiat::Json.decode(msg)
+        catch :thing do
+          procs[di.routing_key].call(message)
         end
       end
 
