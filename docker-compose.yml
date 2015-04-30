@@ -10,3 +10,5 @@ basquiat:
 
 rabbitmq:
   image: mereghost/rabbitmq:latest
+  ports:
+    - "15672"

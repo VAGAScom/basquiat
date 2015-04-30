@@ -11,6 +11,9 @@ function generate_gemfile() {
         format = "gem \"%s\", \"%s\"\r\n";
     }
     {
+        if ($2 == "bundler") {
+            next;
+        }
         if ($1 == "*") {
             match($3, "[^()]+");
             version = substr($3,RSTART,RLENGTH);
@@ -20,5 +23,5 @@ function generate_gemfile() {
 }
 
 generate_gemfile
-docker-compose start rabbitmq
-docker-compose run basquiat
+#docker-compose start rabbitmq
+#docker-compose run basquiat
