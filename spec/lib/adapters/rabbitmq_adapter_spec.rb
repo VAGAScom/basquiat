@@ -13,8 +13,8 @@ describe Basquiat::Adapters::RabbitMq do
   end
 
   before(:each) do
-    Basquiat.configure { |c| c.logger = Logger.new('/tmp/basquiat.log') }
     subject.adapter_options(base_options)
+    subject.send(:reset_connection)
   end
 
   after(:each) do
@@ -30,40 +30,35 @@ describe Basquiat::Adapters::RabbitMq do
   end
 
   context 'listener' do
-    xit '#subscribe_to some event' do
-      message_received = ''
+    it '#subscribe_to some event' do
+      message = ''
       subject.subscribe_to('some.event',
                            lambda do |msg|
-                             msg[:data].upcase!
-                             message_received = msg
+                             message << msg[:data].upcase!
                            end)
       subject.listen(block: false)
-
-      sleep 0.5 # Wait for the listening thread.
       subject.publish('some.event', data: 'coisa')
-      sleep 0.5
+      sleep 0.7 # Wait for the listening thread.
 
-      expect(message_received).to eq(data: 'COISA')
+      expect(message).to eq('COISA')
     end
 
-    xit 'should acknowledge the message by default' do
+    it 'should acknowledge the message by default' do
       subject.subscribe_to('some.event', lambda { |_| 'Everything is AWESOME!' })
       subject.listen(block: false)
 
-      sleep 0.5 # Wait for the listening thread.
       subject.publish('some.event', data: 'stupid message')
-      sleep 0.5 # Wait for the listening thread.
+      sleep 0.7 # Wait for the listening thread.
 
       expect(subject.send(:queue).message_count).to eq(0)
     end
 
-    xit 'should unacknowledge the message when :unack is thrown' do
-      subject.subscribe_to('some.event', ->(msg) { throw :thing, :unack })
+    it 'should unacknowledge the message when told so' do
+      subject.subscribe_to('some.event', ->(msg) { msg.unack })
       subject.listen(block: false)
 
-      sleep 0.5 # Wait for the listening thread.
-      subject.publish('some.event', data: 'coisa')
-      sleep 0.5 # Wait for the listening thread.
+      subject.publish('some.event', data: 'some important but flawed data')
+      sleep 2
 
       expect(queue_status[:messages_unacknowledged]).to eq(1)
     end
@@ -80,7 +75,7 @@ describe Basquiat::Adapters::RabbitMq do
 
   def queue_status
     message = `curl -sXGET -H 'Accepts: application/json' http://guest:guest@#{ENV.fetch(
-        'BASQUIAT_RABBITMQ_1_PORT_25672_TCP_ADDR', 'localhost')}:15672/api/queues/%2f/my.nice_queue`
+        'BASQUIAT_RABBITMQ_1_PORT_25672_TCP_ADDR', 'localhost')}:15672/api/queues/%2F/my.nice_queue`
     MultiJson.load(message, symbolize_keys: true)
   end
 

@@ -8,7 +8,16 @@ module Basquiat::Adapters
 
       def initialize(a_hash, delivery_info = {}, props = {})
         @message, @delivery_info, @props = a_hash, delivery_info, props
+        @ack = true
         __setobj__(@message)
+      end
+
+      def ack?
+        @ack
+      end
+
+      def unack
+        @ack = false
       end
     end
   end

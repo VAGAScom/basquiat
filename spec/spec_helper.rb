@@ -17,7 +17,6 @@ require 'basquiat'
 
 Basquiat.configure do |config|
   config.config_file = File.expand_path('../support/basquiat.yml', __FILE__)
-  config.logger = Logger.new($stdout)
+  config.logger      = Logger.new('log/basquiat_test.log')
 end
-
 require 'support/shared_examples/basquiat_adapter_shared_examples'

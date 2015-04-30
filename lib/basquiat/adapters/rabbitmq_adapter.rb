@@ -33,16 +33,15 @@ module Basquiat
       def listen(block: true)
         connection.with_network_failure_handler do
           procs.keys.each { |key| bind_queue(key) }
-          queue.subscribe(block: block) do |di, props, msg|
-            message = Basquiat::Json.decode(msg)
-            process_message(Message.new(msg, di, props))
+          queue.subscribe(block: block, manual_ack: true) do |di, props, msg|
+            message = Message.new(Basquiat::Json.decode(msg), di, props)
+            procs[di.routing_key].call(message)
+            if message.ack?
+              channel.ack(di.delivery_tag)
+            else
+              channel.unack(di.delivery_tag, false)
+            end
           end
-        end
-      end
-
-      def process_message(msg)
-        catch :thing do
-          procs[msg.di.routing_key].call(msg)
         end
       end
 

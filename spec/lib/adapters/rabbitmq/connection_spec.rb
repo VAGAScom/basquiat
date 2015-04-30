@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'basquiat/adapters/rabbitmq_adapter'
 
-describe Basquiat::Adapters::RabbitMq::Connection,focus: true do
+describe Basquiat::Adapters::RabbitMq::Connection do
   subject(:connection) { Basquiat::Adapters::RabbitMq::Connection }
 
   let(:servers) do
