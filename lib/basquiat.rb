@@ -21,6 +21,10 @@ module Basquiat
     def configure
       yield configuration
     end
+
+    def logger
+      configuration.logger
+    end
   end
 end
 

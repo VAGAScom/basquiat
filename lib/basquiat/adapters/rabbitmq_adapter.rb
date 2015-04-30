@@ -1,4 +1,7 @@
 require 'bunny'
+require 'delegate'
+require 'basquiat/adapters/rabbitmq/message'
+require 'basquiat/adapters/rabbitmq/connection'
 
 module Basquiat
   module Adapters
@@ -20,101 +23,49 @@ module Basquiat
       end
 
       def publish(event, message, persistent: options[:publisher][:persistent])
-        with_network_failure_handler do
+        connection.with_network_failure_handler do
           channel.confirm_select if options[:publisher][:confirm]
-          exchange.publish(Basquiat::Json.encode(message), routing_key: event)
-          disconnect unless persistent
+          exchange.publish(Basquiat::Json.encode(message), routing_key: event, timestamp: Time.now.to_i)
+          reset_connection unless persistent
         end
       end
 
       def listen(block: true)
-        with_network_failure_handler do
+        connection.with_network_failure_handler do
           procs.keys.each { |key| bind_queue(key) }
-          logger.warn 'assinando as mensagens'
-          queue.subscribe(block: block) do |di, _, msg|
-            process_message(di, msg)
+          queue.subscribe(block: block) do |di, props, msg|
+            message = Basquiat::Json.decode(msg)
+            process_message(Message.new(msg, di, props))
           end
         end
       end
 
-      def process_message(di, msg)
-        logger.warn 'In your method, eating your messages'
-        message = Basquiat::Json.decode(msg)
+      def process_message(msg)
         catch :thing do
-          procs[di.routing_key].call(message)
+          procs[msg.di.routing_key].call(msg)
         end
-      end
-
-      def connect
-        with_network_failure_handler do
-          connection.start
-          current_server[:retries] = 0
-        end
-      end
-
-      def connection_uri
-        current_server_uri
-      end
-
-      def disconnect
-        connection.close_all_channels
-        connection.close
-        reset_connection
-      end
-
-      def connected?
-        @connection
       end
 
       private
-
-      def with_network_failure_handler
-        yield if block_given?
-      rescue Bunny::ConnectionForced, Bunny::TCPConnectionFailed, Bunny::NetworkFailure => error
-        if current_server.fetch(:retries, 0) <= failover_opts[:max_retries]
-          handle_network_failures
-          retry
-        else
-          raise(error)
-        end
-      end
-
-      def failover_opts
-        options[:failover]
-      end
 
       def bind_queue(event_name)
         queue.bind(exchange, routing_key: event_name)
       end
 
       def reset_connection
-        @connection, @channel, @exchange, @queue = nil, nil, nil, nil
-      end
-
-      def rotate_servers
-        return unless options[:servers].any? { |server| server.fetch(:retries, 0) < failover_opts[:max_retries] }
-        options[:servers].rotate!
-      end
-
-      def handle_network_failures
-        logger.warn "[WARN] Handling connection to #{current_server_uri}"
-        retries                  = current_server.fetch(:retries, 0)
-        current_server[:retries] = retries + 1
-        if retries < failover_opts[:max_retries]
-          logger.warn("[WARN] Connection failed retrying in #{failover_opts[:default_timeout]} seconds")
-          sleep(failover_opts[:default_timeout])
-        else
-          rotate_servers
-        end
-        reset_connection
+        connection.disconnect
+        @channel, @exchange, @queue = nil, nil, nil, nil
       end
 
       def connection
-        @connection ||= Bunny.new(current_server_uri)
+        @connection ||= Connection.new(
+            servers:  options[:servers],
+            failover: options[:failover],
+            auth:     options[:auth])
       end
 
       def channel
-        connect
+        connection.start
         @channel ||= connection.create_channel
       end
 
@@ -124,15 +75,6 @@ module Basquiat
 
       def exchange
         @exchange ||= channel.topic(options[:exchange][:name], options[:exchange][:options])
-      end
-
-      def current_server
-        options[:servers].first
-      end
-
-      def current_server_uri
-        auth = current_server[:auth] || options[:auth]
-        "amqp://#{auth[:user]}:#{auth[:password]}@#{current_server[:host]}:#{current_server[:port]}"
       end
     end
   end

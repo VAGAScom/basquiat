@@ -18,3 +18,4 @@ tmp
 .idea
 bin
 docker/Gemfile
+log
