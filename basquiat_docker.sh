@@ -23,5 +23,5 @@ function generate_gemfile() {
 }
 
 generate_gemfile
-#docker-compose start rabbitmq
-#docker-compose run basquiat
+docker-compose start rabbitmq
+docker-compose run basquiat
