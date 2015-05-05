@@ -33,9 +33,7 @@ describe Basquiat::Adapters::RabbitMq do
     it '#subscribe_to some event' do
       message = ''
       subject.subscribe_to('some.event',
-                           lambda do |msg|
-                             message << msg[:data].upcase!
-                           end)
+                           ->(msg) { message << msg[:data].upcase! })
       subject.listen(block: false)
       subject.publish('some.event', data: 'coisa')
       sleep 0.7 # Wait for the listening thread.
@@ -44,7 +42,7 @@ describe Basquiat::Adapters::RabbitMq do
     end
 
     it 'should acknowledge the message by default' do
-      subject.subscribe_to('some.event', lambda { |_| 'Everything is AWESOME!' })
+      subject.subscribe_to('some.event', ->(_) { 'Everything is AWESOME!' })
       subject.listen(block: false)
 
       subject.publish('some.event', data: 'stupid message')
@@ -75,8 +73,7 @@ describe Basquiat::Adapters::RabbitMq do
 
   def queue_status
     message = `curl -sXGET -H 'Accepts: application/json' http://guest:guest@#{ENV.fetch(
-        'BASQUIAT_RABBITMQ_1_PORT_25672_TCP_ADDR', 'localhost')}:15672/api/queues/%2F/my.nice_queue`
+      'BASQUIAT_RABBITMQ_1_PORT_25672_TCP_ADDR', 'localhost')}:15672/api/queues/%2F/my.nice_queue`
     MultiJson.load(message, symbolize_keys: true)
   end
-
 end

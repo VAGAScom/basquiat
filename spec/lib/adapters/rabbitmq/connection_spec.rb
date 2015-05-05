@@ -21,10 +21,9 @@ describe Basquiat::Adapters::RabbitMq::Connection do
     conn.disconnect
   end
 
-
   context 'failover' do
     let(:failover) do
-      { default_timeout: 0.2, max_retries: 2,threaded: false }
+      { default_timeout: 0.2, max_retries: 2, threaded: false }
     end
 
     before(:each) { servers.unshift(host: 'localhost', port: 1234) }

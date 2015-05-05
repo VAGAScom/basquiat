@@ -1,3 +1,6 @@
+require 'delegate'
+require 'basquiat/adapters/base_message'
+
 module Basquiat
   module Adapters
     # Base implementation for an adapter
@@ -27,19 +30,16 @@ module Basquiat
         {}
       end
 
-      def update_config
-      end
-
       def publish
+        raise Basquiat::Errors::SubclassResponsibility
       end
 
       def subscribe_to
+        raise Basquiat::Errors::SubclassResponsibility
       end
 
       def disconnect
-      end
-
-      def disconnected?
+        raise Basquiat::Errors::SubclassResponsibility
       end
 
       private

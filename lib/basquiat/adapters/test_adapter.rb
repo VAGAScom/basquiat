@@ -2,6 +2,9 @@ module Basquiat
   module Adapters
     # An adapter to be used in testing
     class Test
+      class Message < BaseMessage
+      end
+
       include Basquiat::Adapters::Base
 
       class << self
@@ -37,7 +40,7 @@ module Basquiat
       def listen(*)
         event = subscribed_event
         msg   = self.class.events[event].shift
-        msg ? procs[event].call(Basquiat::Json.decode(msg)) : nil
+        msg ? procs[event].call(Message.new(msg)) : nil
       end
 
       private

@@ -3,6 +3,7 @@ require 'naught'
 require 'yaml'
 
 require 'basquiat/support'
+require 'basquiat/errors'
 require 'basquiat/adapters'
 require 'basquiat/version'
 require 'basquiat/interfaces/base'

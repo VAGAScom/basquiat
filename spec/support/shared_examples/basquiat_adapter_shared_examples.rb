@@ -1,18 +1,13 @@
 shared_examples_for 'a Basquiat::Adapter' do
-  it '#adapter_options(opts)' do
-    expect(subject).to respond_to(:adapter_options)
-  end
-
-  it '#publish' do
-    expect(subject).to respond_to(:publish)
-  end
-
-  it '#default_options [template for option initialization]' do
-    expect(subject).to respond_to(:default_options)
-  end
-
-  it '#subscribe_to' do
-    expect(subject).to respond_to(:subscribe_to)
+  [:adapter_options,
+   :base_options,
+   :default_options,
+   :publish,
+   :subscribe_to,
+   :disconnect].each do |meth|
+    it "#{meth}" do
+      expect(subject).to respond_to(:adapter_options)
+    end
   end
 
   it 'merges the options with the default ones' do

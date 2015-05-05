@@ -2,14 +2,17 @@ require 'spec_helper'
 require 'basquiat/adapters/rabbitmq_adapter'
 
 describe Basquiat::Adapters::RabbitMq::Message do
-  subject(:message) { Basquiat::Adapters::RabbitMq::Message.new(key: 'value', date: Date.new.iso8601) }
+  let(:json) do
+    { key: 'value', date: Date.new.iso8601 }.to_json
+  end
+  subject(:message) { Basquiat::Adapters::RabbitMq::Message.new(json) }
 
   it 'delegates all calls to message hash' do
     expect(message[:key]).to eq('value')
   end
 
   it 'can be JSONified' do
-    expect(MultiJson.dump(message)).to eq(MultiJson.dump(key: 'value', date: Date.new.iso8601))
+    expect(MultiJson.dump(message)).to eq(json)
   end
 
   it 'exposes the delivery information' do
