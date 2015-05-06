@@ -1,13 +1,16 @@
 require 'bunny'
 require 'delegate'
-require 'basquiat/adapters/rabbitmq/message'
-require 'basquiat/adapters/rabbitmq/connection'
 
 module Basquiat
   module Adapters
     # The RabbitMQ adapter for Basquiat
-    class RabbitMq
-      include Basquiat::Adapters::Base
+    class RabbitMq < Basquiat::Adapters::Base
+
+      # Avoid superclass mismatch errors
+      require 'basquiat/adapters/rabbitmq/message'
+      require 'basquiat/adapters/rabbitmq/connection'
+      require 'basquiat/adapters/rabbitmq/session'
+
 
       def default_options
         { failover:  { default_timeout: 5, max_retries: 5 },
@@ -15,65 +18,55 @@ module Basquiat
           queue:     { name: Basquiat.configuration.queue_name, options: { durable: true } },
           exchange:  { name: Basquiat.configuration.exchange_name, options: { durable: true } },
           publisher: { confirm: true, persistent: false },
-          auth:      { user: 'guest', password: 'guest' } }
+          auth:      { user: 'guest', password: 'guest' },
+          requeue:   { enabled: false } }
       end
 
       def subscribe_to(event_name, proc)
         procs[event_name] = proc
       end
 
-      def publish(event, message, persistent: options[:publisher][:persistent])
+      def publish(event, message, persistent: options[:publisher][:persistent], props: {})
         connection.with_network_failure_handler do
-          channel.confirm_select if options[:publisher][:confirm]
-          exchange.publish(Basquiat::Json.encode(message), routing_key: event, timestamp: Time.now.to_i)
-          reset_connection unless persistent
+          session.publish(event, message, props)
+          disconnect unless persistent
         end
       end
 
       def listen(block: true)
         connection.with_network_failure_handler do
-          procs.keys.each { |key| bind_queue(key) }
-          queue.subscribe(block: block, manual_ack: true) do |di, props, msg|
-            message = Message.new(Basquiat::Json.decode(msg), di, props)
-            procs[di.routing_key].call(message)
-            if message.ack?
-              channel.ack(di.delivery_tag)
-            else
-              channel.unack(di.delivery_tag, false)
-            end
-          end
+          procs.keys.each { |key| session.bind_queue(key) }
+          session.subscribe(block) { |key, message| procs[key].call(message) }
         end
-      end
-
-      private
-
-      def bind_queue(event_name)
-        queue.bind(exchange, routing_key: event_name)
       end
 
       def reset_connection
         connection.disconnect
-        @channel, @exchange, @queue = nil, nil, nil, nil
+        @connection, @session = nil, nil
       end
 
+      alias_method :disconnect, :reset_connection
+
+      def session
+        @session ||= Session.new(connection, formatted_options[:session])
+      end
+
+      private
       def connection
-        @connection ||= Connection.new(
+        @connection ||= Connection.new(formatted_options[:connection])
+      end
+
+      def formatted_options
+        { connection: {
             servers:  options[:servers],
             failover: options[:failover],
-            auth:     options[:auth])
-      end
-
-      def channel
-        connection.start
-        @channel ||= connection.create_channel
-      end
-
-      def queue
-        @queue ||= channel.queue(options[:queue][:name], options[:queue][:options])
-      end
-
-      def exchange
-        @exchange ||= channel.topic(options[:exchange][:name], options[:exchange][:options])
+            auth:     options[:auth] },
+          session:    {
+              exchange:  options[:exchange],
+              publisher: options[:publisher],
+              queue:     options[:queue],
+              requeue:   options[:requeue]
+          } }
       end
     end
   end

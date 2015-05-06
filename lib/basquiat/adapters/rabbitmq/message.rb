@@ -17,10 +17,6 @@ module Basquiat
           @action = :ack
         end
 
-        def ack?
-          @action == :ack
-        end
-
         def unack
           @action = :unack
         end

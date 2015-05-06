@@ -48,7 +48,17 @@ describe Basquiat::Adapters::RabbitMq do
       subject.publish('some.event', data: 'stupid message')
       sleep 0.7 # Wait for the listening thread.
 
-      expect(subject.send(:queue).message_count).to eq(0)
+      expect(subject.session.queue.message_count).to eq(0)
+    end
+
+    it 'support declared acks' do
+      subject.subscribe_to('some.event', ->(msg) { msg.ack })
+      subject.listen(block: false)
+
+      subject.publish('some.event', data: 'stupid message')
+      sleep 0.7 # Wait for the listening thread.
+
+      expect(subject.session.queue.message_count).to eq(0)
     end
 
     it 'should unacknowledge the message when told so' do
@@ -63,8 +73,8 @@ describe Basquiat::Adapters::RabbitMq do
   end
 
   def remove_queues_and_exchanges
-    subject.send(:queue).delete
-    subject.send(:exchange).delete
+    subject.session.queue.delete
+    subject.session.exchange.delete
   rescue Bunny::TCPConnectionFailed
     true
   ensure

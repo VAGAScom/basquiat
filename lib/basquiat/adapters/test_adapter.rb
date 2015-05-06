@@ -1,11 +1,9 @@
 module Basquiat
   module Adapters
     # An adapter to be used in testing
-    class Test
+    class Test < Basquiat::Adapters::Base
       class Message < BaseMessage
       end
-
-      include Basquiat::Adapters::Base
 
       class << self
         def events

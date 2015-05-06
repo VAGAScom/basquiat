@@ -4,7 +4,7 @@ require 'basquiat/adapters/base_message'
 module Basquiat
   module Adapters
     # Base implementation for an adapter
-    module Base
+    class Base
       using Basquiat::HashRefinements
 
       def initialize
@@ -31,15 +31,15 @@ module Basquiat
       end
 
       def publish
-        raise Basquiat::Errors::SubclassResponsibility
+        fail Basquiat::Errors::SubclassResponsibility
       end
 
       def subscribe_to
-        raise Basquiat::Errors::SubclassResponsibility
+        fail Basquiat::Errors::SubclassResponsibility
       end
 
       def disconnect
-        raise Basquiat::Errors::SubclassResponsibility
+        fail Basquiat::Errors::SubclassResponsibility
       end
 
       private

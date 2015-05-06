@@ -10,19 +10,19 @@ module Basquiat
       end
 
       def ack?
-        raise SubclassResponsibility
+        fail Basquiat::Errors::SubclassResponsibility
       end
 
       def unack
-        raise SubclassResponsibility
+        fail Basquiat::Errors::SubclassResponsibility
       end
 
       def requeue
-        raise SubclassResponsibility
+        fail Basquiat::Errors::SubclassResponsibility
       end
 
       def delay_redelivery
-        raise SubclassResponsibility
+        fail Basquiat::Errors::SubclassResponsibility
       end
     end
   end
