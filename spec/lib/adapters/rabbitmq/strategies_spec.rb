@@ -10,12 +10,10 @@ describe 'Requeue Strategies' do
   end
 
   before(:each) { adapter.adapter_options(base_options) }
-
-  after(:each) do
-    remove_queues_and_exchanges
-  end
+  after(:each) { remove_queues_and_exchanges }
 
   describe 'BasickAcknowledge (aka the default)' do
+
     it 'acks a message by default' do
       adapter.subscribe_to('some.event', ->(_) { 'Everything is AWESOME!' })
       adapter.listen(block: false)
@@ -50,20 +48,49 @@ describe 'Requeue Strategies' do
   end
 
   describe 'DeadLetterExchange' do
-    before(:each) { adapter.class.register_strategy :dlx, Basquiat::Adapters::RabbitMq::DeadLettering }
 
-    it 'creates the dead letter exchange'
-    it 'creates and binds a dead letter queue'
+    before(:each) do
+      adapter.class.register_strategy :dlx, Basquiat::Adapters::RabbitMq::DeadLettering
+    end
+
+    it 'creates the dead letter exchange' do
+      adapter.adapter_options(requeue: { enabled: true, strategy: 'dlx' })
+
+      adapter.send(:strategy).new(adapter.session)
+      channel = adapter.session.channel
+      expect(channel.exchanges.keys).to contain_exactly('my.test_exchange', 'basquiat.dlx')
+    end
+
+    it 'creates and binds a dead letter queue' do
+      adapter.adapter_options(requeue: { enabled: true, strategy: 'dlx' })
+
+
+      session =  adapter.session
+      adapter.send(:strategy).new(session)
+      channel = session.channel
+      expect(channel.queues.keys).to include('basquiat.dlq')
+      expect(channel.queues['basquiat.dlq'].arguments)
+          .to include(dead_letter_exchange: session.exchange.name, 'x-message-ttl' => 1000)
+      expect(session.queue.arguments).to include(dead_letter_exchange: 'basquiat.dlx')
+    end
 
     context 'checks if it was the queue that unacked it' do
+      # Create another queue.
+      # ack the message in one of the queues
+      # unack in the other
+      # wait
+      # check if the messages are reprocessed
+
       it 'process the message if true'
       it 'drops the message if not'
+
     end
   end
 
   def remove_queues_and_exchanges
-    adapter.session.queue.delete
-    adapter.session.exchange.delete
+    # Ugly as hell. Probably transform into a proper method in session
+    adapter.session.channel.queues.each_pair { |_, queue| queue.delete }
+    adapter.session.channel.exchanges.each_pair { |_, ex| ex.delete }
   rescue Bunny::TCPConnectionFailed
     true
   ensure

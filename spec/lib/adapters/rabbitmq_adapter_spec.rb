@@ -3,7 +3,7 @@ require 'basquiat/adapters/rabbitmq_adapter'
 
 class AwesomeStrategy
   def self.session_options
-    { exchange: { some_setting: 'awesomesauce' } }
+    { exchange: { options: { some_setting: 'awesomesauce' } } }
   end
 end
 
@@ -20,7 +20,12 @@ describe Basquiat::Adapters::RabbitMq do
     it 'merges the strategy options with the session ones' do
       Basquiat::Adapters::RabbitMq.register_strategy(:awesome, AwesomeStrategy)
       adapter.adapter_options(requeue: { enabled: true, strategy: 'awesome' })
-      expect(adapter.formatted_options[:session][:exchange]).to have_key(:some_setting)
+      expect(adapter.formatted_options[:session][:exchange][:options]).to have_key(:some_setting)
+    end
+
+    it 'raises an error if trying to use a non-registered strategy' do
+      adapter.adapter_options(requeue: { enabled: true, strategy: 'perfect' })
+      expect { adapter.formatted_options }.to raise_error Basquiat::Errors::StrategyNotRegistered
     end
   end
 

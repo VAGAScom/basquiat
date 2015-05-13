@@ -13,6 +13,13 @@ describe Basquiat::HashRefinements do
     expect(hash['hash']['inner_key']).to eq(7)
   end
 
+  it '#deep_merge with nested different hashes' do
+    base  = { queue: { options: { some: 'value' } } }
+    other = { queue: { options: { another: 'setting' } } }
+    result = base.deep_merge(other)
+    expect(base[:queue][:options].keys).to contain_exactly(:some, :another)
+  end
+
   it '#symbolize_keys' do
     symbol_hash = hash.symbolize_keys
     expect(symbol_hash).to have_key(:array)

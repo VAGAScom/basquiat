@@ -33,6 +33,8 @@ EOD
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'metric_fu'
   spec.add_development_dependency 'rubocop'
+  spec.add_development_dependency 'byebug'
+  spec.add_development_dependency 'pry-byebug'
 
   spec.add_dependency 'multi_json'
   spec.add_dependency 'naught'

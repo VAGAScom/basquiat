@@ -1,10 +1,13 @@
 require 'bunny'
 require 'delegate'
+require 'byebug'
 
 module Basquiat
   module Adapters
     # The RabbitMQ adapter for Basquiat
     class RabbitMq < Basquiat::Adapters::Base
+      using Basquiat::HashRefinements
+
       # Avoid superclass mismatch errors
       require 'basquiat/adapters/rabbitmq/message'
       require 'basquiat/adapters/rabbitmq/connection'
@@ -63,10 +66,9 @@ module Basquiat
             servers:  options[:servers],
             failover: options[:failover],
             auth:     options[:auth] },
-          session:    {
-            exchange:  options[:exchange],
-            publisher: options[:publisher],
-            queue:     options[:queue] }.merge(strategy.session_options)
+          session:    { exchange:  options[:exchange],
+                        publisher: options[:publisher],
+                        queue:     options[:queue] }.deep_merge(strategy.session_options)
         }
       end
 
@@ -74,7 +76,7 @@ module Basquiat
 
       def strategy
         return BasicAcknowledge unless options[:requeue][:enabled]
-        STRATEGIES.fetch(options[:requeue][:strategy].to_sym)
+        strategies.fetch(options[:requeue][:strategy].to_sym)
       rescue KeyError
         raise Basquiat::Errors::StrategyNotRegistered.new(options[:requeue][:strategy])
       end

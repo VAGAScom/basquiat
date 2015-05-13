@@ -1,9 +1,5 @@
 shared_examples_for 'a Basquiat::Adapter' do
 
-  after(:each) do
-    adapter.class::STRATEGIES.clear
-  end
-
   [:adapter_options,
    :base_options,
    :default_options,
@@ -11,7 +7,7 @@ shared_examples_for 'a Basquiat::Adapter' do
    :subscribe_to,
    :disconnect].each do |meth|
     it "#{meth}" do
-      expect(adapter).to respond_to(:adapter_options)
+      expect(adapter).to respond_to(:meth)
     end
   end
 

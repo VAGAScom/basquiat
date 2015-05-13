@@ -17,7 +17,7 @@ describe Basquiat::Adapters::Base do
   it 'register a requeue strategy' do
     class CoolStuff ; end
     adapter.class.register_strategy :cool_stuff, CoolStuff
-    expect(adapter.class::STRATEGIES).to have_key :cool_stuff
+    expect(adapter.strategies).to have_key :cool_stuff
   end
 
   it 'merges the options with the default ones' do
