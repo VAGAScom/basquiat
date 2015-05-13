@@ -80,16 +80,18 @@ Yaml File configuration example:
       queue_name: 'my.queue'
       default_adapter: Basquiat::Adapters::RabbitMq
       adapter_options:
-        :servers:
+        servers:
           -
             :host: 'localhost'
             :port: '5672'
-        :failover:
+        failover:
           :default_timeout: 5
           :max_retries: 5
-        :publisher: 
-          :confirm: true
-          :persistent: true
-        :auth:
-          :user: 'guest'
-          :password: 'guest' 
+        publisher: 
+          confirm: true
+          persistent: true
+        auth:
+          user: 'guest'
+          password: 'guest' 
+        requeue:
+          enabled: false

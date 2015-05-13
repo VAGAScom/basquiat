@@ -55,7 +55,7 @@ module Basquiat
     end
 
     def setup_basic_options
-      @queue_name    ||= config.fetch(:queue_name) { 'basquiat.exchange' }
+      @queue_name ||= config.fetch(:queue_name) { 'basquiat.exchange' }
       @exchange_name ||= config.fetch(:exchange_name) { 'basquiat.queue' }
     end
   end

@@ -10,6 +10,7 @@ guard :rspec, { cmd:  'bundle exec rspec', all_on_start: true,
   watch(%r{^lib/basquiat/(.+)\.rb$}) { |matchdata| "spec/lib/#{matchdata[1]}_spec.rb" }
   watch('spec/spec_helper.rb') { 'spec' }
   watch(%r{spec/support/.+\.rb}) { 'spec' }
+  watch('^lib/basquiat/adapters/rabbitmq/strategies/.*rb$') { 'spec/lib/adapters/rabbitmq/strategies_spec.rb' }
 end
 
 guard :rubocop, { cmd: 'rubocop', cli: '-fs -c./.rubocop.yml' } do

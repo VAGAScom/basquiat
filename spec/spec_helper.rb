@@ -22,3 +22,4 @@ Basquiat.configure do |config|
   config.logger      = Logger.new('log/basquiat_test.log')
 end
 require 'support/shared_examples/basquiat_adapter_shared_examples'
+require 'support/rabbitmq_queue_matchers'

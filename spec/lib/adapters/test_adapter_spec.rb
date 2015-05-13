@@ -1,36 +1,35 @@
 require 'spec_helper'
 
 describe Basquiat::Adapters::Test do
-  subject { Basquiat::Adapters::Test.new }
-  it_behaves_like 'a Basquiat::Adapter'
+  subject(:adapter) { Basquiat::Adapters::Test.new }
 
   context 'publisher' do
     it '#publish [enqueue a message]' do
       expect do
-        subject.publish('messages.welcome', value: 'A Nice Welcome Message')
-      end.to change { subject.events('messages.welcome').size }.by(1)
-      expect(subject.events('messages.welcome')[0]).to match(/A Nice Welcome Message/)
+        adapter.publish('messages.welcome', value: 'A Nice Welcome Message')
+      end.to change { adapter.events('messages.welcome').size }.by(1)
+      expect(adapter.events('messages.welcome')[0]).to match(/A Nice Welcome Message/)
     end
   end
 
   context 'listener' do
     before(:each) do
-      subject.publish('some.event', data: 'some message')
+      adapter.publish('some.event', data: 'some message')
     end
 
     it '#subscribe_to some event' do
-      subject.subscribe_to('some.event', ->(msg) { msg.values.map(&:upcase) })
-      expect(subject.listen).to eq(['SOME MESSAGE'])
+      adapter.subscribe_to('some.event', ->(msg) { msg.values.map(&:upcase) })
+      expect(adapter.listen).to eq(['SOME MESSAGE'])
     end
 
     it '#subscribe_to multiple events' do
-      subject.instance_eval <<-METHCALL
+      adapter.instance_eval <<-METHCALL
         subscribe_to('some.event', ->(msg) { publish 'some.other', data: msg.values.first.upcase; msg })
       METHCALL
-      subject.subscribe_to('some.other', ->(msg) { msg.values.first.downcase })
-      expect(subject.listen).to eq(data: 'some message')
-      expect(subject.events('some.other')[0]).to match(/SOME MESSAGE/)
-      expect(subject.listen).to eq('some message')
+      adapter.subscribe_to('some.other', ->(msg) { msg.values.first.downcase })
+      expect(adapter.listen).to eq(data: 'some message')
+      expect(adapter.events('some.other')[0]).to match(/SOME MESSAGE/)
+      expect(adapter.listen).to eq('some message')
     end
   end
 
@@ -44,9 +43,9 @@ describe Basquiat::Adapters::Test do
 
     context 'when some events have been published' do
       before do
-        subject.publish('some.message', value: 'A Nice Welcome Message')
-        subject.publish('some.message', value: 'A Nasty Welcome Message')
-        subject.publish('other.message', value: 'A Random Welcome Message')
+        adapter.publish('some.message', value: 'A Nice Welcome Message')
+        adapter.publish('some.message', value: 'A Nasty Welcome Message')
+        adapter.publish('other.message', value: 'A Random Welcome Message')
       end
 
       it 'should have no event registered' do

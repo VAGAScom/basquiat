@@ -1,10 +1,14 @@
 require 'spec_helper'
 require 'basquiat/adapters/rabbitmq_adapter'
 
-describe Basquiat::Adapters::RabbitMq do
-  subject { Basquiat::Adapters::RabbitMq.new }
+class AwesomeStrategy
+  def self.session_options
+    { exchange: { some_setting: 'awesomesauce' } }
+  end
+end
 
-  it_behaves_like 'a Basquiat::Adapter'
+describe Basquiat::Adapters::RabbitMq do
+  subject(:adapter) { Basquiat::Adapters::RabbitMq.new }
 
   let(:base_options) do
     { servers:   [{ host: ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' },
@@ -12,78 +16,52 @@ describe Basquiat::Adapters::RabbitMq do
       publisher: { persistent: true } }
   end
 
-  before(:each) do
-    subject.adapter_options(base_options)
-    subject.send(:reset_connection)
-  end
-
-  after(:each) do
-    remove_queues_and_exchanges
-  end
-
-  context 'publisher' do
-    it '#publish [enqueue a message]' do
-      expect do
-        subject.publish('messages.welcome', data: 'A Nice Welcome Message')
-      end.to_not raise_error
+  context 'Strategies' do
+    it 'merges the strategy options with the session ones' do
+      Basquiat::Adapters::RabbitMq.register_strategy(:awesome, AwesomeStrategy)
+      adapter.adapter_options(requeue: { enabled: true, strategy: 'awesome' })
+      expect(adapter.formatted_options[:session][:exchange]).to have_key(:some_setting)
     end
   end
 
-  context 'listener' do
-    it '#subscribe_to some event' do
-      message = ''
-      subject.subscribe_to('some.event',
-                           ->(msg) { message << msg[:data].upcase! })
-      subject.listen(block: false)
-      subject.publish('some.event', data: 'coisa')
-      sleep 0.7 # Wait for the listening thread.
-
-      expect(message).to eq('COISA')
+  context 'RabbitMQ interactions' do
+    before(:each) do
+      adapter.adapter_options(base_options)
+      adapter.reset_connection
     end
 
-    it 'should acknowledge the message by default' do
-      subject.subscribe_to('some.event', ->(_) { 'Everything is AWESOME!' })
-      subject.listen(block: false)
-
-      subject.publish('some.event', data: 'stupid message')
-      sleep 0.7 # Wait for the listening thread.
-
-      expect(subject.session.queue.message_count).to eq(0)
+    after(:each) do
+      remove_queues_and_exchanges
     end
 
-    it 'support declared acks' do
-      subject.subscribe_to('some.event', ->(msg) { msg.ack })
-      subject.listen(block: false)
-
-      subject.publish('some.event', data: 'stupid message')
-      sleep 0.7 # Wait for the listening thread.
-
-      expect(subject.session.queue.message_count).to eq(0)
+    context 'publisher' do
+      it '#publish [enqueue a message]' do
+        expect do
+          adapter.publish('messages.welcome', data: 'A Nice Welcome Message')
+        end.to_not raise_error
+      end
     end
 
-    it 'should unacknowledge the message when told so' do
-      subject.subscribe_to('some.event', ->(msg) { msg.unack })
-      subject.listen(block: false)
+    context 'listener' do
+      it '#subscribe_to some event' do
+        message = ''
+        adapter.subscribe_to('some.event',
+                             ->(msg) { message << msg[:data].upcase! })
+        adapter.listen(block: false)
+        adapter.publish('some.event', data: 'coisa')
+        sleep 0.7 # Wait for the listening thread.
 
-      subject.publish('some.event', data: 'some important but flawed data')
-      sleep 2
-
-      expect(queue_status[:messages_unacknowledged]).to eq(1)
+        expect(message).to eq('COISA')
+      end
     end
   end
 
   def remove_queues_and_exchanges
-    subject.session.queue.delete
-    subject.session.exchange.delete
+    adapter.session.queue.delete
+    adapter.session.exchange.delete
   rescue Bunny::TCPConnectionFailed
     true
   ensure
-    subject.send(:disconnect)
-  end
-
-  def queue_status
-    message = `curl -sXGET -H 'Accepts: application/json' http://guest:guest@#{ENV.fetch(
-      'BASQUIAT_RABBITMQ_1_PORT_25672_TCP_ADDR', 'localhost')}:15672/api/queues/%2F/my.nice_queue`
-    MultiJson.load(message, symbolize_keys: true)
+    adapter.send(:disconnect)
   end
 end

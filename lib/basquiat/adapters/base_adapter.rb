@@ -7,10 +7,16 @@ module Basquiat
     class Base
       using Basquiat::HashRefinements
 
+      STRATEGIES = {}
+
       def initialize
         @options = base_options
         @procs   = {}
         @retries = 0
+      end
+
+      def self.register_strategy(config_name, klass)
+        STRATEGIES[config_name.to_sym] = klass
       end
 
       # Used to set the options for the adapter. It is merged in

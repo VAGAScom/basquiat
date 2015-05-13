@@ -1,5 +1,3 @@
-require 'delegate'
-
 module Basquiat
   module Adapters
     class RabbitMq
@@ -9,7 +7,8 @@ module Basquiat
 
         def initialize(message, delivery_info = {}, props = {})
           super(message)
-          @delivery_info, @props = delivery_info, props
+          @delivery_info = delivery_info
+          @props = props
           @action = :ack
         end
 

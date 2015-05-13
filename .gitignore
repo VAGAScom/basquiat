@@ -19,3 +19,4 @@ tmp
 bin
 docker/Gemfile
 log
+.tags*

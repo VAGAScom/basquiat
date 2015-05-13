@@ -2,11 +2,6 @@ module Basquiat
   module Adapters
     class RabbitMq
       class Session
-        ACK_STRATEGIES = {
-            ack:   -> { channel.ack(message.di.delivery_tag, false) },
-            unack: -> { channel.unack(message.di.delivery_tag, false) },
-        }
-
         def initialize(connection, session_options = {})
           @connection = connection
           @options    = session_options
@@ -23,11 +18,10 @@ module Basquiat
                              timestamp:   Time.now.to_i }.merge(props))
         end
 
-        def subscribe(block)
-          queue.subscribe(block: block, manual_ack: true) do |di, props, msg|
+        def subscribe(lock, &_block)
+          queue.subscribe(block: lock, manual_ack: true) do |di, props, msg|
             message = Basquiat::Adapters::RabbitMq::Message.new(msg, di, props)
             yield di.routing_key, message
-            ACK_STRATEGIES[message.action].call
           end
         end
 

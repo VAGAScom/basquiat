@@ -20,6 +20,7 @@ module Basquiat
         end
 
         def disconnect
+          return unless connected?
           connection.close_all_channels
           connection.close
           reset

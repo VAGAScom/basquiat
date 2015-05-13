@@ -12,3 +12,4 @@ rabbitmq:
   image: mereghost/rabbitmq:latest
   ports:
     - "15672"
+    - "5672"
