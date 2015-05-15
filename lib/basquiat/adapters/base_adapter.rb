@@ -15,7 +15,6 @@ module Basquiat
         def register_strategy(config_name, klass)
           strategies.merge!(config_name.to_sym => klass)
         end
-
       end
 
       def initialize

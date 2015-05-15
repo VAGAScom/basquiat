@@ -31,11 +31,15 @@ module Basquiat
         end
 
         def queue
-          @queue ||= channel.queue(@options[:queue][:name], arguments: (@options[:queue][:options]||{}))
+          @queue ||= channel.queue(@options[:queue][:name],
+                                   durable:   true,
+                                   arguments: (@options[:queue][:options] || {}))
         end
 
         def exchange
-          @exchange ||= channel.topic(@options[:exchange][:name], arguments: (@options[:exchange][:options]|| {}))
+          @exchange ||= channel.topic(@options[:exchange][:name],
+                                      durable:   true,
+                                      arguments: (@options[:exchange][:options] || {}))
         end
       end
     end

@@ -12,6 +12,14 @@ module Basquiat
           @action = :ack
         end
 
+        def routing_key
+          delivery_info.routing_key
+        end
+
+        def delivery_tag
+          delivery_info.delivery_tag
+        end
+
         def ack
           @action = :ack
         end

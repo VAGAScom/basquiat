@@ -8,27 +8,34 @@ module Basquiat
         end
 
         def self.session_options
-          { queue: { options: { dead_letter_exchange: 'basquiat.dlx' } }, exchange: {} }
+          { queue: { options: { 'x-dead-letter-exchange' => 'basquiat.dlx' } }, exchange: {} }
         end
 
         def run(message)
           catch :skip_processing do
-            check_incoming_messages
+            check_incoming_messages(message)
             yield
-            send(message.di.delivery_tag, message.action)
           end
+          public_send(message.action, message.delivery_tag)
         end
 
         private
 
-        def check_incoming_messages
-          fail
+        def check_incoming_messages(message)
+          redelivered = message.delivery_info.redelivered
+
+          redelivered and
+              message.props.headers['x-death'][1]['queue'] != session.queue.name and
+              throw :skip_processing
         end
 
         def setup_dead_lettering
           dlx   = @session.channel.topic('basquiat.dlx')
-          queue = @session.channel.queue('basquiat.dlq', ttl: 5 * 60 * 1000, arguments: { dead_letter_exchange: @session.exchange.name, 'x-message-ttl' => 1000 })
-          queue.bind(dlx, routing_key: '#')
+          queue = @session.channel.queue('basquiat.dlq',
+                                         ttl:       1_000 * 5,
+                                         arguments: { 'x-dead-letter-exchange' => @session.exchange.name,
+                                                      'x-message-ttl'          => 1_000 })
+          queue.bind(dlx, routing_key: '*.#')
         end
       end
     end

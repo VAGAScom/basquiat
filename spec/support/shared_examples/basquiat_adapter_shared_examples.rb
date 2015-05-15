@@ -1,5 +1,4 @@
 shared_examples_for 'a Basquiat::Adapter' do
-
   [:adapter_options,
    :base_options,
    :default_options,
@@ -10,6 +9,4 @@ shared_examples_for 'a Basquiat::Adapter' do
       expect(adapter).to respond_to(:meth)
     end
   end
-
-
 end

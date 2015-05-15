@@ -40,9 +40,9 @@ module Basquiat
       def listen(block: true)
         connection.with_network_failure_handler do
           procs.keys.each { |key| session.bind_queue(key) }
-          strategy = BasicAcknowledge.new(session)
+          tactic = strategy.new(session)
           session.subscribe(block) do |routing_key, message|
-            strategy.run(message) do
+            tactic.run(message) do
               procs[routing_key].call(message)
             end
           end
@@ -63,9 +63,9 @@ module Basquiat
 
       def formatted_options
         { connection: {
-            servers:  options[:servers],
-            failover: options[:failover],
-            auth:     options[:auth] },
+          servers:  options[:servers],
+          failover: options[:failover],
+          auth:     options[:auth] },
           session:    { exchange:  options[:exchange],
                         publisher: options[:publisher],
                         queue:     options[:queue] }.deep_merge(strategy.session_options)

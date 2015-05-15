@@ -14,14 +14,13 @@ module Basquiat
           fail Basquiat::Errors::SubclassResponsibility
         end
 
-        private
-
         def ack(delivery_tag)
           @session.channel.ack(delivery_tag)
         end
 
         def unack(delivery_tag)
-          @session.channel.unack(delivery_tag, false)
+          p 'Nack chamado pra ' + delivery_tag.to_s
+          @session.channel.nack(delivery_tag, false)
         end
       end
     end

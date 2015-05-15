@@ -13,7 +13,6 @@ describe 'Requeue Strategies' do
   after(:each) { remove_queues_and_exchanges }
 
   describe 'BasickAcknowledge (aka the default)' do
-
     it 'acks a message by default' do
       adapter.subscribe_to('some.event', ->(_) { 'Everything is AWESOME!' })
       adapter.listen(block: false)
@@ -35,20 +34,9 @@ describe 'Requeue Strategies' do
       expect(adapter.session.queue.message_count).to eq(0)
       expect(adapter.session.queue).to_not have_unacked_messages
     end
-
-    it 'should unacknowledge the message when told so' do
-      adapter.subscribe_to('some.event', ->(msg) { msg.unack })
-      adapter.listen(block: false)
-
-      adapter.publish('some.event', data: 'some important but flawed data')
-      sleep 2
-
-      expect(adapter.session.queue).to have_n_unacked_messages(1)
-    end
   end
 
   describe 'DeadLetterExchange' do
-
     before(:each) do
       adapter.class.register_strategy :dlx, Basquiat::Adapters::RabbitMq::DeadLettering
     end
@@ -62,28 +50,52 @@ describe 'Requeue Strategies' do
     end
 
     it 'creates and binds a dead letter queue' do
+      # Initialize the strategy since we won't be listening to anything
       adapter.adapter_options(requeue: { enabled: true, strategy: 'dlx' })
-
-
-      session =  adapter.session
+      session = adapter.session
       adapter.send(:strategy).new(session)
+
+      # Grabs the Bunny::Channel from the session for checks
       channel = session.channel
       expect(channel.queues.keys).to include('basquiat.dlq')
       expect(channel.queues['basquiat.dlq'].arguments)
-          .to include(dead_letter_exchange: session.exchange.name, 'x-message-ttl' => 1000)
-      expect(session.queue.arguments).to include(dead_letter_exchange: 'basquiat.dlx')
+          .to match(hash_including('x-dead-letter-exchange' => session.exchange.name, 'x-message-ttl' => 1000))
+      expect(session.queue.arguments).to match(hash_including('x-dead-letter-exchange' => 'basquiat.dlx'))
+
+      expect do
+        channel.exchanges['basquiat.dlx'].publish('some message', routing_key: 'some.event')
+      end.to change { channel.queues['basquiat.dlq'].message_count }.by(1)
     end
 
     context 'checks if it was the queue that unacked it' do
-      # Create another queue.
-      # ack the message in one of the queues
-      # unack in the other
-      # wait
-      # check if the messages are reprocessed
+      before(:each) do
+        adapter.adapter_options(requeue: { enabled: true, strategy: 'dlx' })
+        session = adapter.session
+        adapter.send(:strategy).new(session)
 
-      it 'process the message if true'
+        queue = session.channel.queue('sample_queue', arguments: { 'x-dead-letter-exchange' => 'basquiat.dlx' })
+        queue.bind(session.exchange, routing_key: 'sample.message')
+
+        queue.subscribe(manual_ack: true, block: false) do |di, _, _|
+          adapter.session.channel.ack(di.delivery_tag)
+        end
+      end
+
+      it 'process the message if true' do
+        sample = 1
+        adapter.subscribe_to('sample.message', ->(msg) {
+          p sample += 1
+          (sample % 2).zero? ? msg.ack : msg.unack
+        })
+
+        adapter.listen(block: false)
+        adapter.publish('sample.message', key: 'message')
+
+        sleep 5
+        expect(sample).to eq(2)
+      end
+
       it 'drops the message if not'
-
     end
   end
 

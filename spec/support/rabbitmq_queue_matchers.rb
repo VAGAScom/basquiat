@@ -2,7 +2,7 @@ class QueueStats
   def initialize(queue)
     @queue = queue
     host   = ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_25672_TCP_ADDR', 'localhost')
-    port   = ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_15672_TCP_PORT', 15672)
+    port   = ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_15672_TCP_PORT', 15_672)
     @uri   = "http://guest:guest@#{host}:#{port}/api/queues/%2F/#{@queue}"
   end
 
@@ -21,8 +21,8 @@ class QueueStats
   end
 end
 
-RSpec::Matchers.define :have_n_unacked_messages do |expected| #number of unacked messages
-  match do |queue| #queue
+RSpec::Matchers.define :have_n_unacked_messages do |expected| # number of unacked messages
+  match do |queue| # queue
     expected == QueueStats.new(queue.name).unacked_messages
   end
 
@@ -40,4 +40,3 @@ RSpec::Matchers.define :have_unacked_messages do
     "expected #{queue.name} to have 0 unacked messages but got #{QueueStats.new(queue.name).unacked_messages}"
   end
 end
-
