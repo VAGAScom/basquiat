@@ -1,6 +1,5 @@
 require 'bunny'
 require 'delegate'
-require 'byebug'
 
 module Basquiat
   module Adapters
@@ -10,20 +9,14 @@ module Basquiat
 
       # Avoid superclass mismatch errors
       require 'basquiat/adapters/rabbitmq/message'
+      require 'basquiat/adapters/rabbitmq/configuration'
       require 'basquiat/adapters/rabbitmq/connection'
       require 'basquiat/adapters/rabbitmq/session'
-      require 'basquiat/adapters/rabbitmq/strategies/base_strategy'
-      require 'basquiat/adapters/rabbitmq/strategies/basic_acknowledge'
-      require 'basquiat/adapters/rabbitmq/strategies/dead_lettering'
+      require 'basquiat/adapters/rabbitmq/requeue_strategies'
 
-      def default_options
-        { failover:  { default_timeout: 5, max_retries: 5 },
-          servers:   [{ host: 'localhost', port: 5672 }],
-          queue:     { name: Basquiat.configuration.queue_name, options: { durable: true } },
-          exchange:  { name: Basquiat.configuration.exchange_name, options: { durable: true } },
-          publisher: { confirm: true, persistent: false },
-          auth:      { user: 'guest', password: 'guest' },
-          requeue:   { enabled: false } }
+      def base_options
+        @configuration ||= Configuration.new
+        @configuration.merge_user_options(Basquiat.configuration.adapter_options)
       end
 
       def subscribe_to(event_name, proc)
@@ -40,10 +33,9 @@ module Basquiat
       def listen(block: true)
         connection.with_network_failure_handler do
           procs.keys.each { |key| session.bind_queue(key) }
-          tactic = strategy.new(session)
-          session.subscribe(block) do |routing_key, message|
-            tactic.run(message) do
-              procs[routing_key].call(message)
+          session.subscribe(block) do |message|
+            strategy.run(message) do
+              procs[message.routing_key].call(message)
             end
           end
         end
@@ -57,32 +49,18 @@ module Basquiat
 
       alias_method :disconnect, :reset_connection
 
-      def session
-        @session ||= Session.new(connection, formatted_options[:session])
+      def strategy
+        @strategy ||= @configuration.strategy.new(session)
       end
 
-      def formatted_options
-        { connection: {
-          servers:  options[:servers],
-          failover: options[:failover],
-          auth:     options[:auth] },
-          session:    { exchange:  options[:exchange],
-                        publisher: options[:publisher],
-                        queue:     options[:queue] }.deep_merge(strategy.session_options)
-        }
+      def session
+        @session ||= Session.new(connection, @configuration.session_options)
       end
 
       private
 
-      def strategy
-        return BasicAcknowledge unless options[:requeue][:enabled]
-        strategies.fetch(options[:requeue][:strategy].to_sym)
-      rescue KeyError
-        raise Basquiat::Errors::StrategyNotRegistered.new(options[:requeue][:strategy])
-      end
-
       def connection
-        @connection ||= Connection.new(formatted_options[:connection])
+        @connection ||= Connection.new(@configuration.connection_options)
       end
     end
   end

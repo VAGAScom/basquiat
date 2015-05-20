@@ -40,3 +40,14 @@ RSpec::Matchers.define :have_unacked_messages do
     "expected #{queue.name} to have 0 unacked messages but got #{QueueStats.new(queue.name).unacked_messages}"
   end
 end
+
+# convenience method
+def remove_queues_and_exchanges(adapter)
+  # Ugly as hell. Probably transform into a proper method in session
+  adapter.session.channel.queues.each_pair { |_, queue| queue.delete }
+  adapter.session.channel.exchanges.each_pair { |_, ex| ex.delete }
+rescue Bunny::TCPConnectionFailed
+  true
+ensure
+  adapter.reset_connection
+end

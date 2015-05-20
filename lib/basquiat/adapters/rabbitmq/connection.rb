@@ -63,10 +63,10 @@ module Basquiat
         def connection
           Basquiat.logger.info("Connecting to #{current_server_uri}")
           @connection ||= Bunny.new(
-            current_server_uri,
-            automatic_recovery: false,
-            threaded:           @failover.fetch(:threaded, true),
-            logger:             Basquiat.logger)
+              current_server_uri,
+              automatic_recovery: false,
+              threaded:           @failover.fetch(:threaded, true),
+              logger:             Basquiat.logger)
           __setobj__(@connection)
         end
 

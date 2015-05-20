@@ -14,9 +14,9 @@ module Basquiat
           # Publicar a mensagem no exchange com um ttl igual ao anterior **2
           # dar um unack caso o tempo estoure o maximo.
           def message_handler
-            delay = message[:headers][0][:expiration]**2
+            delay    = message[:headers][0][:expiration]**2
             exchange = channel.topic('basquiat.dd')
-            queue = channel.queue('delay', ttl: delay * 2)
+            queue    = channel.queue('delay', ttl: delay * 2)
             queue.bind(exchange, 'original_queue.delay.message_name')
             exchange.publish('original_queue.delay.message_name', message, ttl: delay, dlx: default_exchange)
           end

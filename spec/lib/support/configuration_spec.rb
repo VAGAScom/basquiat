@@ -58,7 +58,7 @@ describe Basquiat::Configuration do
 
   it 'settings provided on the config file have lower precedence' do
     config.exchange_name = 'super.nice_exchange'
-    config.config_file = File.join(File.dirname(__FILE__), '../../support/basquiat.yml')
+    config.config_file   = File.join(File.dirname(__FILE__), '../../support/basquiat.yml')
 
     expect(config.exchange_name).to eq('super.nice_exchange')
   end

@@ -8,8 +8,8 @@ module Basquiat
         def initialize(message, delivery_info = {}, props = {})
           super(message)
           @delivery_info = delivery_info
-          @props = props
-          @action = :ack
+          @props         = props
+          @action        = :ack
         end
 
         def routing_key

@@ -2,12 +2,18 @@ module Basquiat
   module Adapters
     class RabbitMq
       class BaseStrategy
-        def initialize(session)
-          @session = session
+        class << self
+          def session_options
+            {}
+          end
+
+          def setup(options = {})
+            @options = options
+          end
         end
 
-        def self.session_options
-          {}
+        def initialize(session)
+          @session = session
         end
 
         def run(_message)
@@ -19,7 +25,6 @@ module Basquiat
         end
 
         def unack(delivery_tag)
-          p 'Nack chamado pra ' + delivery_tag.to_s
           @session.channel.nack(delivery_tag, false)
         end
       end

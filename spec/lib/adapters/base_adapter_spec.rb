@@ -15,7 +15,8 @@ describe Basquiat::Adapters::Base do
   end
 
   it 'register a requeue strategy' do
-    class CoolStuff; end
+    class CoolStuff
+    end
     adapter.class.register_strategy :cool_stuff, CoolStuff
     expect(adapter.strategies).to have_key :cool_stuff
   end

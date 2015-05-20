@@ -14,9 +14,9 @@ describe Basquiat::HashRefinements do
   end
 
   it '#deep_merge with nested different hashes' do
-    base  = { queue: { options: { some: 'value' } } }
-    other = { queue: { options: { another: 'setting' } } }
-    result = base.deep_merge(other)
+    base   = { queue: { options: { some: 'value' } } }
+    other  = { queue: { options: { another: 'setting' } } }
+    base.deep_merge(other)
     expect(base[:queue][:options].keys).to contain_exactly(:some, :another)
   end
 

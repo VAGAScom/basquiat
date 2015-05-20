@@ -1,12 +1,6 @@
 require 'spec_helper'
 require 'basquiat/adapters/rabbitmq_adapter'
 
-class AwesomeStrategy
-  def self.session_options
-    { exchange: { options: { some_setting: 'awesomesauce' } } }
-  end
-end
-
 describe Basquiat::Adapters::RabbitMq do
   subject(:adapter) { Basquiat::Adapters::RabbitMq.new }
 
@@ -14,19 +8,6 @@ describe Basquiat::Adapters::RabbitMq do
     { servers:   [{ host: ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' },
                     port: ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } }],
       publisher: { persistent: true } }
-  end
-
-  context 'Strategies' do
-    it 'merges the strategy options with the session ones' do
-      Basquiat::Adapters::RabbitMq.register_strategy(:awesome, AwesomeStrategy)
-      adapter.adapter_options(requeue: { enabled: true, strategy: 'awesome' })
-      expect(adapter.formatted_options[:session][:exchange][:options]).to have_key(:some_setting)
-    end
-
-    it 'raises an error if trying to use a non-registered strategy' do
-      adapter.adapter_options(requeue: { enabled: true, strategy: 'perfect' })
-      expect { adapter.formatted_options }.to raise_error Basquiat::Errors::StrategyNotRegistered
-    end
   end
 
   context 'RabbitMQ interactions' do
@@ -54,7 +35,7 @@ describe Basquiat::Adapters::RabbitMq do
                              ->(msg) { message << msg[:data].upcase! })
         adapter.listen(block: false)
         adapter.publish('some.event', data: 'coisa')
-        sleep 0.7 # Wait for the listening thread.
+        sleep 0.7 # Wait for the listening thread
 
         expect(message).to eq('COISA')
       end

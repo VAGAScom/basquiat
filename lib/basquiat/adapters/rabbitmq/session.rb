@@ -21,7 +21,7 @@ module Basquiat
         def subscribe(lock, &_block)
           queue.subscribe(block: lock, manual_ack: true) do |di, props, msg|
             message = Basquiat::Adapters::RabbitMq::Message.new(msg, di, props)
-            yield di.routing_key, message
+            yield message
           end
         end
 

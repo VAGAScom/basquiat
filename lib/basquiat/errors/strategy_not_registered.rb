@@ -1,9 +1,9 @@
 module Basquiat
   module Errors
-    class StrategyNotRegistered < RuntimeError
+    class StrategyNotRegistered < StandardError
       def initialize(symbol)
-        @symbol = symbol
         super()
+        @symbol = symbol
       end
 
       def message

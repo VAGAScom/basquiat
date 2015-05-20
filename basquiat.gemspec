@@ -4,16 +4,16 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'basquiat/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'basquiat'
-  spec.version       = Basquiat::VERSION
-  spec.authors       = ['Marcello "mereghost" Rocha']
-  spec.email         = %w(marcello.rocha@gmail.com.br)
-  spec.description   = <<EOD
+  spec.name        = 'basquiat'
+  spec.version     = Basquiat::VERSION
+  spec.authors     = ['Marcello "mereghost" Rocha']
+  spec.email       = %w(marcello.rocha@gmail.com.br)
+  spec.description = <<EOD
 Basquiat is a library that intends to abstract all the complexity of working with message queues
 EOD
-  spec.summary       = 'A pluggable library that aims to hide message queue complexity'
-  spec.homepage      = 'http://github.com/VAGAScom/basquiat'
-  spec.license       = 'MIT'
+  spec.summary  = 'A pluggable library that aims to hide message queue complexity'
+  spec.homepage = 'http://github.com/VAGAScom/basquiat'
+  spec.license  = 'MIT'
 
   spec.files         = `git ls-files`.split($RS)
   spec.executables   = spec.files.grep(/^bin\//) { |f| File.basename(f) }
