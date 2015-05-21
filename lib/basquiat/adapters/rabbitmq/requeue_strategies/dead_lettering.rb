@@ -36,10 +36,8 @@ module Basquiat
         private
 
         def check_incoming_messages(message)
-          redelivered = message.delivery_info.redelivered
-
-          redelivered &&
-              message.props.headers['x-death'][1]['queue'] != session.queue.name &&
+          message.props.headers and
+              message.props.headers['x-death'][1]['queue'] != @session.queue.name and
               throw(:skip_processing)
         end
 

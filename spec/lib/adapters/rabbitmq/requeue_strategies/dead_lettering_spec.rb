@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'basquiat/adapters/rabbitmq_adapter'
 
-describe 'DeadLetterExchange' do
+describe Basquiat::Adapters::RabbitMq::DeadLettering do
   let(:adapter) { Basquiat::Adapters::RabbitMq.new }
   let(:base_options) do
     { servers:   [{ host: ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' },
@@ -41,7 +41,7 @@ describe 'DeadLetterExchange' do
     end.to change { channel.queues['basquiat.dlq'].message_count }.by(1)
   end
 
-  context 'checks if it was the queue that unacked it' do
+  context 'if it was the queue that unacked the message then' do
     before(:each) do
       adapter.adapter_options(requeue: { enabled: true, strategy: 'dlx' })
       session = adapter.session
@@ -55,19 +55,47 @@ describe 'DeadLetterExchange' do
       end
     end
 
-    it 'process the message if true' do
-      sample = 1
+    it 'process the message' do
+      sample = 0
       adapter.subscribe_to('sample.message', ->(msg) do
-        sample += 1; (sample % 2).zero? ? msg.ack : msg.unack
+        sample += 1;
+        sample == 3 ? msg.ack : msg.unack
       end)
 
       adapter.listen(block: false)
       adapter.publish('sample.message', key: 'message')
 
-      sleep 5
-      expect(sample).to eq(2)
+      sleep 3
+      expect(sample).to eq(3)
     end
 
-    it 'drops the message if not'
+    it 'else drop the message' do
+      ack_count = 0
+      sample    = 0
+
+      other = Basquiat::Adapters::RabbitMq.new
+      other.adapter_options(base_options.merge(queue: { name: 'other_queue' }, requeue: { enabled: true, strategy: 'dlx' }))
+      other.subscribe_to('sample.message', ->(msg) do
+        ack_count += 1
+      end)
+
+      adapter.subscribe_to('sample.message', ->(msg) do
+        if sample == 3
+          msg.ack
+        else
+          sample += 1;
+          msg.unack
+        end
+      end)
+
+      other.listen(block: false)
+      adapter.listen(block: false)
+      adapter.publish('sample.message', key: 'message')
+
+      sleep 3
+      remove_queues_and_exchanges(other)
+      expect(ack_count).to eq(1)
+      expect(sample).to eq(3)
+    end
   end
 end

@@ -19,7 +19,7 @@ module Basquiat
         end
 
         def base_options
-          @options.dup
+          @options
         end
 
         def merge_user_options(user_opts)
