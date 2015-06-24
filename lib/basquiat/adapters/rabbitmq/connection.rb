@@ -26,7 +26,7 @@ module Basquiat
         end
 
         def current_server_uri
-          "amqp://#{auth[:user]}:#{auth[:password]}@#{current_server[:host]}:#{current_server[:port]}#{current_server[:vhost]}"
+          "amqp://#{current_server[:host]}:#{current_server[:port]}#{current_server[:vhost]}"
         end
 
         def with_network_failure_handler
@@ -64,9 +64,11 @@ module Basquiat
           Basquiat.logger.info("Connecting to #{current_server_uri}")
           @connection ||= Bunny.new(
               current_server_uri,
+              user:     auth[:user],
+              password: auth[:password],
               automatic_recovery: false,
-              threaded:           @failover.fetch(:threaded, true),
-              logger:             Basquiat.logger)
+              threaded: @failover.fetch(:threaded, true),
+              logger: Basquiat.logger)
           __setobj__(@connection)
         end
 
