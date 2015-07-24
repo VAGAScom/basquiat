@@ -2,3 +2,4 @@
 --color
 --fail-fast
 --order rand
+--require spec_helper
