@@ -67,6 +67,22 @@ describe Basquiat::Adapters::RabbitMq do
 
       expect(message_received).to eq(data: 'COISA')
     end
+
+    it '#subscribe_to other event with #' do
+      message_received = ''
+      subject.subscribe_to('other.event.#',
+                           lambda do |msg|
+                             msg[:data].upcase!
+                             message_received = msg
+                           end)
+      subject.listen(block: false)
+
+      subject.publish('other.event.extra', data: 'outra coisa')
+      sleep 0.1 # Wait for the listening thread.
+
+      expect(message_received).to eq(data: 'OUTRA COISA')
+    end
+
   end
 
   def remove_queues_and_exchanges
