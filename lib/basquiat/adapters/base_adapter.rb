@@ -19,7 +19,7 @@ module Basquiat
 
       def initialize
         @options = base_options
-        @procs   = Basquiat::Events.new
+        @procs   = {}
         @retries = 0
       end
 

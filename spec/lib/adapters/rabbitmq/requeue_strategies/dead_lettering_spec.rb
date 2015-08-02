@@ -58,7 +58,7 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
     it 'process the message' do
       sample = 0
       adapter.subscribe_to('sample.message', ->(msg) do
-        sample += 1;
+        sample += 1
         sample == 3 ? msg.ack : msg.unack
       end)
 

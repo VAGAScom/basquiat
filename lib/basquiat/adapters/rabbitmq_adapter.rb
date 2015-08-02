@@ -7,12 +7,19 @@ module Basquiat
     class RabbitMq < Basquiat::Adapters::Base
       using Basquiat::HashRefinements
 
+
       # Avoid superclass mismatch errors
+      require 'basquiat/adapters/rabbitmq/events'
       require 'basquiat/adapters/rabbitmq/message'
       require 'basquiat/adapters/rabbitmq/configuration'
       require 'basquiat/adapters/rabbitmq/connection'
       require 'basquiat/adapters/rabbitmq/session'
       require 'basquiat/adapters/rabbitmq/requeue_strategies'
+
+      def initialize
+        super
+        @procs = Events.new
+      end
 
       def base_options
         @configuration ||= Configuration.new
