@@ -18,8 +18,8 @@ describe Basquiat::Adapters::RabbitMq::Events do
   end
 
   context 'wildcard keys' do
+    let(:proc) { -> { 'Hello from the lambda! o/' } }
     describe '*' do
-      let(:proc) { -> { 'Hello from the lambda! o/' } }
       let(:words) { %w{awesome lame dumb cool} }
       context 'matches any ONE word' do
         it 'at the end' do
@@ -53,7 +53,17 @@ describe Basquiat::Adapters::RabbitMq::Events do
       context 'does not match more than ONE word' do
         it 'some.* does not match some.event.dude' do
           events['some.*'] = -> {}
-          expect(events['some.event.dude']).to be_nil
+          expect { events['some.event.dude'] }.to raise_error KeyError
+        end
+      end
+    end
+    describe '#' do
+      context 'matches any number of words' do
+        it '# matches all events' do
+          events['#'] = proc
+          %w{some.cool.event event cool.event}.each do |event|
+            expect(events[event]).to eq(proc)
+          end
         end
       end
     end

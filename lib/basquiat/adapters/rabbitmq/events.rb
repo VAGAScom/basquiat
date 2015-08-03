@@ -10,9 +10,11 @@ module Basquiat
         end
 
         def []=(key, value)
-          key            = /^#{key.gsub('*', '[^.]+')}$/ if key =~ /\*/
-          key            = /^#{key.gsub('#', '.*')}$/ if key =~ /#/
-          @patterns[key] = value
+          if key =~ /\*|\#/
+            set_pattern_key(key, value)
+          else
+            @exact[key] = value
+          end
         end
 
         def keys
@@ -38,9 +40,17 @@ module Basquiat
         # event.for.the.win, event.for.everyone, event.for.*
         private
 
+        def set_pattern_key(key, value)
+          key            = if key =~ /\*/
+                             /^#{key.gsub('*', '[^.]+')}$/
+                           else
+                             /^#{key.gsub(/\#/, '.*')}$/
+                           end
+          @patterns[key] = value
+        end
+
         def simple_pattern_match(key)
           match = @patterns.keys.detect(nil) { |pattern| key =~ pattern }
-          p match
           @patterns.fetch match
         end
       end
