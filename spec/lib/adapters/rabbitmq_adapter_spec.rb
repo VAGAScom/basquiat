@@ -50,10 +50,10 @@ describe Basquiat::Adapters::RabbitMq do
                            end)
       subject.listen(block: false)
 
-      subject.publish('other.event.extra', data: 'outra coisa')
-      sleep 0.1 # Wait for the listening thread.
+      subject.publish('other.event.extra.info', data: 'some stuff')
+      sleep 0.3 # Wait for the listening thread.
 
-      expect(message_received).to eq(data: 'OUTRA COISA')
+      expect(message_received).to eq(data: 'SOME STUFF')
     end
 
   end

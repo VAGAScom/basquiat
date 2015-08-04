@@ -4,7 +4,10 @@ module Basquiat
   module Adapters
     class RabbitMq
       class Events
+        attr_reader :keys
+
         def initialize
+          @keys     = []
           @exact    = {}
           @patterns = {}
         end
@@ -15,26 +18,13 @@ module Basquiat
           else
             @exact[key] = value
           end
+          @keys.push key
         end
 
-        def keys
-          @exact.keys
-        end
-
-        # # substitutes 1 or more words
-        # * substitutes exactly 1 word
-        # best matches are used from left to right.
         def [](key)
           @exact.fetch(key) { simple_pattern_match(key) }
         rescue KeyError
           raise KeyError, "No event handler found for #{key}"
-          #dismember the key.
-          # search alg:
-          # 1. exact match
-          # 2. search for keys that have # and *
-          #   a. see if any of these matches
-          #   b. * has higher precedence over #
-          #   c.# ~= /.*/ * =~ \w+{1}
         end
 
         # event.for.the.win, event.for.everyone, event.for.*

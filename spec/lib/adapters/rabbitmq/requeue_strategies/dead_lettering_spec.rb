@@ -38,6 +38,7 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
 
     expect do
       channel.exchanges['basquiat.dlx'].publish('some message', routing_key: 'some.event')
+      sleep 0.1
     end.to change { channel.queues['basquiat.dlq'].message_count }.by(1)
   end
 

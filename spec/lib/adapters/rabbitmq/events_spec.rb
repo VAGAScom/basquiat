@@ -5,7 +5,6 @@ describe Basquiat::Adapters::RabbitMq::Events do
   subject(:events) { Basquiat::Adapters::RabbitMq::Events.new }
 
   context 'basic functionality' do
-
     it 'raises a KeyError when no matching keys are found' do
       expect { events['event'] }.to raise_error KeyError
     end
@@ -20,7 +19,7 @@ describe Basquiat::Adapters::RabbitMq::Events do
   context 'wildcard keys' do
     let(:proc) { -> { 'Hello from the lambda! o/' } }
     describe '*' do
-      let(:words) { %w{awesome lame dumb cool} }
+      let(:words) { %w(awesome lame dumb cool) }
       context 'matches any ONE word' do
         it 'at the end' do
           events['some.event.*'] = proc
@@ -61,9 +60,17 @@ describe Basquiat::Adapters::RabbitMq::Events do
       context 'matches any number of words' do
         it '# matches all events' do
           events['#'] = proc
-          %w{some.cool.event event cool.event}.each do |event|
+          %w(some.cool.event event cool.event).each do |event|
             expect(events[event]).to eq(proc)
           end
+        end
+
+        it 'matches specific events' do
+          events['#.event'] = proc
+          %w(some.cool.event cool.event).each do |event|
+            expect(events[event]).to eq(proc)
+          end
+          expect { events['event']}.to raise_error KeyError
         end
       end
     end
