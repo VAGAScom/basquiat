@@ -13,36 +13,40 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
     adapter.adapter_options(base_options)
     adapter.class.register_strategy :ddl, Basquiat::Adapters::RabbitMq::DelayedDelivery
     adapter.adapter_options(requeue: { enabled: true, strategy: 'ddl' })
+    adapter.strategy # initialize the strategy
   end
 
   after(:each) { remove_queues_and_exchanges(adapter) }
 
   it 'creates the dead letter exchange' do
-    adapter.strategy # initialize the strategy
     channel = adapter.session.channel
     expect(channel.exchanges.keys).to contain_exactly('my.test_exchange', 'basquiat.dlx')
   end
 
   it 'creates de timeout queues' do
-    adapter.strategy # initialize the strategy
     channel = adapter.session.channel
     expect(channel.queues.keys).to contain_exactly('basquiat.ddlq_1', 'basquiat.ddlq_2', 'basquiat.ddlq_4',
                                                    'basquiat.ddlq_8', 'basquiat.ddlq_16')
   end
 
-  it 'creates and binds the delayed delivery queues' do
-    adapter.strategy
+  it 'set the message ttl and dead letter exchange for the delayed queues' do
     session = adapter.session
-
     channel = session.channel
     expect(channel.queues['basquiat.ddlq_1'].arguments)
         .to match(hash_including('x-dead-letter-exchange' => session.exchange.name, 'x-message-ttl' => 1_000))
 
+    expect(channel.queues['basquiat.ddlq_8'].arguments['x-message-ttl']).to eq(8_000)
+  end
+
+  it 'binds the delayed queues' do
+    session = adapter.session
+    channel = session.channel
     expect do
       channel.exchanges['basquiat.dlx'].publish('some message', routing_key: '1.some.event')
       sleep 0.1
     end.to change { channel.queues['basquiat.ddlq_1'].message_count }.by(1)
   end
+
 
   context 'when a message is requeued' do
     it 'is republished with the appropriate routing key'
