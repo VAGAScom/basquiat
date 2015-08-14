@@ -12,12 +12,12 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
   before(:each) do
     adapter.adapter_options(base_options)
     adapter.class.register_strategy :dlx, Basquiat::Adapters::RabbitMq::DeadLettering
+    adapter.adapter_options(requeue: { enabled: true, strategy: 'dlx' })
   end
 
   after(:each) { remove_queues_and_exchanges(adapter) }
 
   it 'creates the dead letter exchange' do
-    adapter.adapter_options(requeue: { enabled: true, strategy: 'dlx' })
     adapter.strategy # initialize the strategy
     channel = adapter.session.channel
     expect(channel.exchanges.keys).to contain_exactly('my.test_exchange', 'basquiat.dlx')
@@ -25,7 +25,6 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
 
   it 'creates and binds a dead letter queue' do
     # Initialize the strategy since we won't be listening to anything
-    adapter.adapter_options(requeue: { enabled: true, strategy: 'dlx' })
     session = adapter.session
     adapter.strategy
 
@@ -44,7 +43,6 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
 
   context 'unacked the message from' do
     before(:each) do
-      adapter.adapter_options(requeue: { enabled: true, strategy: 'dlx' })
       session = adapter.session
       adapter.strategy # initialize strategy
 
@@ -58,7 +56,7 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
 
     it 'this queue then process the message' do
       sample = 0
-      adapter.subscribe_to('sample.message', ->(msg) do
+      adapter.subscribe_to('sample.message', lambda do |msg|
         sample += 1
         sample == 3 ? msg.ack : msg.unack
       end)
@@ -76,11 +74,11 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
 
       other = Basquiat::Adapters::RabbitMq.new
       other.adapter_options(base_options.merge(queue: { name: 'other_queue' }, requeue: { enabled: true, strategy: 'dlx', ttl: 5 }))
-      other.subscribe_to('sample.message', ->(msg) do
+      other.subscribe_to('sample.message', lambda do |msg|
         ack_count += 1
       end)
 
-      adapter.subscribe_to('sample.message', ->(msg) do
+      adapter.subscribe_to('sample.message', lambda do |msg|
         if sample == 3
           msg.ack
         else
@@ -93,7 +91,7 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
       adapter.listen(block: false)
       adapter.publish('sample.message', key: 'message')
 
-      sleep 2
+      sleep 3
       remove_queues_and_exchanges(other)
       expect(ack_count).to eq(1)
       expect(sample).to eq(3)

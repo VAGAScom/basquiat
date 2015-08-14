@@ -12,19 +12,18 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
   before(:each) do
     adapter.adapter_options(base_options)
     adapter.class.register_strategy :ddl, Basquiat::Adapters::RabbitMq::DelayedDelivery
+    adapter.adapter_options(requeue: { enabled: true, strategy: 'ddl' })
   end
 
   after(:each) { remove_queues_and_exchanges(adapter) }
 
   it 'creates the dead letter exchange' do
-    adapter.adapter_options(requeue: { enabled: true, strategy: 'ddl' })
     adapter.strategy # initialize the strategy
     channel = adapter.session.channel
     expect(channel.exchanges.keys).to contain_exactly('my.test_exchange', 'basquiat.dlx')
   end
 
   it 'creates de timeout queues' do
-    adapter.adapter_options(requeue: { enabled: true, strategy: 'ddl' })
     adapter.strategy # initialize the strategy
     channel = adapter.session.channel
     expect(channel.queues.keys).to contain_exactly('basquiat.ddlq_1', 'basquiat.ddlq_2', 'basquiat.ddlq_4',
@@ -32,7 +31,6 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
   end
 
   it 'creates and binds the delayed delivery queues' do
-    adapter.adapter_options(requeue: { enabled: true, strategy: 'ddl' })
     adapter.strategy
     session = adapter.session
 
@@ -47,11 +45,6 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
   end
 
   context 'when a message is requeued' do
-    before(:each) do
-      adapter.adapter_options(requeue: { enabled: true, strategy: 'ddl' })
-      adapter.strategy # initialize strategy
-    end
-
     it 'is republished with the appropriate routing key'
     it 'after it expires it is reprocessed by the right queue'
   end

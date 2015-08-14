@@ -29,15 +29,6 @@ describe Basquiat::Adapters::RabbitMq do
     end
 
     context 'listener' do
-      it 'does not eat exceptions' do
-        pending 'No solution found!'
-        adapter.subscribe_to('some.event', ->(msg) { raise ArgumentError })
-        expect do
-          adapter.listen(block: false)
-          adapter.publish('some.event', data: 'coisa')
-          sleep 0.7 # Wait for the listening thread
-        end.to raise_error ArgumentError
-      end
       it '#subscribe_to some event' do
         message = ''
         adapter.subscribe_to('some.event',

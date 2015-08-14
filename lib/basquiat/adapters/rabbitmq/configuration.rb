@@ -39,9 +39,10 @@ module Basquiat
         end
 
         def strategy
-          return BasicAcknowledge unless @options[:requeue][:enabled]
-          @strategy ||= RabbitMq.strategies.fetch(@options[:requeue][:strategy].to_sym)
-          @strategy.setup(@options[:requeue][:options] || {})
+          requeue = @options[:requeue]
+          return BasicAcknowledge unless requeue[:enabled]
+          @strategy ||= RabbitMq.strategies.fetch(requeue[:strategy].to_sym)
+          @strategy.setup(requeue[:options] || {})
           @strategy
         rescue KeyError
           fail Basquiat::Errors::StrategyNotRegistered.new(@options[:requeue][:strategy])
