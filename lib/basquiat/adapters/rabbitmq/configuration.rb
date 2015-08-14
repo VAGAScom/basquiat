@@ -5,8 +5,11 @@ module Basquiat
         using Basquiat::HashRefinements
 
         def initialize
-          @options = { failover:  { default_timeout: 5, max_retries: 5 },
-                       servers:   [{ host: 'localhost', port: 5672 }],
+          @options = { connection:
+                                  { hosts: ['localhost'],
+                                    port:  5672,
+                                    auth:  { user: 'guest', password: 'guest' }
+                                  },
                        queue:     {
                            name:    Basquiat.configuration.queue_name,
                            options: { durable: true } },
@@ -14,7 +17,6 @@ module Basquiat
                            name:    Basquiat.configuration.exchange_name,
                            options: { durable: true } },
                        publisher: { confirm: true, persistent: false },
-                       auth:      { user: 'guest', password: 'guest' },
                        requeue:   { enabled: false } }
         end
 
@@ -27,9 +29,7 @@ module Basquiat
         end
 
         def connection_options
-          { servers:  @options[:servers],
-            failover: @options[:failover],
-            auth:     @options[:auth] }
+          @options[:connection]
         end
 
         def session_options

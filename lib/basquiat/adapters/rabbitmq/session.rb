@@ -2,9 +2,11 @@ module Basquiat
   module Adapters
     class RabbitMq
       class Session
-        def initialize(connection, session_options = {})
-          @connection = connection
-          @options    = session_options
+        attr_reader :channel
+
+        def initialize(channel, session_options = {})
+          @channel = channel
+          @options = session_options
         end
 
         def bind_queue(routing_key)
@@ -18,16 +20,10 @@ module Basquiat
                              timestamp:   Time.now.to_i }.merge(props))
         end
 
-        def subscribe(lock, &_block)
+        def subscribe(lock)
           queue.subscribe(block: lock, manual_ack: true) do |di, props, msg|
-            message = Basquiat::Adapters::RabbitMq::Message.new(msg, di, props)
-            yield message
+            yield Basquiat::Adapters::RabbitMq::Message.new(msg, di, props)
           end
-        end
-
-        def channel
-          @connection.start unless @connection.connected?
-          @channel ||= @connection.create_channel
         end
 
         def queue

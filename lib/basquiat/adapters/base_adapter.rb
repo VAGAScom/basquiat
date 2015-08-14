@@ -12,14 +12,17 @@ module Basquiat
           @strategies ||= {}
         end
 
+        # Used to register a requeue strategy
+        # @param [String,Symbol] config_name the named used on the config file for the Requeue Strategy
+        # @param [Class] klass the class name.
         def register_strategy(config_name, klass)
           strategies.merge!(config_name.to_sym => klass)
         end
       end
 
-      def initialize
+      def initialize(procs: {})
         @options = base_options
-        @procs   = {}
+        @procs   = procs
         @retries = 0
       end
 

@@ -17,8 +17,7 @@ module Basquiat
       require 'basquiat/adapters/rabbitmq/requeue_strategies'
 
       def initialize
-        super
-        @procs = Events.new
+        super(procs: Events.new)
       end
 
       def base_options
@@ -31,19 +30,15 @@ module Basquiat
       end
 
       def publish(event, message, persistent: options[:publisher][:persistent], props: {})
-        connection.with_network_failure_handler do
-          session.publish(event, message, props)
-          disconnect unless persistent
-        end
+        session.publish(event, message, props)
+        disconnect unless persistent
       end
 
       def listen(block: true)
-        connection.with_network_failure_handler do
-          procs.keys.each { |key| session.bind_queue(key) }
-          session.subscribe(block) do |message|
-            strategy.run(message) do
-              procs[message.routing_key].call(message)
-            end
+        procs.keys.each { |key| session.bind_queue(key) }
+        session.subscribe(block) do |message|
+          strategy.run(message) do
+            procs[message.routing_key].call(message)
           end
         end
       end
@@ -52,6 +47,7 @@ module Basquiat
         connection.disconnect
         @connection = nil
         @session    = nil
+        @strategy   = nil
       end
 
       alias_method :disconnect, :reset_connection
@@ -61,7 +57,7 @@ module Basquiat
       end
 
       def session
-        @session ||= Session.new(connection, @configuration.session_options)
+        @session ||= Session.new(connection.create_channel, @configuration.session_options)
       end
 
       private

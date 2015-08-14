@@ -20,12 +20,12 @@ module Basquiat
           fail Basquiat::Errors::SubclassResponsibility
         end
 
-        def ack(delivery_tag)
-          @session.channel.ack(delivery_tag)
+        def ack(message)
+          @session.channel.ack(message.delivery_tag)
         end
 
-        def unack(delivery_tag)
-          @session.channel.nack(delivery_tag, false)
+        def unack(message)
+          @session.channel.nack(message.delivery_tag, false)
         end
       end
     end

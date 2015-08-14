@@ -4,9 +4,8 @@ require 'basquiat/adapters/rabbitmq_adapter'
 describe Basquiat::Adapters::RabbitMq::Connection do
   subject(:connection) { Basquiat::Adapters::RabbitMq::Connection }
 
-  let(:servers) do
-    [{ host: ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' },
-       port: ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } }]
+  let(:hosts) do
+    [ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' }]
   end
 
   before(:each) do
@@ -14,7 +13,7 @@ describe Basquiat::Adapters::RabbitMq::Connection do
   end
 
   it '#connected?' do
-    conn = connection.new(servers: servers)
+    conn = connection.new(hosts: hosts)
     expect(conn.connected?).to be_falsey
     conn.start
     expect(conn.connected?).to_not be_truthy
@@ -23,22 +22,22 @@ describe Basquiat::Adapters::RabbitMq::Connection do
 
   context 'failover' do
     let(:failover) do
-      { default_timeout: 0.2, max_retries: 2, threaded: false }
+      { default_timeout: 0.2, max_retries: 2, connection_timeout: 0.3 }
     end
 
-    before(:each) { servers.unshift(host: 'localhost', port: 1234) }
+    before(:each) { hosts.unshift('172.168.0.124') }
 
     it 'tries a reconnection after a few seconds' do
-      conn = connection.new(servers:  [host: 'localhost', port: 1234],
+      conn = connection.new(hosts:    ['172.168.0.124'],
                             failover: { default_timeout: 0.2, max_retries: 1 })
       expect { conn.start }.to raise_error(Bunny::TCPConnectionFailed)
       conn.close
     end
 
     it 'uses another server after all retries on a single one' do
-      conn = connection.new(servers: servers, failover: failover)
+      conn = connection.new(hosts: hosts, failover: failover)
       expect { conn.start }.to_not raise_error
-      expect(conn.current_server_uri).to match "#{ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 }}"
+      expect(conn.host).to match "#{ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost'}}"
       conn.close
     end
   end

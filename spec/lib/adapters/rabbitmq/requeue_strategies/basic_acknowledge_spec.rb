@@ -4,9 +4,9 @@ require 'basquiat/adapters/rabbitmq_adapter'
 describe 'Requeue Strategies' do
   let(:adapter) { Basquiat::Adapters::RabbitMq.new }
   let(:base_options) do
-    { servers:   [{ host: ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' },
-                    port: ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } }],
-      publisher: { persistent: true } }
+    { connection: { hosts: [ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' }],
+                    port:  ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } },
+      publisher:  { persistent: true } }
   end
 
   before(:each) { adapter.adapter_options(base_options) }

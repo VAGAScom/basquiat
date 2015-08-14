@@ -4,7 +4,7 @@ module Basquiat
       class BasicAcknowledge < BaseStrategy
         def run(message)
           yield
-          send(message.action, message.di.delivery_tag)
+          public_send(message.action, message)
         end
       end
     end

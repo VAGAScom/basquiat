@@ -3,6 +3,7 @@ AllCops:
     - 'bin/*'
     - 'docker/*'
     - 'Guardfile'
+    - 'basquiat.gemspec'
 Metrics/LineLength:
   Max: 109
 

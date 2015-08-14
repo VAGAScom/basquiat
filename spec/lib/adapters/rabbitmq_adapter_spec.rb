@@ -5,9 +5,9 @@ describe Basquiat::Adapters::RabbitMq do
   subject(:adapter) { Basquiat::Adapters::RabbitMq.new }
 
   let(:base_options) do
-    { servers:   [{ host: ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' },
-                    port: ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } }],
-      publisher: { persistent: true } }
+    { connection: { hosts: [ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' }],
+                    port:  ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } },
+      publisher:  { persistent: true } }
   end
 
   context 'RabbitMQ interactions' do
@@ -29,6 +29,15 @@ describe Basquiat::Adapters::RabbitMq do
     end
 
     context 'listener' do
+      it 'does not eat exceptions' do
+        pending 'No solution found!'
+        adapter.subscribe_to('some.event', ->(msg) { raise ArgumentError })
+        expect do
+          adapter.listen(block: false)
+          adapter.publish('some.event', data: 'coisa')
+          sleep 0.7 # Wait for the listening thread
+        end.to raise_error ArgumentError
+      end
       it '#subscribe_to some event' do
         message = ''
         adapter.subscribe_to('some.event',

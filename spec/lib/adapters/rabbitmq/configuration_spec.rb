@@ -19,7 +19,7 @@ describe Basquiat::Adapters::RabbitMq::Configuration do
   end
 
   it '#connection_options' do
-    expect(config.connection_options.keys).to contain_exactly(:servers, :auth, :failover)
+    expect(config.connection_options.keys).to contain_exactly(:hosts, :auth, :port)
   end
 
   it '#session_options' do
