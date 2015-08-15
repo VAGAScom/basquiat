@@ -20,7 +20,7 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
   it 'creates the dead letter exchange' do
     adapter.strategy # initialize the strategy
     channel = adapter.session.channel
-    expect(channel.exchanges.keys).to contain_exactly('my.test_exchange', 'basquiat.dlx')
+    expect(channel.exchanges.keys).to contain_exactly('basquiat.exchange', 'basquiat.dlx')
   end
 
   it 'creates and binds a dead letter queue' do

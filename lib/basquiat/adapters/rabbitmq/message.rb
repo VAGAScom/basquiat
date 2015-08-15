@@ -2,6 +2,7 @@ module Basquiat
   module Adapters
     class RabbitMq
       class Message < Basquiat::Adapters::BaseMessage
+        attr_writer :routing_key
         attr_reader :delivery_info, :props
         alias_method :di, :delivery_info
 
@@ -13,7 +14,7 @@ module Basquiat
         end
 
         def routing_key
-          delivery_info.routing_key
+          @routing_key || delivery_info.routing_key
         end
 
         def delivery_tag

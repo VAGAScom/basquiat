@@ -9,6 +9,10 @@ module Basquiat
   class Configuration
     using HashRefinements
 
+    def initialize
+      @yaml = {}
+    end
+
     attr_writer :queue_name, :exchange_name, :logger, :environment
 
     def queue_name
@@ -37,7 +41,7 @@ module Basquiat
     end
 
     def default_adapter
-      config.fetch(:default_adapter) { Basquiat::Adapter::Test }
+      config.fetch(:default_adapter) { 'Basquiat::Adapters::Test' }
     end
 
     def reload_classes
@@ -47,7 +51,7 @@ module Basquiat
     private
 
     def config
-      @yaml.fetch(environment)
+      @yaml.fetch(environment, {})
     end
 
     def load_yaml(path)

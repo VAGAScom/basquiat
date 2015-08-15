@@ -16,7 +16,7 @@ module Basquiat
           @session = session
         end
 
-        def run(_message)
+        def run(message)
           fail Basquiat::Errors::SubclassResponsibility
         end
 

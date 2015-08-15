@@ -1,12 +1,6 @@
 require 'spec_helper'
 
 describe Basquiat do
-  after(:all) do
-    Basquiat.configure do |config|
-      config.config_file = File.expand_path('../../support/basquiat.yml', __FILE__)
-    end
-  end
-
   it 'should have a version number' do
     expect(Basquiat::VERSION).not_to be_nil
   end

@@ -9,6 +9,8 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
       publisher:  { persistent: true } }
   end
 
+  before(:each) { Basquiat.configuration.logger = Logger.new('log/delayed_delivery.log') }
+
   before(:each) do
     adapter.adapter_options(base_options)
     adapter.class.register_strategy :ddl, Basquiat::Adapters::RabbitMq::DelayedDelivery
@@ -20,13 +22,13 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
 
   it 'creates the dead letter exchange' do
     channel = adapter.session.channel
-    expect(channel.exchanges.keys).to contain_exactly('my.test_exchange', 'basquiat.dlx')
+    expect(channel.exchanges.keys).to contain_exactly('basquiat.exchange', 'basquiat.dlx')
   end
 
-  it 'creates de timeout queues' do
+  it 'creates the timeout queues' do
     channel = adapter.session.channel
     expect(channel.queues.keys).to contain_exactly('basquiat.ddlq_1', 'basquiat.ddlq_2', 'basquiat.ddlq_4',
-                                                   'basquiat.ddlq_8', 'basquiat.ddlq_16')
+                                                   'basquiat.ddlq_8', 'basquiat.ddlq_16', 'basquiat.queue')
   end
 
   it 'set the message ttl and dead letter exchange for the delayed queues' do
@@ -42,11 +44,22 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
     session = adapter.session
     channel = session.channel
     expect do
-      channel.exchanges['basquiat.dlx'].publish('some message', routing_key: '1.some.event')
+      channel.exchanges['basquiat.dlx'].publish({ data: 'some message' }.to_json, routing_key: '1.some.event')
       sleep 0.1
     end.to change { channel.queues['basquiat.ddlq_1'].message_count }.by(1)
   end
 
+  it 'associates the event *.queue_name.event.name with event.name', focus: true do
+    message = ''
+    session = adapter.session
+    adapter.subscribe_to('some.event', ->(msg) { message = msg[:data].upcase })
+
+    adapter.listen(block: false)
+    session.publish('1.basquiat.queue.some.event', { data: 'some message' })
+    sleep 0.5
+
+    expect(message).to eq('SOME MESSAGE')
+  end
 
   context 'when a message is requeued' do
     it 'is republished with the appropriate routing key'

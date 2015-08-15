@@ -62,12 +62,4 @@ describe Basquiat::Configuration do
 
     expect(config.exchange_name).to eq('super.nice_exchange')
   end
-
-  it '#reload_classes' do
-    class MyTest
-      extend Basquiat::Base
-    end
-
-    config.reload_classes
-  end
 end

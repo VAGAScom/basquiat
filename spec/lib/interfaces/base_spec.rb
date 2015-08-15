@@ -45,8 +45,8 @@ describe Basquiat::Base do
 
     it 'publishes to the configured queue and exchanges' do
       expect do
-        subject.publish('test.message', message: 'useful test message')
-      end.to change { subject.adapter.events('test.message').size }.by(1)
+        defaults.publish('test.message', message: 'useful test message')
+      end.to change { defaults.adapter.events('test.message').size }.by(1)
     end
   end
 
