@@ -17,19 +17,26 @@ module Basquiat
 
         def run(message)
           message.routing_key = clear_routing_key(message.routing_key)
-          Basquiat.logger.debug '>>>>>>>>>>>>>>>>>>>>>>>>>>>' + message.routing_key
           yield
           public_send(message.action, message)
         end
 
         def requeue(message)
-          unack(message)
-          @exchange.publish(message, routing_key: new_routing_key_for(message))
+          @exchange.publish(Basquiat::Json.encode(message), routing_key: routing_key_for(message.di.routing_key))
+          ack(message)
         end
 
         private
+        def routing_key_for(key)
+          md = key.match(/^(\d+)\.(#{@session.queue.name})\.(.+)$/)
+          if md
+            "#{ 2 * (md.captures[0].to_i) }.#{md.captures[1]}.#{md.captures[2]}"
+          else
+            "1000.#{@session.queue.name}.#{key}"
+          end
+        end
+
         def clear_routing_key(key)
-          Basquiat.logger.debug '>>>>>>>>>>>>>>>>>>>>>>>>>>>' + key
           md = key.match(/^\d+\.#{@session.queue.name}\.(.+)$/)
           md and md.captures[0]
         end
@@ -43,12 +50,11 @@ module Basquiat
           @session.bind_queue("*.#{@session.queue.name}.#")
           options[:retries].times do |iteration|
             timeout = 2 ** iteration
-            queue   = @session.channel.queue("basquiat.ddlq_#{timeout}",
-                                             durable:   true,
-                                             arguments: {
+            queue   = @session.channel.queue("basquiat.ddlq_#{timeout}", durable: true,
+                                             arguments:                           {
                                                  'x-dead-letter-exchange' => @session.exchange.name,
                                                  'x-message-ttl'          => timeout * 1_000 })
-            queue.bind(@exchange, routing_key: "#{timeout}.#")
+            queue.bind(@exchange, routing_key: "#{timeout * 1_000}.#")
           end
         end
       end

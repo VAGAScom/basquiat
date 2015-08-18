@@ -28,6 +28,10 @@ module Basquiat
         def unack
           @action = :unack
         end
+
+        def requeue
+          @action = :requeue
+        end
       end
     end
   end
