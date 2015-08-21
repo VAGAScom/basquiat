@@ -16,7 +16,13 @@ module Basquiat
         # @param [String,Symbol] config_name the named used on the config file for the Requeue Strategy
         # @param [Class] klass the class name.
         def register_strategy(config_name, klass)
-          strategies.merge!(config_name.to_sym => klass)
+          strategies[config_name.to_sym] = klass
+        end
+
+        def strategy(key)
+          strategies.fetch(key)
+        rescue KeyError
+          fail Basquiat::Errors::StrategyNotRegistered
         end
       end
 

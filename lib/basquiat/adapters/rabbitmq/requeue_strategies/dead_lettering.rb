@@ -8,8 +8,8 @@ module Basquiat
           def setup(opts)
             @options = { session:
                               { queue:
-                                    { options:
-                                          { 'x-dead-letter-exchange' => opts.fetch(:exchange, 'basquiat.dlx') } } },
+                                  { options:
+                                      { 'x-dead-letter-exchange' => opts.fetch(:exchange, 'basquiat.dlx') } } },
                          dlx: { ttl: opts.fetch(:ttl, 1_000) } }
           end
 
@@ -37,8 +37,8 @@ module Basquiat
 
         def check_incoming_messages(headers)
           headers and
-              headers['x-death'][1]['queue'] != @session.queue.name and
-              throw(:skip_processing)
+            headers['x-death'][1]['queue'] != @session.queue.name and
+            throw(:skip_processing)
         end
 
         def options

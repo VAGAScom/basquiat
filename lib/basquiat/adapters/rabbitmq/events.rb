@@ -27,10 +27,10 @@ module Basquiat
           raise KeyError, "No event handler found for #{key}"
         end
 
-        # event.for.the.win, event.for.everyone, event.for.*
         private
 
         def set_pattern_key(key, value)
+          key            = key.gsub('.', '\.')
           key            = if key =~ /\*/
                              /^#{key.gsub('*', '[^.]+')}$/
                            else

@@ -5,7 +5,7 @@ AllCops:
     - 'Guardfile'
     - 'basquiat.gemspec'
 Metrics/LineLength:
-  Max: 109
+  Max: 119
 
 Style/AlignHash:
   EnforcedHashRocketStyle: table

@@ -11,7 +11,7 @@ describe Basquiat::Adapters::Base do
   end
 
   it 'raise error when using an unregistered strategy' do
-    # expect(adapter.use_strategy(:not_here)).to raise_error StrategyNotRegistered
+    expect { adapter.class.strategy(:not_here) }.to raise_error Basquiat::Errors::StrategyNotRegistered
   end
 
   it 'register a requeue strategy' do

@@ -18,7 +18,7 @@ describe 'Requeue Strategies' do
       adapter.listen(block: false)
 
       adapter.publish('some.event', data: 'stupid message')
-      sleep 0.7 # Wait for the listening thread.
+      sleep 0.5 # Wait for the listening thread.
 
       expect(adapter.session.queue.message_count).to eq(0)
       expect(adapter.session.queue).to_not have_unacked_messages
@@ -29,7 +29,7 @@ describe 'Requeue Strategies' do
       adapter.listen(block: false)
 
       adapter.publish('some.event', data: 'stupid message')
-      sleep 0.7 # Wait for the listening thread.
+      sleep 0.5 # Wait for the listening thread.
 
       expect(adapter.session.queue.message_count).to eq(0)
       expect(adapter.session.queue).to_not have_unacked_messages

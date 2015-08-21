@@ -36,14 +36,14 @@ module Basquiat
 
         def connection
           @connection ||= Bunny.new(
-              hosts:                     @hosts,
-              port:                      @port,
-              username:                  @auth.fetch(:user, 'guest'),
-              password:                  @auth.fetch(:password, 'guest'),
-              recovery_attempts:         @failover.fetch(:max_retries, 5),
-              network_recovery_interval: @failover.fetch(:default_timeout, 5),
-              connection_timeout:        @failover.fetch(:connection_timeout, 5),
-              logger:                    Basquiat.logger)
+            hosts:                     @hosts,
+            port:                      @port,
+            username:                  @auth.fetch(:user, 'guest'),
+            password:                  @auth.fetch(:password, 'guest'),
+            recovery_attempts:         @failover.fetch(:max_retries, 5),
+            network_recovery_interval: @failover.fetch(:default_timeout, 5),
+            connection_timeout:        @failover.fetch(:connection_timeout, 5),
+            logger:                    Basquiat.logger)
           __setobj__(@connection)
         end
       end

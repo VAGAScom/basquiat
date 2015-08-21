@@ -32,7 +32,7 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
     channel = session.channel
     expect(channel.queues.keys).to include('basquiat.dlq')
     expect(channel.queues['basquiat.dlq'].arguments)
-        .to match(hash_including('x-dead-letter-exchange' => session.exchange.name, 'x-message-ttl' => 1000))
+      .to match(hash_including('x-dead-letter-exchange' => session.exchange.name, 'x-message-ttl' => 1000))
     expect(session.queue.arguments).to match(hash_including('x-dead-letter-exchange' => 'basquiat.dlx'))
 
     expect do
@@ -56,10 +56,11 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
 
     it 'this queue then process the message' do
       sample = 0
-      adapter.subscribe_to('sample.message', lambda do |msg|
-        sample += 1
-        sample == 3 ? msg.ack : msg.unack
-      end)
+      adapter.subscribe_to('sample.message',
+                           lambda do |msg|
+                             sample += 1
+                             sample == 3 ? msg.ack : msg.unack
+                           end)
 
       adapter.listen(block: false)
       adapter.publish('sample.message', key: 'message')
@@ -74,18 +75,13 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
 
       other = Basquiat::Adapters::RabbitMq.new
       other.adapter_options(base_options.merge(queue: { name: 'other_queue' }, requeue: { enabled: true, strategy: 'dlx', ttl: 5 }))
-      other.subscribe_to('sample.message', lambda do |msg|
-        ack_count += 1
-      end)
+      other.subscribe_to('sample.message', lambda { |msg| ack_count += 1 })
 
-      adapter.subscribe_to('sample.message', lambda do |msg|
-        if sample == 3
-          msg.ack
-        else
-          sample += 1
-          msg.unack
-        end
-      end)
+      adapter.subscribe_to('sample.message',
+                           lambda do |msg|
+                             sample += 1
+                             sample == 3 ? msg.ack : msg.unack
+                           end)
 
       other.listen(block: false)
       adapter.listen(block: false)

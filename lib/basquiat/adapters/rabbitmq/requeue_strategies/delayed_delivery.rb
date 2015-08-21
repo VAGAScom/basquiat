@@ -52,8 +52,8 @@ module Basquiat
             timeout = 2 ** iteration
             queue   = @session.channel.queue("basquiat.ddlq_#{timeout}", durable: true,
                                              arguments:                           {
-                                                 'x-dead-letter-exchange' => @session.exchange.name,
-                                                 'x-message-ttl'          => timeout * 1_000 })
+                                               'x-dead-letter-exchange' => @session.exchange.name,
+                                               'x-message-ttl'          => timeout * 1_000 })
             queue.bind(@exchange, routing_key: "#{timeout * 1_000}.#")
           end
         end

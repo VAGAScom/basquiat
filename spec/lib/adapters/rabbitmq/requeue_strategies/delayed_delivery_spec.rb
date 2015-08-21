@@ -9,8 +9,6 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
       publisher:  { persistent: true } }
   end
 
-  before(:each) { Basquiat.configuration.logger = Logger.new('log/delayed_delivery.log') }
-
   before(:each) do
     adapter.adapter_options(base_options)
     adapter.class.register_strategy :ddl, Basquiat::Adapters::RabbitMq::DelayedDelivery
@@ -35,7 +33,7 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
     session = adapter.session
     channel = session.channel
     expect(channel.queues['basquiat.ddlq_1'].arguments)
-        .to match(hash_including('x-dead-letter-exchange' => session.exchange.name, 'x-message-ttl' => 1_000))
+      .to match(hash_including('x-dead-letter-exchange' => session.exchange.name, 'x-message-ttl' => 1_000))
 
     expect(channel.queues['basquiat.ddlq_8'].arguments['x-message-ttl']).to eq(8_000)
   end
@@ -55,7 +53,7 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
     adapter.subscribe_to('some.event', ->(msg) { message = msg[:data].upcase })
 
     adapter.listen(block: false)
-    session.publish('1000.basquiat.queue.some.event', { data: 'some message' })
+    session.publish('1000.basquiat.queue.some.event', data: 'some message')
     sleep 0.5
 
     expect(message).to eq('SOME MESSAGE')
@@ -67,23 +65,24 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
       adapter.subscribe_to('some.event', ->(msg) { msg.requeue })
       adapter.listen(block: false)
 
-      expect {
-        session.publish('some.event', { data: 'some message' })
+      expect do
+        session.publish('some.event', data: 'some message')
         sleep 0.3
-      }.to change { session.channel.queues['basquiat.ddlq_1'].message_count }.by(1)
+      end.to change { session.channel.queues['basquiat.ddlq_1'].message_count }.by(1)
     end
 
     it 'after it expires it is reprocessed by the right queue' do
       analysed = 0
       session  = adapter.session
-      adapter.subscribe_to('some.event', lambda do |msg|
-                                         if analysed == 1
-                                           msg.ack
-                                         else
-                                           analysed += 1
-                                           msg.requeue
-                                         end
-                                       end)
+      adapter.subscribe_to('some.event',
+                           lambda do |msg|
+                             if analysed == 1
+                               msg.ack
+                             else
+                               analysed += 1
+                               msg.requeue
+                             end
+                           end)
       adapter.listen(block: false)
       session.publish('some.event', { data: 'some message' })
       sleep 1.3

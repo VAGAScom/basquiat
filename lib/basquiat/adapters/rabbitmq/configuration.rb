@@ -11,11 +11,11 @@ module Basquiat
                                     auth:  { user: 'guest', password: 'guest' }
                                   },
                        queue:     {
-                           name:    Basquiat.configuration.queue_name,
-                           options: { durable: true } },
+                         name:    Basquiat.configuration.queue_name,
+                         options: { durable: true } },
                        exchange:  {
-                           name:    Basquiat.configuration.exchange_name,
-                           options: { durable: true } },
+                         name:    Basquiat.configuration.exchange_name,
+                         options: { durable: true } },
                        publisher: { confirm: true, persistent: false },
                        requeue:   { enabled: false } }
         end
@@ -41,11 +41,9 @@ module Basquiat
         def strategy
           requeue = @options[:requeue]
           return BasicAcknowledge unless requeue[:enabled]
-          @strategy ||= RabbitMq.strategies.fetch(requeue[:strategy].to_sym)
+          @strategy ||= RabbitMq.strategy(requeue[:strategy].to_sym)
           @strategy.setup(requeue[:options] || {})
           @strategy
-        rescue KeyError
-          fail Basquiat::Errors::StrategyNotRegistered.new(@options[:requeue][:strategy])
         end
       end
     end

@@ -12,6 +12,7 @@ describe Basquiat::Adapters::RabbitMq do
 
   context 'RabbitMQ interactions' do
     before(:each) do
+      Basquiat.configuration.logger = Logger.new 'log/basquiat.log'
       adapter.adapter_options(base_options)
       adapter.reset_connection
     end
@@ -29,33 +30,37 @@ describe Basquiat::Adapters::RabbitMq do
     end
 
     context 'listener' do
+      it 'does not eat exceptions', skip: true do
+        coisa = ''
+        adapter.subscribe_to('some.event', ->(_msg) { fail ArgumentError })
+        adapter.listen(block: false, rescue_proc: -> { coisa = 'Exception' })
+        adapter.publish('some.event', data: 'coisa')
+        sleep 0.7
+
+        expect(coisa).to eq('Exception')
+      end
+
       it '#subscribe_to some event' do
         message = ''
-        adapter.subscribe_to('some.event',
-                             ->(msg) { message << msg[:data].upcase! })
+        adapter.subscribe_to('some.event', ->(msg) { message = msg[:data].upcase })
         adapter.listen(block: false)
-        adapter.publish('some.event', data: 'coisa')
-        sleep 0.7 # Wait for the listening thread
+        adapter.publish('some.event', data: 'message')
+        sleep 0.7
 
-        expect(message).to eq('COISA')
+        expect(message).to eq('MESSAGE')
       end
     end
 
-    it '#subscribe_to other event with #' do
+    it '#subscribe_to other.event with #' do
       message_received = ''
-      subject.subscribe_to('other.event.#',
-                           lambda do |msg|
-                             msg[:data].upcase!
-                             message_received = msg
-                           end)
+      subject.subscribe_to('other.event.#', ->(msg) { message_received = msg[:data].upcase })
       subject.listen(block: false)
 
-      subject.publish('other.event.extra.info', data: 'some stuff')
-      sleep 0.3 # Wait for the listening thread.
+      subject.publish('other.event.test', data: 'some stuff')
+      sleep 0.7
 
-      expect(message_received).to eq(data: 'SOME STUFF')
+      expect(message_received).to eq('SOME STUFF')
     end
-
   end
 
   def remove_queues_and_exchanges

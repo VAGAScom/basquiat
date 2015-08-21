@@ -9,7 +9,7 @@ basquiat:
   stdin_open: true
 
 rabbitmq:
-  image: mereghost/rabbitmq:latest
+  image: mereghost/rabbitmq:3.5.4
   ports:
     - "15672"
     - "5672"
