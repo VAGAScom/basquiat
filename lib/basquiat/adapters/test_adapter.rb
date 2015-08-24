@@ -17,7 +17,7 @@ module Basquiat
 
       attr_reader :options
 
-      def default_options
+      def base_options
         @event_names = []
         { host: '127.0.0.1', port: 123_456, durable: true }
       end

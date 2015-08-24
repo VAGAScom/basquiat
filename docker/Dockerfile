@@ -11,3 +11,5 @@ COPY Gemfile /tmp/Gemfile
 #This is needed by bundler =/
 ENV GEM_HOME=/home/dev/.gem
 RUN cd /tmp && bundle install
+
+EXPOSE 8808

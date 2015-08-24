@@ -1,19 +1,21 @@
 require 'spec_helper'
 
-# Sample class used for testing
-class SampleClass
-  extend Basquiat::Base
-  self.event_adapter = Basquiat::Adapters::Test
-end
 
 describe Basquiat::Base do
-  subject { SampleClass }
-
-  it '.event_adapter' do
-    expect(subject).to respond_to(:event_adapter=)
+  # Sample class used for testing
+  class SampleClass
+    extend Basquiat::Base
+    self.adapter = Basquiat::Adapters::Test
   end
 
-  it '.event_source(option_hash)' do
+  subject { SampleClass }
+
+  it '.event_adapter= / .adapter=' do
+    expect(subject).to respond_to(:event_adapter=)
+    expect(subject).to respond_to(:adapter=)
+  end
+
+  it '.adapter_options(option_hash)' do
     expect(subject).to respond_to(:adapter_options)
   end
 
@@ -87,14 +89,5 @@ describe Basquiat::Base do
       subject.subscribe_to('some.event', :test_method)
       expect(subject.listen(block: false)).to eq(%w(e e e))
     end
-  end
-
-  it 'trigger an event after processing a message' do
-    subject.publish('some.event', 'some message')
-    subject.instance_eval <<-METHCALL
-    subscribe_to 'some.event', ->(msg) { publish('other.event', "Redirected \#{msg}") }
-    METHCALL
-    expect { subject.listen(block: false) }.to_not raise_error
-    expect(subject.adapter.events('other.event').size).to eq(1)
   end
 end

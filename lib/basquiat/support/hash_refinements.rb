@@ -1,5 +1,14 @@
 module Basquiat
   module HashRefinements
+    # @!method deep_merge
+    #   Merges self with other_hash recursively
+    #   @param other_hash [Hash] hash to be merged into self
+    #   @return [self]
+
+    # @!method symbolize_keys
+    #   Symbolize all the keys in a given hash. Works with nested hashes
+    #   @return [Hash] return other hash with the symbolized keys
+
     refine Hash do
       def deep_merge(other_hash)
         other_hash.each_pair do |key, value|

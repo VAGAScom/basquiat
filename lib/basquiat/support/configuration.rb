@@ -13,6 +13,15 @@ module Basquiat
       @yaml = {}
     end
 
+    # @!attribute queue_name
+    #   @return [String] the queue name. Defaults to 'basquiat.queue'
+    # @!attribute exchange_name
+    #   @return [String] the exchange name. Defaults to 'basquiat.exchange'
+    # @!attribute logger
+    #   @return [Logger] return the application logger. Defaults to {DefaultLogger}.
+    # @!attribute environment
+    #   @return [Symbol] return the set environment or the value of the 'BASQUIAT_ENV' environment variable
+    #    or :development
     attr_writer :queue_name, :exchange_name, :logger, :environment
 
     def queue_name
@@ -31,19 +40,25 @@ module Basquiat
       (@environment || ENV['BASQUIAT_ENV'] || 'development').to_sym
     end
 
+    # Loads a YAML file with the configuration options
+    # @param path [String] the path of the configuration file
     def config_file=(path)
       load_yaml(path)
       setup_basic_options
     end
 
+
+    # @return [Hash] return the configured adapter options. Defaults to an empty {::Hash}
     def adapter_options
       config.fetch(:adapter_options) { Hash.new }
     end
 
+    # @return [String] return the configured default adapter. Defaults to {Adapters::Test}
     def default_adapter
       config.fetch(:default_adapter) { 'Basquiat::Adapters::Test' }
     end
 
+    # Used by the railtie. Forces the reconfiguration of all extended classes
     def reload_classes
       Basquiat::Base.descendants.each(&:reload_adapter_from_configuration)
     end

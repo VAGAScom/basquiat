@@ -1,7 +1,8 @@
 require 'set'
+require 'byebug'
 
 module Basquiat
-  # base module extend the classes that will use the event infrastructure
+  # Base module used to extend the classes so that they will be able to use the event infrastructure
   module Base
     class << self
       def extended(klass)
@@ -14,39 +15,60 @@ module Basquiat
     end
 
     def reload_adapter_from_configuration
-      @adapter = Kernel.const_get(Basquiat.configuration.default_adapter).new
-      @adapter.adapter_options Basquiat.configuration.adapter_options
+      adapter = Kernel.const_get Basquiat.configuration.default_adapter
+      adapter_options Basquiat.configuration.adapter_options
     end
 
-    def event_adapter=(adapter)
-      @adapter = adapter.new
+    # @!attribute [rw] adapter
+    #   Initializes and return a instance of the default adapter specified on Basquiat.configuration.default_adapter
+    #   @return [Basquiat::Adapter] the adapter instance for the current class
+    #   @deprecated event_adapter is deprecated and will be removed eventually. Please use {#adapter}.
+    def adapter=(adapter_klass)
+      @adapter = adapter_klass.new
     end
+    alias_method :event_adapter=, :adapter=
 
     def adapter
       @adapter ||= Kernel.const_get(Basquiat.configuration.default_adapter).new
     end
 
+    # @param opts [Hash] The adapter specific options. Defaults to Basquiat.configuration.adapter_options
     def adapter_options(opts = Basquiat.configuration.adapter_options)
       adapter.adapter_options(opts)
     end
 
+    # Publishes the message of type event to the queue. Note that the message will be converted to a JSON
+    # @param event [String] the event name
+    # @param message [#to_json] Message to be JSONfied and sent to the Message Queue
     def publish(event, message)
       adapter.publish(event, message)
     end
 
+    # Subscribe the event with the proc passed.
+    # @param event_name [String] the event name
+    # @param proc [Symbol, #call] the proc to be executed when the event is consumed.
+    #   You can pass anything that answers to call or a symbol.
+    #   If a symbol is passed it will try to look for a public class method of the same name.
     def subscribe_to(event_name, proc)
       proc = make_callable(proc)
       adapter.subscribe_to(event_name, proc)
     end
 
+    # Utility method to force a disconnect from the message queue.
+    # @note The adapter should reconnect automatically.
     def disconnect
       adapter.disconnect
     end
 
+    # Utility method to check connection status
+    # @return [truthy, falsey]
     def connected?
       adapter.connected?
     end
 
+    # Starts the consumer loop
+    # @param block [Boolean] If it should block the thread. The revelance of this is dictated by the adapter.
+    #   Defaults to true.
     def listen(block: true)
       adapter.listen(block: block)
     end

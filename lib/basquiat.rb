@@ -8,7 +8,7 @@ require 'basquiat/adapters'
 require 'basquiat/version'
 require 'basquiat/interfaces/base'
 
-# Overall namespace And config class
+# Overall namespace config class
 module Basquiat
   class << self
     # resets the gems configuration. Useful for testing and not much else
@@ -21,8 +21,8 @@ module Basquiat
       @configuration ||= Configuration.new
     end
 
-    # @yield [Configuration] setup the gem's configuration as a block
-    # @yieldparam [Configuration] configuration
+    # used to configure the gem using a block
+    # @yieldparam [Configuration] configuration the current {Configuration} instance
     def configure
       yield configuration
     end

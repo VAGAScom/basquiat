@@ -5,8 +5,8 @@ basquiat:
     - ./:/basquiat
   links:
     - rabbitmq
-  tty: true
-  stdin_open: true
+  ports:
+    - "8808"
 
 rabbitmq:
   image: mereghost/rabbitmq:3.5.4
