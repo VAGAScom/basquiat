@@ -13,7 +13,7 @@ module Basquiat
         fail Basquiat::Errors::SubclassResponsibility
       end
 
-      def unack
+      def nack
         fail Basquiat::Errors::SubclassResponsibility
       end
 

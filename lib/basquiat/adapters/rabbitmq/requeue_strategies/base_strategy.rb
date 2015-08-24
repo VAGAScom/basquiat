@@ -2,6 +2,7 @@ module Basquiat
   module Adapters
     class RabbitMq
       class BaseStrategy
+
         class << self
           def session_options
             {}
@@ -24,9 +25,13 @@ module Basquiat
           @session.channel.ack(message.delivery_tag)
         end
 
-        def unack(message)
+        def nack(message)
           @session.channel.nack(message.delivery_tag, false)
         end
+
+        private
+
+        attr_reader :session
       end
     end
   end

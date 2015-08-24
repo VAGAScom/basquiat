@@ -20,3 +20,4 @@ bin
 docker/Gemfile
 log
 .tags*
+doc

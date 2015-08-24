@@ -8,15 +8,21 @@ All the exchanges, connections, queues and sessions declarations are swept under
 
 Add this line to your application's Gemfile:
 
-    gem 'basquiat'
+```ruby
+gem 'basquiat'
+```
 
 And then execute:
 
-    $ bundle
+```bash
+$ bundle
+```
 
 Or install it yourself as:
 
-    $ gem install basquiat
+```bash
+$ gem install basquiat
+```
 
 You will also need the right gem for your Message Queue (MQ) system. Bundled in this gem you will find 1 adapter, for RabbitMQ, which depends on the gem _bunny_.
 
@@ -100,4 +106,6 @@ development:                                #full example of the RabbitMq option
       enabled: true
       delayed_delivery:
         retries: 10
+        queue_name_preffix: wait.for_it
+        exchange_name: my.precious
 ```

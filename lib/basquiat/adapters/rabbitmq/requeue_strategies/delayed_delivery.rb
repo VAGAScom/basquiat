@@ -3,42 +3,56 @@ module Basquiat
     class RabbitMq
       class DelayedDelivery < BaseStrategy
         class << self
+          using HashRefinements
           attr_reader :options
 
           def setup(opts)
-            @options = { ddl: { retries: opts.fetch(:retries, 5) } }
+            @options = { ddl: { retries:            5,
+                                exchange_name:      'basquiat.dlx',
+                                queue_name_preffix: 'basquiat.ddlq' } }.deep_merge(opts)
           end
         end
 
         def initialize(session)
-          super(session)
+          super
           setup_delayed_delivery
         end
 
         def run(message)
-          message.routing_key = clear_routing_key(message.routing_key)
+          message.routing_key = extract_event_info(message.routing_key)[0]
           yield
           public_send(message.action, message)
         end
 
+        #@param [Message] message the, well, message to be requeued
         def requeue(message)
-          @exchange.publish(Basquiat::Json.encode(message), routing_key: routing_key_for(message.di.routing_key))
+          @exchange.publish(Basquiat::Json.encode(message), routing_key: requeue_route_for(message.di.routing_key))
           ack(message)
         end
 
         private
-        def routing_key_for(key)
-          md = key.match(/^(\d+)\.(#{@session.queue.name})\.(.+)$/)
-          if md
-            "#{ 2 * (md.captures[0].to_i) }.#{md.captures[1]}.#{md.captures[2]}"
+
+        #@param [#match] key the current routing key of the message
+        #@return [String] the calculated routing key for a republish / requeue
+        def requeue_route_for(key)
+          event_name, timeout = extract_event_info(key)
+          if timeout == 2 ** options[:retries] * 1_000
+            "rejected.#{session.queue.name}.#{event_name}"
           else
-            "1000.#{@session.queue.name}.#{key}"
+            "#{ timeout * 2 }.#{session.queue.name}.#{event_name}"
           end
         end
 
-        def clear_routing_key(key)
-          md = key.match(/^\d+\.#{@session.queue.name}\.(.+)$/)
-          md and md.captures[0]
+        #@param [#match] key the current routing key of the message
+        #@return [Array<String, Integer>] a 2 item array composed of the event.name (aka original routing_key) and the current timeout
+        def extract_event_info(key)
+          md = key.match(/^(\d+)\.#{session.queue.name}\.(.+)$/)
+          if md
+            [md.captures[1], md.captures[0].to_i]
+          else
+            # So timeout can turn into 1 second, weird but spares some checking
+            [key, 500]
+          end
         end
 
         def options
@@ -46,15 +60,29 @@ module Basquiat
         end
 
         def setup_delayed_delivery
-          @exchange = @session.channel.topic('basquiat.dlx', durable: true)
-          @session.bind_queue("*.#{@session.queue.name}.#")
-          options[:retries].times do |iteration|
+          @exchange = session.channel.topic(options[:exchange_name], durable: true)
+          session.bind_queue("*.#{session.queue.name}.#")
+          prepare_timeout_queues
+          queue = session.channel.queue("#{options[:queue_name_preffix]}_rejected", durable: true)
+          queue.bind(@exchange, routing_key: 'rejected.#')
+        end
+
+        def prepare_timeout_queues
+          queues = (0..options[:retries] - 1).map do |iteration|
             timeout = 2 ** iteration
-            queue   = @session.channel.queue("basquiat.ddlq_#{timeout}", durable: true,
-                                             arguments:                           {
-                                               'x-dead-letter-exchange' => @session.exchange.name,
-                                               'x-message-ttl'          => timeout * 1_000 })
-            queue.bind(@exchange, routing_key: "#{timeout * 1_000}.#")
+            session.channel.queue("#{options[:queue_name_preffix]}_#{timeout}", durable: true,
+                                  arguments:                                             {
+                                    'x-dead-letter-exchange' => session.exchange.name,
+                                    'x-message-ttl'          => timeout * 1_000 })
+
+          end
+          bind_timeout_queues(queues)
+        end
+
+        def bind_timeout_queues(queues)
+          queues.each do |queue|
+            timeout = queue.arguments['x-message-ttl'].to_i
+            queue.bind(@exchange, routing_key: "#{timeout}.#")
           end
         end
       end

@@ -26,7 +26,8 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
   it 'creates the timeout queues' do
     channel = adapter.session.channel
     expect(channel.queues.keys).to contain_exactly('basquiat.ddlq_1', 'basquiat.ddlq_2', 'basquiat.ddlq_4',
-                                                   'basquiat.ddlq_8', 'basquiat.ddlq_16', 'basquiat.queue')
+                                                   'basquiat.ddlq_8', 'basquiat.ddlq_16', 'basquiat.queue',
+                                                   'basquiat.ddlq_rejected')
   end
 
   it 'set the message ttl and dead letter exchange for the delayed queues' do
@@ -47,7 +48,7 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
     end.to change { channel.queues['basquiat.ddlq_1'].message_count }.by(1)
   end
 
-  it 'associates the event *.queue_name.event.name with event.name', focus: true do
+  it 'associates the event *.queue_name.event.name with event.name' do
     message = ''
     session = adapter.session
     adapter.subscribe_to('some.event', ->(msg) { message = msg[:data].upcase })
@@ -69,6 +70,17 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
         session.publish('some.event', data: 'some message')
         sleep 0.3
       end.to change { session.channel.queues['basquiat.ddlq_1'].message_count }.by(1)
+    end
+
+    it 'goes to the reject queue if a requeue would exceed the maximum timeout' do
+      session = adapter.session
+      adapter.subscribe_to('some.event', ->(msg) { msg.requeue })
+      adapter.listen(block: false)
+
+      expect do
+        session.publish('32000.basquiat.queue.some.event', data: 'some message')
+        sleep 0.3
+      end.to change { session.channel.queues['basquiat.ddlq_rejected'].message_count }.by(1)
     end
 
     it 'after it expires it is reprocessed by the right queue' do

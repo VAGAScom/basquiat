@@ -11,8 +11,7 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
 
   before(:each) do
     adapter.adapter_options(base_options)
-    adapter.class.register_strategy :dlx, Basquiat::Adapters::RabbitMq::DeadLettering
-    adapter.adapter_options(requeue: { enabled: true, strategy: 'dlx' })
+    adapter.adapter_options(requeue: { enabled: true, strategy: 'dead_lettering' })
   end
 
   after(:each) { remove_queues_and_exchanges(adapter) }
@@ -41,7 +40,7 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
     end.to change { channel.queues['basquiat.dlq'].message_count }.by(1)
   end
 
-  context 'unacked the message from' do
+  context 'nacked the message from' do
     before(:each) do
       session = adapter.session
       adapter.strategy # initialize strategy
@@ -59,7 +58,7 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
       adapter.subscribe_to('sample.message',
                            lambda do |msg|
                              sample += 1
-                             sample == 3 ? msg.ack : msg.unack
+                             sample == 3 ? msg.ack : msg.nack
                            end)
 
       adapter.listen(block: false)
@@ -74,13 +73,15 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
       sample    = 0
 
       other = Basquiat::Adapters::RabbitMq.new
-      other.adapter_options(base_options.merge(queue: { name: 'other_queue' }, requeue: { enabled: true, strategy: 'dlx', ttl: 5 }))
-      other.subscribe_to('sample.message', lambda { |msg| ack_count += 1 })
+      other.adapter_options(base_options.merge(queue:
+                                                        { name: 'other_queue' },
+                                               requeue: { enabled: true, strategy: 'dead_lettering', ttl: 5 }))
+      other.subscribe_to('sample.message', lambda { |_msg| ack_count += 1 })
 
       adapter.subscribe_to('sample.message',
                            lambda do |msg|
                              sample += 1
-                             sample == 3 ? msg.ack : msg.unack
+                             sample == 3 ? msg.ack : msg.nack
                            end)
 
       other.listen(block: false)

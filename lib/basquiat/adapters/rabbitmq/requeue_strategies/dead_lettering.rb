@@ -37,7 +37,7 @@ module Basquiat
 
         def check_incoming_messages(headers)
           headers and
-            headers['x-death'][1]['queue'] != @session.queue.name and
+            headers['x-death'][1]['queue'] != session.queue.name and
             throw(:skip_processing)
         end
 
@@ -46,10 +46,10 @@ module Basquiat
         end
 
         def setup_dead_lettering
-          dlx   = @session.channel.topic('basquiat.dlx')
-          queue = @session.channel.queue('basquiat.dlq',
-                                         arguments: { 'x-dead-letter-exchange' => @session.exchange.name,
-                                                      'x-message-ttl'          => options[:dlx][:ttl] })
+          dlx   = session.channel.topic('basquiat.dlx')
+          queue = session.channel.queue('basquiat.dlq',
+                                        arguments: { 'x-dead-letter-exchange' => session.exchange.name,
+                                                     'x-message-ttl'          => options[:dlx][:ttl] })
           queue.bind(dlx, routing_key: '#')
         end
       end
