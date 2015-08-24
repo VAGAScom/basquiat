@@ -2,9 +2,6 @@ module Basquiat
   module Adapters
     # An adapter to be used in testing
     class Test < Basquiat::Adapters::Base
-      class Message < BaseMessage
-      end
-
       class << self
         def events
           @events ||= Hash.new { |hash, key| hash[key] = [] }
@@ -38,7 +35,7 @@ module Basquiat
       def listen(*)
         event = subscribed_event
         msg   = self.class.events[event].shift
-        msg ? procs[event].call(Message.new(msg)) : nil
+        msg ? procs[event].call(BaseMessage.new(msg)) : nil
       end
 
       private
