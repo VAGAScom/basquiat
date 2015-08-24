@@ -30,6 +30,6 @@ function stop_and_remove_containers {
 
 generate_gemfile
 docker-compose start rabbitmq
-docker-compose run basquiat
+docker-compose run --service-ports basquiat
 
 trap stop_and_remove_containers EXIT SIGINT SIGTERM SIGKILL

@@ -78,6 +78,7 @@ module Basquiat
       def disconnect
         fail Basquiat::Errors::SubclassResponsibility
       end
+
       # @!endgroup
 
       private

@@ -27,14 +27,16 @@ EOD
   spec.add_development_dependency 'guard-bundler'
   spec.add_development_dependency 'guard-rspec'
   spec.add_development_dependency 'guard-rubocop'
+  spec.add_development_dependency 'guard-yard'
   spec.add_development_dependency 'bunny'
-  spec.add_development_dependency 'stomp'
   spec.add_development_dependency 'yajl-ruby'
   spec.add_development_dependency 'simplecov'
-  spec.add_development_dependency 'metric_fu'
   spec.add_development_dependency 'rubocop'
+  spec.add_development_dependency 'metric_fu'
   spec.add_development_dependency 'byebug'
   spec.add_development_dependency 'pry-byebug'
+  spec.add_development_dependency 'yard'
+
 
   spec.add_dependency 'multi_json'
   spec.add_dependency 'naught'

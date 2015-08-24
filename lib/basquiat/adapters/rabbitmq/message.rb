@@ -28,24 +28,6 @@ module Basquiat
         def delivery_tag
           delivery_info.delivery_tag
         end
-
-        #@!group Action Setters
-        # Sets the action to be taken after processing to be an ack.
-        # Here just in case as the default is to acknowledge the message.
-        def ack
-          @action = :ack
-        end
-
-        # Sets the action to be taken after processing to be an nack / reject
-        def nack
-          @action = :nack
-        end
-
-        # Sets the action to be taken after processing to be a requeue
-        def requeue
-          @action = :requeue
-        end
-        #@!endgroup
       end
     end
   end

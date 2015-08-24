@@ -7,10 +7,4 @@ describe Basquiat::Adapters::BaseMessage do
     expect(message.fetch(:data)).to eq('everything is AWESOME!')
     expect { message.fetch(:error) }.to raise_error KeyError
   end
-
-  [:ack?, :nack, :requeue, :delay_redelivery].each do |meth|
-    it "raise a SubclassResponsibility error if #{meth} isn't implemented" do
-      expect { message.public_send(meth) }.to raise_error Basquiat::Errors::SubclassResponsibility
-    end
-  end
 end

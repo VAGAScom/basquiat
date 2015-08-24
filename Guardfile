@@ -16,3 +16,7 @@ guard :rubocop, { cmd: 'rubocop', cli: '-fs -c./.rubocop.yml' } do
   #watch(%r{.+\.rb$})
   #watch(%r{(?:.+/)?\.rubocop\.yml$}) { |m| File.dirname(m[0]) }
 end
+
+guard 'yard', { cli: '-r' } do
+  watch(%r{lib/.+\.rb})
+end
