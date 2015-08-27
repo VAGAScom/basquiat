@@ -67,7 +67,7 @@ module Basquiat
     end
 
     # Starts the consumer loop
-    # @param block [Boolean] If it should block the thread. The revelance of this is dictated by the adapter.
+    # @param block [Boolean] If it should block the thread. The relevance of this is dictated by the adapter.
     #   Defaults to true.
     def listen(block: true)
       adapter.listen(block: block)

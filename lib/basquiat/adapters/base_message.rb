@@ -13,7 +13,7 @@ module Basquiat
         @action = :ack
       end
 
-      #@!group Action Setters
+      # @!group Action Setters
       # Sets the action to be taken after processing to be an ack.
       # Here just in case as the default is to acknowledge the message.
       def ack
@@ -29,7 +29,7 @@ module Basquiat
       def requeue
         @action = :requeue
       end
-      #@!endgroup
+      # @!endgroup
     end
   end
 end

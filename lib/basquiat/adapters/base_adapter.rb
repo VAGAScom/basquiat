@@ -15,8 +15,8 @@ module Basquiat
         end
 
         # Used to register a requeue/acknowledge strategy
-        # @param [String,Symbol] config_name the named used on the config file for the Requeue Strategy
-        # @param [Class] klass the class name.
+        # @param config_name [#to_sym] the named used on the config file for the Requeue Strategy
+        # @param klass [Class] the class name.
         def register_strategy(config_name, klass)
           strategies[config_name.to_sym] = klass
         end
@@ -32,7 +32,8 @@ module Basquiat
         end
       end
 
-      # @param procs [Hash] - it's a hash by default, but can be any object as in {RabbitMq#initialize}
+      # @param procs: [Object]
+      #   It's a hash by default, but usually will be superseded by the adapter implementation
       def initialize(procs: {})
         @options = base_options
         @procs   = procs
@@ -44,14 +45,23 @@ module Basquiat
         self.class.strategies
       end
 
-      # Used to set the options for the adapter. It is merged in
-      # to the default_options hash.
+      # Allows the #base_options to be superseded on the local level
+      #
+      # You could have configured an exchange_name (on a config file) to +'awesome.sauce'+,
+      # but on this object you'd want to publish your messages to the +'killer.mailman'+ exchange.
+      # @example
+      #   class Mailmail
+      #     extend Basquiat::Base
+      #     adapter_options {exchange: {name: 'killer.mailman'}}
+      #   end
+      #
       # @param [Hash] opts an adapter dependant hash of options
       def adapter_options(opts)
         @options.deep_merge(opts)
       end
 
-      # Options for the adapter. It's already merged with the Configuration.adapter_options
+      # The default adapter options, merged with the {Basquiat::Configuration#adapter_options}. Used internally.
+      # @todo rename this method
       # @return [Hash] the full options hash
       def base_options
         default_options.merge(Basquiat.configuration.adapter_options)
