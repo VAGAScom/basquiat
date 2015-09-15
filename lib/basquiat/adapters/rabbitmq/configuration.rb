@@ -13,11 +13,14 @@ module Basquiat
                                   },
                        queue:     {
                          name:    Basquiat.configuration.queue_name,
-                         options: { durable: true } },
+                         durable: true,
+                         options: { } },
                        exchange:  {
                          name:    Basquiat.configuration.exchange_name,
-                         options: { durable: true } },
+                         durable: true,
+                         options: { } },
                        publisher: { confirm: true, persistent: false },
+                       consumer:  { prefetch: 1000 },
                        requeue:   { enabled: false } }
         end
 
@@ -46,6 +49,7 @@ module Basquiat
         def session_options
           { exchange:  @options[:exchange],
             publisher: @options[:publisher],
+            consumer:  @options[:consumer],
             queue:     @options[:queue] }.deep_merge(strategy.session_options)
         end
 

@@ -23,7 +23,7 @@ describe Basquiat::Adapters::RabbitMq::Configuration do
   end
 
   it '#session_options' do
-    expect(config.session_options.keys).to contain_exactly(:exchange, :queue, :publisher)
+    expect(config.session_options.keys).to contain_exactly(:exchange, :queue, :publisher, :consumer)
   end
 
   context 'Strategies' do
