@@ -21,9 +21,9 @@ module Basquiat
                              timestamp:   Time.now.to_i }.merge(props))
         end
 
-        def subscribe(lock)
+        def subscribe(block: true, manual_ack: @options[:consumer][:manual_ack])
           channel.prefetch(@options[:consumer][:prefetch])
-          queue.subscribe(block: lock, manual_ack: true) do |di, props, msg|
+          queue.subscribe(block: block, manual_ack: manual_ack) do |di, props, msg|
             yield Basquiat::Adapters::RabbitMq::Message.new(msg, di, props)
           end
         end

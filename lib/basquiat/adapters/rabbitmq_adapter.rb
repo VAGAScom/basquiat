@@ -48,7 +48,7 @@ module Basquiat
       # @param block [Boolean] block the thread
       def listen(block: true)
         procs.keys.each { |key| session.bind_queue(key) }
-        session.subscribe(block) do |message|
+        session.subscribe(block: block) do |message|
           strategy.run(message) do
             procs[message.routing_key].call(message)
           end

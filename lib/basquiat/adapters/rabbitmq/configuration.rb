@@ -20,7 +20,7 @@ module Basquiat
                          durable: true,
                          options: { } },
                        publisher: { confirm: true, persistent: false },
-                       consumer:  { prefetch: 1000 },
+                       consumer:  { prefetch: 1000, manual_ack: true },
                        requeue:   { enabled: false } }
         end
 
@@ -56,7 +56,7 @@ module Basquiat
         # @return [BaseStrategy] the requeue strategy or {BasicAcknowledge} if none is configured
         def strategy
           requeue = @options[:requeue]
-          return BasicAcknowledge unless requeue[:enabled]
+          return AutoAcknowledge unless requeue[:enabled]
           @strategy ||= RabbitMq.strategy(requeue[:strategy].to_sym)
           @strategy.setup(requeue[:options] || {})
           @strategy
