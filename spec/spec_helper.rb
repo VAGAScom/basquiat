@@ -1,7 +1,7 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-
+require 'codeclimate-test-reporter'
 require 'simplecov'
-
+CodeClimate::TestReporter.start
 SimpleCov.start do
   add_filter { |source| source.lines_of_code <= 3 }
   add_filter { |source| source.filename =~ /spec/ }

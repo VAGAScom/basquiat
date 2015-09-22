@@ -1,5 +1,7 @@
 # Basquiat
 
+[![Code Climate](https://codeclimate.com/github/VAGAScom/basquiat/badges/gpa.svg)](https://codeclimate.com/github/VAGAScom/basquiat)
+
 **Basquiat** is library aimed to hide (almost) all the complexity when working with some kind of message queue from the application internals.
 
 All the exchanges, connections, queues and sessions declarations are swept under rug. The aim is to provide a simple yet flexible interface to work with message queues.
