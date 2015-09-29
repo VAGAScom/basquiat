@@ -24,7 +24,7 @@ describe Basquiat::Adapters::RabbitMq::Events do
 
       it 'event.* does not match event_some_word' do
         events['event.*'] = proc
-        expect { events["event_some_word"] }.to raise_error KeyError
+        expect { events['event_some_word'] }.to raise_error KeyError
       end
 
       context 'matches any ONE word' do

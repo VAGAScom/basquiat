@@ -6,7 +6,7 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
   let(:base_options) do
     { connection: { hosts: [ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' }],
                     port:  ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } },
-      publisher:  { persistent: true } }
+      publisher: { persistent: true } }
   end
 
   before(:each) do
@@ -76,7 +76,7 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
       other.adapter_options(base_options.merge(queue:
                                                         { name: 'other_queue' },
                                                requeue: { enabled: true, strategy: 'dead_lettering', ttl: 5 }))
-      other.subscribe_to('sample.message', lambda { |_msg| ack_count += 1 })
+      other.subscribe_to('sample.message', ->(_msg) { ack_count += 1 })
 
       adapter.subscribe_to('sample.message',
                            lambda do |msg|

@@ -9,7 +9,7 @@ basquiat:
     - "8808"
 
 rabbitmq:
-  image: mereghost/rabbitmq:3.5.4
+  image: rabbitmq:3-management
   ports:
     - "15672"
     - "5672"

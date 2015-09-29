@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 describe Basquiat::Base do
   # Sample class used for testing
   class SampleClass

@@ -1,9 +1,12 @@
+require 'uri'
+require 'net/http'
+
 class QueueStats
   def initialize(queue)
     @queue = queue
-    host   = ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_25672_TCP_ADDR', 'localhost')
+    host   = ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_15672_TCP_ADDR', 'localhost')
     port   = ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_15672_TCP_PORT', 15_672)
-    @uri   = "http://guest:guest@#{host}:#{port}/api/queues/%2F/#{@queue}"
+    @uri   = URI.parse("http://#{host}:#{port}/api/queues/%2F/#{@queue}")
   end
 
   def unacked_messages
@@ -17,7 +20,10 @@ class QueueStats
   end
 
   def fetch
-    `curl -sXGET -H 'Accepts: application/json' #{@uri}`
+    req = Net::HTTP::Get.new @uri
+    req.basic_auth('guest', 'guest')
+    res = Net::HTTP.start(@uri.host, @uri.port) { |http| http.request(req) }
+    res.body
   end
 end
 

@@ -7,7 +7,6 @@ module Basquiat
     class RabbitMq < Basquiat::Adapters::Base
       using Basquiat::HashRefinements
 
-
       # Avoid superclass mismatch errors
       require 'basquiat/adapters/rabbitmq/events'
       require 'basquiat/adapters/rabbitmq/message'
@@ -37,22 +36,28 @@ module Basquiat
 
       # Publishes the event to the exchange configured.
       # @param event [String] routing key to be used
-      # @param persistent [Boolean] should the session disconnect after the publish
+      # @param message [Hash] the message to be publish
       # @param props [Hash] other properties you wish to publish with the message, such as custom headers etc.
-      def publish(event, message, persistent: options[:publisher][:persistent], props: {})
+      def publish(event, message, props: {})
         session.publish(event, message, props)
-        disconnect unless persistent
+        disconnect unless options[:publisher][:persistent]
       end
 
       # Binds the queues and start the event lopp.
       # @param block [Boolean] block the thread
-      def listen(block: true)
+      def listen(block: true, rescue_proc: Basquiat.configuration.rescue_proc)
         procs.keys.each { |key| session.bind_queue(key) }
         session.subscribe(block: block) do |message|
           strategy.run(message) do
-            procs[message.routing_key].call(message)
+            process_message(message, rescue_proc)
           end
         end
+      end
+
+      def process_message(message, rescue_proc)
+        procs[message.routing_key].call(message)
+      rescue => ex
+        rescue_proc.call(ex, message)
       end
 
       # Reset the connection to RabbitMQ.

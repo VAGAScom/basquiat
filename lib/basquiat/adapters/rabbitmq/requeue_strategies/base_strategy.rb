@@ -2,7 +2,6 @@ module Basquiat
   module Adapters
     class RabbitMq
       class BaseStrategy
-
         class << self
           def session_options
             {}
@@ -17,7 +16,7 @@ module Basquiat
           @session = session
         end
 
-        def run(message)
+        def run(_message)
           fail Basquiat::Errors::SubclassResponsibility
         end
 

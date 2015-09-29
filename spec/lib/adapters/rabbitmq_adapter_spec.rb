@@ -7,12 +7,11 @@ describe Basquiat::Adapters::RabbitMq do
   let(:base_options) do
     { connection: { hosts: [ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' }],
                     port:  ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } },
-      publisher:  { persistent: true } }
+      publisher: { persistent: true } }
   end
 
   context 'RabbitMQ interactions' do
     before(:each) do
-      Basquiat.configuration.logger = Logger.new 'log/basquiat.log'
       adapter.adapter_options(base_options)
       adapter.reset_connection
     end
@@ -30,14 +29,14 @@ describe Basquiat::Adapters::RabbitMq do
     end
 
     context 'listener' do
-      it 'does not eat exceptions', skip: true do
+      it 'runs the rescue block when an exception happens' do
         coisa = ''
         adapter.subscribe_to('some.event', ->(_msg) { fail ArgumentError })
-        adapter.listen(block: false, rescue_proc: -> { coisa = 'Exception' })
+        adapter.listen(block: false, rescue_proc: -> (ex, _msg) { coisa = ex.class.to_s })
         adapter.publish('some.event', data: 'coisa')
         sleep 0.7
 
-        expect(coisa).to eq('Exception')
+        expect(coisa).to eq('ArgumentError')
       end
 
       it '#subscribe_to some event' do

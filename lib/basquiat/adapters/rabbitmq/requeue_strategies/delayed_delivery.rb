@@ -24,7 +24,7 @@ module Basquiat
           public_send(message.action, message)
         end
 
-        #@param [Message] message the, well, message to be requeued
+        # @param [Message] message the, well, message to be requeued
         def requeue(message)
           @exchange.publish(Basquiat::Json.encode(message), routing_key: requeue_route_for(message.di.routing_key))
           ack(message)
@@ -32,19 +32,20 @@ module Basquiat
 
         private
 
-        #@param [#match] key the current routing key of the message
-        #@return [String] the calculated routing key for a republish / requeue
+        # @param [#match] key the current routing key of the message
+        # @return [String] the calculated routing key for a republish / requeue
         def requeue_route_for(key)
           event_name, timeout = extract_event_info(key)
-          if timeout == 2 ** options[:retries] * 1_000
+          if timeout == 2**options[:retries] * 1_000
             "rejected.#{session.queue.name}.#{event_name}"
           else
-            "#{ timeout * 2 }.#{session.queue.name}.#{event_name}"
+            "#{timeout * 2}.#{session.queue.name}.#{event_name}"
           end
         end
 
-        #@param [#match] key the current routing key of the message
-        #@return [Array<String, Integer>] a 2 item array composed of the event.name (aka original routing_key) and the current timeout
+        # @param [#match] key the current routing key of the message
+        # @return [Array<String, Integer>] a 2 item array composed of the event.name (aka original routing_key) and
+        #   the current timeout
         def extract_event_info(key)
           md = key.match(/^(\d+)\.#{session.queue.name}\.(.+)$/)
           if md
@@ -69,12 +70,11 @@ module Basquiat
 
         def prepare_timeout_queues
           queues = (0..options[:retries] - 1).map do |iteration|
-            timeout = 2 ** iteration
+            timeout = 2**iteration
             session.channel.queue("#{options[:queue_name_preffix]}_#{timeout}", durable: true,
-                                  arguments:                                             {
-                                    'x-dead-letter-exchange' => session.exchange.name,
-                                    'x-message-ttl'          => timeout * 1_000 })
-
+                                                                                arguments: {
+                                                                                  'x-dead-letter-exchange' => session.exchange.name,
+                                                                                  'x-message-ttl'          => timeout * 1_000 })
           end
           bind_timeout_queues(queues)
         end

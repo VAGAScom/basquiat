@@ -6,11 +6,12 @@ module Basquiat
           attr_reader :options
 
           def setup(opts)
-            @options = { session:
-                              { queue:
-                                  { options:
-                                      { 'x-dead-letter-exchange' => opts.fetch(:exchange, 'basquiat.dlx') } } },
-                         dlx: { ttl: opts.fetch(:ttl, 1_000) } }
+            @options = {
+              session: {
+                queue: {
+                  options: {
+                    'x-dead-letter-exchange' => opts.fetch(:exchange, 'basquiat.dlx') } } },
+              dlx: { ttl: opts.fetch(:ttl, 1_000) } }
           end
 
           def session_options
@@ -36,8 +37,8 @@ module Basquiat
         private
 
         def check_incoming_messages(headers)
-          headers and
-            headers['x-death'][1]['queue'] != session.queue.name and
+          headers &&
+            headers['x-death'][1]['queue'] != session.queue.name &&
             throw(:skip_processing)
         end
 

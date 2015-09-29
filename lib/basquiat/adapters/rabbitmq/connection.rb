@@ -3,7 +3,6 @@ module Basquiat
     class RabbitMq
       # Control the connection to the RabitMQ server. Delegates calls to {Bunny::Connection}
       class Connection < SimpleDelegator
-
         # @param hosts: [Array<String>] IPs or FQDN of the RabbitMQ instances
         # @param port: [Fixnum] Port that the RabbitMQ instances run
         # @param failover: [Hash]

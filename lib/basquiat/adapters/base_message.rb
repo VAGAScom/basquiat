@@ -1,6 +1,5 @@
 module Basquiat
   module Adapters
-
     # The simplest Message class. It's encouraged to tailor it to your adapter needs (hence BaseMessage).
     class BaseMessage < SimpleDelegator
       attr_reader :action

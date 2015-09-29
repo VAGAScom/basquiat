@@ -6,7 +6,7 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
   let(:base_options) do
     { connection: { hosts: [ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' }],
                     port:  ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } },
-      publisher:  { persistent: true } }
+      publisher: { persistent: true } }
   end
 
   before(:each) do
@@ -96,7 +96,7 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
                              end
                            end)
       adapter.listen(block: false)
-      session.publish('some.event', { data: 'some message' })
+      session.publish('some.event', data: 'some message')
       sleep 1.3
       expect(analysed).to eq(1)
       expect(session.queue).to_not have_unacked_messages

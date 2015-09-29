@@ -1,6 +1,6 @@
-require 'basquiat/support/hash_refinements'
 require 'naught'
 require 'erb'
+require 'basquiat/support/hash_refinements'
 
 module Basquiat
   require 'logger'
@@ -10,7 +10,13 @@ module Basquiat
     using HashRefinements
 
     def initialize
-      @yaml = {}
+      @yaml        = {}
+      @rescue_proc = lambda do |exception, message|
+        logger.error do
+          { exception: exception, stack_trace: exception.stack_trace, message: message }.to_json
+        end
+        fail exception
+      end
     end
 
     # @!attribute queue_name
@@ -21,8 +27,13 @@ module Basquiat
     #   @return [Logger] return the application logger. Defaults to {DefaultLogger}.
     # @!attribute environment
     #   @return [Symbol] return the set environment or the value of the 'BASQUIAT_ENV' environment variable
-    #    or :development
+    #     or :development
     attr_writer :queue_name, :exchange_name, :logger, :environment
+
+    # @!attribute rescue_proc
+    #   @return [#call] return the callable to be executed when some exception is thrown. The callable receives the
+    #     exception and message
+    attr_accessor :rescue_proc
 
     def queue_name
       @queue_name || 'basquiat.queue'
@@ -46,7 +57,6 @@ module Basquiat
       load_yaml(path)
       setup_basic_options
     end
-
 
     # @return [Hash] return the configured adapter options. Defaults to an empty {::Hash}
     def adapter_options
@@ -74,7 +84,7 @@ module Basquiat
     end
 
     def setup_basic_options
-      @queue_name    ||= config.fetch(:queue_name) { 'basquiat.exchange' }
+      @queue_name ||= config.fetch(:queue_name) { 'basquiat.exchange' }
       @exchange_name ||= config.fetch(:exchange_name) { 'basquiat.queue' }
     end
   end

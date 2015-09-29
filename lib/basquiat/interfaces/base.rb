@@ -1,5 +1,4 @@
 require 'set'
-require 'byebug'
 
 module Basquiat
   # Base module used to extend the classes so that they will be able to use the event infrastructure
@@ -15,7 +14,7 @@ module Basquiat
     end
 
     def reload_adapter_from_configuration
-      adapter = Kernel.const_get Basquiat.configuration.default_adapter
+      @adapter = Kernel.const_get Basquiat.configuration.default_adapter
       adapter_options Basquiat.configuration.adapter_options
     end
 
@@ -69,8 +68,8 @@ module Basquiat
     # Starts the consumer loop
     # @param block [Boolean] If it should block the thread. The relevance of this is dictated by the adapter.
     #   Defaults to true.
-    def listen(block: true)
-      adapter.listen(block: block)
+    def listen(block: true, rescue_proc: -> {})
+      adapter.listen(block: block, rescue_proc: rescue_proc)
     end
 
     private

@@ -28,7 +28,7 @@ module Basquiat
         def strategy(key)
           strategies.fetch(key)
         rescue KeyError
-          fail Basquiat::Errors::StrategyNotRegistered
+          raise Basquiat::Errors::StrategyNotRegistered
         end
       end
 
