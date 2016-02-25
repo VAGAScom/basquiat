@@ -1,15 +1,14 @@
+# frozen_string_literal: true
 module Basquiat
   module Adapters
     class RabbitMq
       # Control the connection to the RabitMQ server. Delegates calls to {Bunny::Connection}
       class Connection < SimpleDelegator
         # @param hosts: [Array<String>] IPs or FQDN of the RabbitMQ instances
-        # @param port: [Fixnum] Port that the RabbitMQ instances run
-        # @param failover: [Hash]
+        # @param port [Fixnum] Port that the RabbitMQ instances run
         # @option failover: [Fixnum] :max_retries (5) Maximum number of reconnection retries
         # @option failover: [Fixnum] :default_timeout (5) Interval between to reconnect attempts
         # @option failover: [Fixnum] :connection_timeout (5) Allowed time before a connection attempt timeouts
-        # @param auth: [Hash]
         # @option auth: [String] :user ('guest')
         # @option auth: [String] :password ('guest')
         def initialize(hosts:, port: 5672, failover: {}, auth: {})
@@ -23,19 +22,22 @@ module Basquiat
         # @return [Bunny::Channel]
         def create_channel
           connection.start
+          Basquiat.logger.debug 'Creating a new channel'
           connection.create_channel
         end
 
         # Starts the connection if needed
         def start
+          Basquiat.logger.debug 'Connecting to RabbitMQ'
           connection.start unless connection.connected?
         end
 
+        # checks if the connection is started
         def connected?
           connection.status == :started
         end
 
-        # Closes the channels and the connection.
+        # Closes all channels and then the connection.
         def disconnect
           connection.close_all_channels
           connection.close
@@ -46,6 +48,7 @@ module Basquiat
 
         def reset
           @connection = nil
+          __setobj__(nil)
         end
 
         def connection

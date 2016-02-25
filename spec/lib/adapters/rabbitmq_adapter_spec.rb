@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 require 'basquiat/adapters/rabbitmq_adapter'
 
@@ -34,7 +35,7 @@ describe Basquiat::Adapters::RabbitMq do
         adapter.subscribe_to('some.event', ->(_msg) { fail ArgumentError })
         adapter.listen(block: false, rescue_proc: -> (ex, _msg) { coisa = ex.class.to_s })
         adapter.publish('some.event', data: 'coisa')
-        sleep 0.7
+        sleep 0.3
 
         expect(coisa).to eq('ArgumentError')
       end
@@ -44,7 +45,7 @@ describe Basquiat::Adapters::RabbitMq do
         adapter.subscribe_to('some.event', ->(msg) { message = msg[:data].upcase })
         adapter.listen(block: false)
         adapter.publish('some.event', data: 'message')
-        sleep 0.7
+        sleep 0.3
 
         expect(message).to eq('MESSAGE')
       end
@@ -56,7 +57,7 @@ describe Basquiat::Adapters::RabbitMq do
       subject.listen(block: false)
 
       subject.publish('other.event.test', data: 'some stuff')
-      sleep 0.7
+      sleep 0.3
 
       expect(message_received).to eq('SOME STUFF')
     end

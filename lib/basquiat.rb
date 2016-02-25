@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'multi_json'
 require 'naught'
 require 'yaml'
@@ -11,7 +12,7 @@ require 'basquiat/interfaces/base'
 # Overall namespace config class
 module Basquiat
   class << self
-    # resets the gems configuration. Useful for testing and not much else
+    # resets the library configuration. Useful for testing and not much else
     def reset
       @configuration = Configuration.new
     end

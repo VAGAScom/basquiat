@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Basquiat
   # A simple MultiJson wrapper to protect against eventual API changes.
   module Json

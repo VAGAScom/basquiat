@@ -1,7 +1,12 @@
+# frozen_string_literal: true
 module Basquiat
   module Adapters
     class RabbitMq
+      # A RabbitMQ message, with it's delivery info and properties
+      # It's used instead of a simple hash so we can access more easily
+      # the properties needed for acks and requeues
       class Message < Basquiat::Adapters::BaseMessage
+
         attr_reader :delivery_info, :props
         alias_method :di, :delivery_info
         # @!attribute [r] delivery_info
@@ -25,6 +30,7 @@ module Basquiat
         end
 
         # Shorthand for delivery_info.delivery_tag
+        # @return [String] the message's Delivery Tag
         def delivery_tag
           delivery_info.delivery_tag
         end

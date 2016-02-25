@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 require 'basquiat/adapters/rabbitmq_adapter'
 
@@ -97,7 +98,7 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
                            end)
       adapter.listen(block: false)
       session.publish('some.event', data: 'some message')
-      sleep 1.3
+      sleep 0.5
       expect(analysed).to eq(1)
       expect(session.queue).to_not have_unacked_messages
     end

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Basquiat
   module Adapters
     class RabbitMq
@@ -16,8 +17,6 @@ module Basquiat
 
           def session_options
             options.fetch :session
-          rescue KeyError
-            raise 'You have to setup the strategy first'
           end
         end
 
@@ -47,10 +46,10 @@ module Basquiat
         end
 
         def setup_dead_lettering
-          dlx   = session.channel.topic('basquiat.dlx')
+          dlx = session.channel.topic('basquiat.dlx')
           queue = session.channel.queue('basquiat.dlq',
                                         arguments: { 'x-dead-letter-exchange' => session.exchange.name,
-                                                     'x-message-ttl'          => options[:dlx][:ttl] })
+                                                     'x-message-ttl' => options[:dlx][:ttl] })
           queue.bind(dlx, routing_key: '#')
         end
       end

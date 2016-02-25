@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 shared_examples_for 'a Basquiat::Adapter' do
   [:adapter_options,
    :base_options,

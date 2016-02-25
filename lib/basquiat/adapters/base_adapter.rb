@@ -1,9 +1,10 @@
+# frozen_string_literal: true
 require 'delegate'
 require 'basquiat/adapters/base_message'
 
 module Basquiat
   module Adapters
-    # Base implementation for an adapter
+    # Base implementation for an adapter in uses {HashRefinements} internally.
     class Base
       using Basquiat::HashRefinements
 
@@ -21,9 +22,9 @@ module Basquiat
           strategies[config_name.to_sym] = klass
         end
 
-        # Return the Strategy Class registered on key
+        # Return the Strategy Class registered on given key
         # @param key [#to_sym] configured key for the wanted strategy
-        # @return [Class] return the strategy class
+        # @return [Class] the strategy class
         # @raise [Errors::StrategyNotRegistered] if it fails to find the key
         def strategy(key)
           strategies.fetch(key)
@@ -32,7 +33,7 @@ module Basquiat
         end
       end
 
-      # @param procs: [Object]
+      # @param procs [Object]
       #   It's a hash by default, but usually will be superseded by the adapter implementation
       def initialize(procs: {})
         @options = base_options
@@ -61,8 +62,9 @@ module Basquiat
       end
 
       # The default adapter options, merged with the {Basquiat::Configuration#adapter_options}. Used internally.
-      # @todo rename this method
+      # @api private
       # @return [Hash] the full options hash
+      # @todo rename this method
       def base_options
         default_options.merge(Basquiat.configuration.adapter_options)
       end
@@ -88,7 +90,6 @@ module Basquiat
       def disconnect
         fail Basquiat::Errors::SubclassResponsibility
       end
-
       # @!endgroup
 
       private

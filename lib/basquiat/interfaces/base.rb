@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'set'
 
 module Basquiat
@@ -10,6 +11,10 @@ module Basquiat
 
       def descendants
         @descendants ||= []
+      end
+
+      def reconfigure_children
+        descendants.each(&:reload_adapter_from_configuration)
       end
     end
 
@@ -25,6 +30,7 @@ module Basquiat
     def adapter=(adapter_klass)
       @adapter = adapter_klass.new
     end
+
     alias_method :event_adapter=, :adapter=
 
     def adapter

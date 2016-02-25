@@ -1,4 +1,4 @@
-FROM mereghost/ruby:2.2.2
+FROM mereghost/ruby:2.3.0
 
 RUN useradd -mg users -G network dev
 VOLUME /basquiat

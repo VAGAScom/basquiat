@@ -1,6 +1,8 @@
+# frozen_string_literal: true
 module Basquiat
   module Adapters
     class RabbitMq
+      # A RabbitMQ session.
       class Session
         attr_reader :channel
 

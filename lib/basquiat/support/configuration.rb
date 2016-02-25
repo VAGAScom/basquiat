@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'naught'
 require 'erb'
 require 'basquiat/support/hash_refinements'
@@ -70,7 +71,7 @@ module Basquiat
 
     # Used by the railtie. Forces the reconfiguration of all extended classes
     def reload_classes
-      Basquiat::Base.descendants.each(&:reload_adapter_from_configuration)
+      Basquiat::Base.reconfigure_children
     end
 
     private

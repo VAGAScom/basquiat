@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 require 'basquiat/adapters/rabbitmq_adapter'
 
@@ -5,13 +6,13 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
   let(:adapter) { Basquiat::Adapters::RabbitMq.new }
   let(:base_options) do
     { connection: { hosts: [ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' }],
-                    port:  ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } },
+                    port: ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } },
       publisher: { persistent: true } }
   end
 
   before(:each) do
     adapter.adapter_options(base_options)
-    adapter.adapter_options(requeue: { enabled: true, strategy: 'dead_lettering' })
+    adapter.adapter_options(requeue: { enabled: true, strategy: 'dead_lettering', options: { ttl: 100 } })
   end
 
   after(:each) { remove_queues_and_exchanges(adapter) }
@@ -31,12 +32,12 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
     channel = session.channel
     expect(channel.queues.keys).to include('basquiat.dlq')
     expect(channel.queues['basquiat.dlq'].arguments)
-      .to match(hash_including('x-dead-letter-exchange' => session.exchange.name, 'x-message-ttl' => 1000))
+      .to match(hash_including('x-dead-letter-exchange' => session.exchange.name, 'x-message-ttl' => 100))
     expect(session.queue.arguments).to match(hash_including('x-dead-letter-exchange' => 'basquiat.dlx'))
 
     expect do
       channel.exchanges['basquiat.dlx'].publish('some message', routing_key: 'some.event')
-      sleep 0.1
+      sleep 0.01
     end.to change { channel.queues['basquiat.dlq'].message_count }.by(1)
   end
 
@@ -53,7 +54,7 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
       end
     end
 
-    it 'this queue then process the message' do
+    it 'from this queue then process the message' do
       sample = 0
       adapter.subscribe_to('sample.message',
                            lambda do |msg|
@@ -64,18 +65,20 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
       adapter.listen(block: false)
       adapter.publish('sample.message', key: 'message')
 
-      sleep 3
+      sleep 0.5
       expect(sample).to eq(3)
     end
 
-    it 'another queue then drop the message' do
+    it 'from another queue then drop the message' do
       ack_count = 0
-      sample    = 0
+      sample = 0
 
       other = Basquiat::Adapters::RabbitMq.new
-      other.adapter_options(base_options.merge(queue:
-                                                        { name: 'other_queue' },
-                                               requeue: { enabled: true, strategy: 'dead_lettering', ttl: 5 }))
+      other.adapter_options(base_options.merge(queue: { name: 'other_queue' },
+                                               requeue: { enabled: true,
+                                                          strategy: 'dead_lettering',
+                                                          options: { ttl: 100 } }))
+
       other.subscribe_to('sample.message', ->(_msg) { ack_count += 1 })
 
       adapter.subscribe_to('sample.message',
@@ -88,7 +91,7 @@ describe Basquiat::Adapters::RabbitMq::DeadLettering do
       adapter.listen(block: false)
       adapter.publish('sample.message', key: 'message')
 
-      sleep 3
+      sleep 0.5
       remove_queues_and_exchanges(other)
       expect(ack_count).to eq(1)
       expect(sample).to eq(3)

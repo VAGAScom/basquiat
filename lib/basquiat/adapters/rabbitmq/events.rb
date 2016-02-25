@@ -1,5 +1,4 @@
-require 'set'
-
+# frozen_string_literal: true
 module Basquiat
   module Adapters
     class RabbitMq
@@ -13,7 +12,7 @@ module Basquiat
         end
 
         def []=(key, value)
-          if key =~ /\*|\#/
+          if key =~ /\*|#/
             set_pattern_key(key, value)
           else
             @exact[key] = value
@@ -34,7 +33,7 @@ module Basquiat
           key            = if key =~ /\*/
                              /^#{key.gsub('*', '[^.]+')}$/
                            else
-                             /^#{key.gsub(/\#/, '.*')}$/
+                             /^#{key.gsub(/#/, '.*')}$/
                            end
           @patterns[key] = value
         end

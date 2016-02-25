@@ -36,7 +36,6 @@ EOD
   spec.add_development_dependency 'codeclimate-test-reporter'
   spec.add_development_dependency 'yard'
 
-
   spec.add_dependency 'multi_json'
   spec.add_dependency 'naught'
 end
