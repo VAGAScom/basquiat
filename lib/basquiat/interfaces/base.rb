@@ -31,7 +31,7 @@ module Basquiat
       @adapter = adapter_klass.new
     end
 
-    alias_method :event_adapter=, :adapter=
+    alias event_adapter= adapter=
 
     def adapter
       @adapter ||= Kernel.const_get(Basquiat.configuration.default_adapter).new

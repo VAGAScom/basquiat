@@ -8,8 +8,8 @@ module Basquiat
           attr_reader :options
 
           def setup(opts)
-            @options = { ddl: { retries:            5,
-                                exchange_name:      'basquiat.dlx',
+            @options = { ddl: { retries: 5,
+                                exchange_name: 'basquiat.dlx',
                                 queue_name_preffix: 'basquiat.ddlq' } }.deep_merge(opts)
           end
         end
@@ -70,20 +70,14 @@ module Basquiat
         end
 
         def prepare_timeout_queues
-          queues = (0..options[:retries] - 1).map do |iteration|
-            timeout = 2**iteration
-            session.channel.queue("#{options[:queue_name_preffix]}_#{timeout}", durable: true,
-                                                                                arguments: {
-                                                                                  'x-dead-letter-exchange' => session.exchange.name,
-                                                                                  'x-message-ttl'          => timeout * 1_000 })
-          end
-          bind_timeout_queues(queues)
-        end
-
-        def bind_timeout_queues(queues)
-          queues.each do |queue|
-            timeout = queue.arguments['x-message-ttl'].to_i
-            queue.bind(@exchange, routing_key: "#{timeout}.#")
+          (0..options[:retries] - 1).each do |iteration|
+            timeout = 2 ** iteration
+            queue = session.channel.queue("#{options[:queue_name_preffix]}_#{timeout}",
+                                          durable: true,
+                                          arguments: {
+                                            'x-dead-letter-exchange' => session.exchange.name,
+                                            'x-message-ttl' => timeout * 1_000 })
+            queue.bind(@exchange, routing_key: "#{timeout * 1_000}.#")
           end
         end
       end

@@ -16,7 +16,7 @@ module Basquiat
         logger.error do
           { exception: exception, stack_trace: exception.stack_trace, message: message }.to_json
         end
-        fail exception
+        raise exception
       end
     end
 

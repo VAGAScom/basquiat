@@ -6,9 +6,9 @@ describe 'Requeue Strategies' do
   let(:adapter) { Basquiat::Adapters::RabbitMq.new }
   let(:base_options) do
     { connection: { hosts: [ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' }],
-                    port:  ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } },
+                    port: ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } },
       publisher: { persistent: true },
-      requeue: { enabled: true, strategy: 'basic_ack'}
+      requeue: { enabled: true, strategy: 'basic_ack' }
     }
   end
 

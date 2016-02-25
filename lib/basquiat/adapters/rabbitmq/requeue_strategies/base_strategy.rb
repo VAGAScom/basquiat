@@ -18,7 +18,7 @@ module Basquiat
         end
 
         def run(_message)
-          fail Basquiat::Errors::SubclassResponsibility
+          raise Basquiat::Errors::SubclassResponsibility
         end
 
         def ack(message)

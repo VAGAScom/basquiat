@@ -8,21 +8,21 @@ module Basquiat
 
         def initialize
           @options = { connection:
-                                  { hosts: ['localhost'],
-                                    port:  5672,
-                                    auth:  { user: 'guest', password: 'guest' }
-                                  },
-                       queue:     {
-                         name:    Basquiat.configuration.queue_name,
+                         { hosts: ['localhost'],
+                           port: 5672,
+                           auth: { user: 'guest', password: 'guest' }
+                         },
+                       queue: {
+                         name: Basquiat.configuration.queue_name,
                          durable: true,
                          options: {} },
-                       exchange:  {
-                         name:    Basquiat.configuration.exchange_name,
+                       exchange: {
+                         name: Basquiat.configuration.exchange_name,
                          durable: true,
                          options: {} },
                        publisher: { confirm: true, persistent: false },
-                       consumer:  { prefetch: 1000, manual_ack: true },
-                       requeue:   { enabled: false } }
+                       consumer: { prefetch: 1000, manual_ack: true },
+                       requeue: { enabled: false } }
         end
 
         def base_options
@@ -48,10 +48,10 @@ module Basquiat
 
         # @return [Hash] the session options
         def session_options
-          { exchange:  @options[:exchange],
+          { exchange: @options[:exchange],
             publisher: @options[:publisher],
-            consumer:  @options[:consumer],
-            queue:     @options[:queue] }.deep_merge(strategy.session_options)
+            consumer: @options[:consumer],
+            queue: @options[:queue] }.deep_merge(strategy.session_options)
         end
 
         # @return [BaseStrategy] the requeue strategy or {BasicAcknowledge} if none is configured

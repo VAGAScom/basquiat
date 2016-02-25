@@ -69,7 +69,7 @@ module Basquiat
         @strategy   = nil
       end
 
-      alias_method :disconnect, :reset_connection
+      alias disconnect reset_connection
 
       # Lazy initializes the requeue strategy configured for the adapter
       # @return [BaseStrategy]

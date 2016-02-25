@@ -78,17 +78,17 @@ module Basquiat
       # @!group Adapter specific implementations
       # @abstract Publish an event to the event stream
       def publish
-        fail Basquiat::Errors::SubclassResponsibility
+        raise Basquiat::Errors::SubclassResponsibility
       end
 
       # @abstract subscribe_to the event stream
       def subscribe_to
-        fail Basquiat::Errors::SubclassResponsibility
+        raise Basquiat::Errors::SubclassResponsibility
       end
 
       # @abstract Disconnect from the message queue
       def disconnect
-        fail Basquiat::Errors::SubclassResponsibility
+        raise Basquiat::Errors::SubclassResponsibility
       end
       # @!endgroup
 

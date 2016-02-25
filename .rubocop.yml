@@ -9,7 +9,7 @@ Metrics/LineLength:
   Max: 119
 
 Style/AlignHash:
-  EnforcedHashRocketStyle: table
+  EnforcedHashRocketStyle: key
 
 Style/Documentation:
   Enabled: false
