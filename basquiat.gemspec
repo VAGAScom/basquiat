@@ -15,7 +15,7 @@ EOD
   spec.homepage = 'http://github.com/VAGAScom/basquiat'
   spec.license  = 'MIT'
 
-  spec.files         = `git ls-files`.split($RS)
+  spec.files         = `git ls-files`.split($RS).reject {|f| f.match /^\.|docker/ }
   spec.executables   = spec.files.grep(/^bin\//) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(/^(test|spec|features)\//)
   spec.require_paths = %w(lib)
