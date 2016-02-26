@@ -106,7 +106,8 @@ development:                                #full example of the RabbitMq option
       password: 'guest'
     requeue:
       enabled: true
-      delayed_delivery:
+      strategy: delayed_delivery
+      options:
         retries: 10
         queue_name_preffix: wait.for_it
         exchange_name: legendary
