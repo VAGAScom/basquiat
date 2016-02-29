@@ -6,7 +6,7 @@ shared_examples_for 'a Basquiat::Adapter' do
    :publish,
    :subscribe_to,
    :disconnect].each do |meth|
-    it "#{meth}" do
+    it meth.to_s do
       expect(adapter).to respond_to(:meth)
     end
   end

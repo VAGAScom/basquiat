@@ -12,7 +12,7 @@ module Basquiat
                 queue: {
                   options: {
                     'x-dead-letter-exchange' => opts.fetch(:exchange, 'basquiat.dlx') } } },
-              dlx: { ttl: opts.fetch(:ttl, 1_000) } }
+              dlx:     { ttl: opts.fetch(:ttl, 1_000) } }
           end
 
           def session_options
@@ -46,10 +46,10 @@ module Basquiat
         end
 
         def setup_dead_lettering
-          dlx = session.channel.topic('basquiat.dlx')
+          dlx   = session.channel.topic('basquiat.dlx')
           queue = session.channel.queue('basquiat.dlq',
                                         arguments: { 'x-dead-letter-exchange' => session.exchange.name,
-                                                     'x-message-ttl' => options[:dlx][:ttl] })
+                                                     'x-message-ttl'          => options[:dlx][:ttl] })
           queue.bind(dlx, routing_key: '#')
         end
       end

@@ -36,6 +36,10 @@ module Basquiat
                                    arguments: (@options[:queue][:options] || {}))
         end
 
+        def queue_name
+          queue.name
+        end
+
         def exchange
           @exchange ||= channel.topic(@options[:exchange][:name],
                                       durable:   @options[:exchange][:durable],

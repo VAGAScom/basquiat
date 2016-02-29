@@ -7,13 +7,12 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
   let(:base_options) do
     { connection: { hosts: [ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' }],
                     port:  ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } },
-      publisher: { persistent: true } }
+      publisher:  { persistent: true } }
   end
 
   before(:each) do
     adapter.adapter_options(base_options)
-    adapter.class.register_strategy :ddl, Basquiat::Adapters::RabbitMq::DelayedDelivery
-    adapter.adapter_options(requeue: { enabled: true, strategy: 'ddl' })
+    adapter.adapter_options(requeue: { enabled: true, strategy: 'delayed_delivery', options: { retries: 3 } })
     adapter.strategy # initialize the strategy
   end
 
@@ -27,8 +26,7 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
   it 'creates the timeout queues' do
     channel = adapter.session.channel
     expect(channel.queues.keys).to contain_exactly('basquiat.ddlq_1', 'basquiat.ddlq_2', 'basquiat.ddlq_4',
-                                                   'basquiat.ddlq_8', 'basquiat.ddlq_16', 'basquiat.queue',
-                                                   'basquiat.ddlq_rejected')
+                                                   'basquiat.queue', 'basquiat.ddlq_rejected')
   end
 
   it 'set the message ttl and dead letter exchange for the delayed queues' do
@@ -37,7 +35,7 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
     expect(channel.queues['basquiat.ddlq_1'].arguments)
       .to match(hash_including('x-dead-letter-exchange' => session.exchange.name, 'x-message-ttl' => 1_000))
 
-    expect(channel.queues['basquiat.ddlq_8'].arguments['x-message-ttl']).to eq(8_000)
+    expect(channel.queues['basquiat.ddlq_4'].arguments['x-message-ttl']).to eq(4_000)
   end
 
   it 'binds the delayed queues' do
@@ -79,7 +77,7 @@ describe Basquiat::Adapters::RabbitMq::DelayedDelivery do
       adapter.listen(block: false)
 
       expect do
-        session.publish('32000.basquiat.queue.some.event', data: 'some message')
+        session.publish('4000.basquiat.queue.some.event', data: 'some message')
         sleep 0.3
       end.to change { session.channel.queues['basquiat.ddlq_rejected'].message_count }.by(1)
     end

@@ -8,15 +8,16 @@ module Basquiat
           attr_reader :options
 
           def setup(opts)
-            @options = { ddl: { retries: 5,
-                                exchange_name: 'basquiat.dlx',
-                                queue_name_preffix: 'basquiat.ddlq' } }.deep_merge(opts)
+            @options = { retries:            5,
+                         exchange_name:      'basquiat.dlx',
+                         queue_name_preffix: 'basquiat.ddlq' }.deep_merge(opts)
           end
         end
 
         def initialize(session)
           super
           setup_delayed_delivery
+          @queue_name = session.queue_name
         end
 
         def run(message)
@@ -37,10 +38,10 @@ module Basquiat
         # @return [String] the calculated routing key for a republish / requeue
         def requeue_route_for(key)
           event_name, timeout = extract_event_info(key)
-          if timeout == 2**options[:retries] * 1_000
-            "rejected.#{session.queue.name}.#{event_name}"
+          if timeout == max_timeout
+            "rejected.#{@queue_name}.#{event_name}"
           else
-            "#{timeout * 2}.#{session.queue.name}.#{event_name}"
+            "#{timeout * 2}.#{@queue_name}.#{event_name}"
           end
         end
 
@@ -58,7 +59,7 @@ module Basquiat
         end
 
         def options
-          self.class.options[:ddl]
+          self.class.options
         end
 
         def setup_delayed_delivery
@@ -71,14 +72,18 @@ module Basquiat
 
         def prepare_timeout_queues
           (0..options[:retries] - 1).each do |iteration|
-            timeout = 2 ** iteration
-            queue = session.channel.queue("#{options[:queue_name_preffix]}_#{timeout}",
-                                          durable: true,
-                                          arguments: {
-                                            'x-dead-letter-exchange' => session.exchange.name,
-                                            'x-message-ttl' => timeout * 1_000 })
+            timeout = 2**iteration
+            queue   = session.channel.queue("#{options[:queue_name_preffix]}_#{timeout}",
+                                            durable:   true,
+                                            arguments: {
+                                              'x-dead-letter-exchange' => session.exchange.name,
+                                              'x-message-ttl'          => timeout * 1_000 })
             queue.bind(@exchange, routing_key: "#{timeout * 1_000}.#")
           end
+        end
+
+        def max_timeout
+          2**(options[:retries] - 1) * 1_000
         end
       end
     end
