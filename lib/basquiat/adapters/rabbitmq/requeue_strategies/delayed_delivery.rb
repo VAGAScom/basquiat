@@ -49,13 +49,8 @@ module Basquiat
         # @return [Array<String, Integer>] a 2 item array composed of the event.name (aka original routing_key) and
         #   the current timeout
         def extract_event_info(key)
-          md = key.match(/^(\d+)\.#{session.queue.name}\.(.+)$/)
-          if md
-            [md.captures[1], md.captures[0].to_i]
-          else
-            # So timeout can turn into 1 second, weird but spares some checking
-            [key, 500]
-          end
+          matched = key.match(/^(\d+)\.#{session.queue.name}\.(.+)$/)
+          matched && [matched.captures[1], matched.captures[0].to_i] || [key, 500]
         end
 
         def options
@@ -66,6 +61,10 @@ module Basquiat
           @exchange = session.channel.topic(options[:exchange_name], durable: true)
           session.bind_queue("*.#{session.queue.name}.#")
           prepare_timeout_queues
+          create_and_bind_rejected_queue
+        end
+
+        def create_and_bind_rejected_queue
           queue = session.channel.queue("#{options[:queue_name_preffix]}_rejected", durable: true)
           queue.bind(@exchange, routing_key: 'rejected.#')
         end
