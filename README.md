@@ -1,6 +1,7 @@
 # Basquiat
 
-[![Code Climate](https://codeclimate.com/github/VAGAScom/basquiat/badges/gpa.svg)](https://codeclimate.com/github/VAGAScom/basquiat)
+[![Issue Count](https://codeclimate.com/github/VAGAScom/basquiat/badges/issue_count.svg)](https://codeclimate.com/github/VAGAScom/basquiat)
+[![Test Coverage](https://codeclimate.com/github/VAGAScom/basquiat/badges/coverage.svg)](https://codeclimate.com/github/VAGAScom/basquiat/coverage)
 
 **Basquiat** is library aimed to hide (almost) all the complexity when working with some kind of message queue from the application internals.
 
