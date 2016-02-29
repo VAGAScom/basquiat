@@ -1,4 +1,5 @@
-# coding: utf-8
+# frozen_string_literal: true
+
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'basquiat/version'
@@ -15,9 +16,9 @@ EOD
   spec.homepage = 'http://github.com/VAGAScom/basquiat'
   spec.license  = 'MIT'
 
-  spec.files         = `git ls-files`.split($RS).reject {|f| f.match /^\.|docker/ }
-  spec.executables   = spec.files.grep(/^bin\//) { |f| File.basename(f) }
-  spec.test_files    = spec.files.grep(/^(test|spec|features)\//)
+  spec.files         = `git ls-files`.split($RS).reject { |f| f =~ /^\.|docker/ }
+  spec.executables   = spec.files.grep(%r{/^bin/}) { |f| File.basename(f) }
+  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = %w(lib)
 
   spec.add_development_dependency 'bundler'

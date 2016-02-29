@@ -2,6 +2,8 @@
 engines:
   rubocop:
     enabled: true
+    exclude_fingerprints:
+      - c78d54034662278a4268b723e32aec63
   golint:
     enabled: false
   gofmt:
