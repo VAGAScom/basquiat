@@ -74,7 +74,7 @@ module Basquiat
     # Starts the consumer loop
     # @param block [Boolean] If it should block the thread. The relevance of this is dictated by the adapter.
     #   Defaults to true.
-    def listen(block: true, rescue_proc: -> {})
+    def listen(block: true, rescue_proc: Basquiat.configuration.rescue_proc)
       adapter.listen(block: block, rescue_proc: rescue_proc)
     end
 
