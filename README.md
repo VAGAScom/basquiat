@@ -96,15 +96,16 @@ development:                                #full example of the RabbitMq option
   queue_name: 'basquiat.queue'
   default_adapter: Basquiat::Adapters::RabbitMq
   adapter_options:
-    hosts:
-      - 'localhost'
-    port: 5672
+    connection:
+      hosts:
+        - 'localhost'
+      port: 5672
+      auth:
+        user: 'guest'
+        password: 'guest'
     publisher:
       confirm: true
       persistent: true
-    auth:
-      user: 'guest'
-      password: 'guest'
     requeue:
       enabled: true
       strategy: delayed_delivery
