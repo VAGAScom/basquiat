@@ -38,7 +38,7 @@ module Basquiat
         # @option user_opts [Hash{Symbol=>Object}] :requeue
         # @return [Hash] the configuration option hash
         def merge_user_options(**user_opts)
-          @options.merge!(user_opts)
+          @options.deep_merge(user_opts)
         end
 
         # @return [Hash] the connection options
