@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-require 'spec_helper'
 require 'basquiat/adapters/rabbitmq_adapter'
 
 class AwesomeStrategy < Basquiat::Adapters::RabbitMq::BaseStrategy
@@ -8,11 +7,11 @@ class AwesomeStrategy < Basquiat::Adapters::RabbitMq::BaseStrategy
   end
 end
 
-describe Basquiat::Adapters::RabbitMq::Configuration do
+RSpec.describe Basquiat::Adapters::RabbitMq::Configuration do
   subject(:config) { Basquiat::Adapters::RabbitMq::Configuration.new }
 
   # used by the Adapter::Base class
-  describe '#merge_user_options', focus: true do
+  describe '#merge_user_options' do
     it 'merges the user supplied options with the default ones' do
       config.merge_user_options(queue: { name: 'config.test.queue' })
       expect(config.base_options[:queue][:name]).to eq('config.test.queue')
@@ -39,7 +38,7 @@ describe Basquiat::Adapters::RabbitMq::Configuration do
       expect { config.strategy }.to raise_error Basquiat::Errors::StrategyNotRegistered
     end
 
-    it 'deals with the requeue strategy options', focus: true do
+    it 'deals with the requeue strategy options' do
       Basquiat::Adapters::RabbitMq.register_strategy :dlx, Basquiat::Adapters::RabbitMq::DeadLettering
       config.merge_user_options(requeue: { enabled: true, strategy: 'dlx', options: { exchange: 'dlx.topic' } })
       expect(config.session_options[:queue][:options]).to include('x-dead-letter-exchange' => 'dlx.topic')

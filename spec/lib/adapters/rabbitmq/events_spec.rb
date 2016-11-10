@@ -1,8 +1,7 @@
 # frozen_string_literal: true
-require 'spec_helper'
 require 'basquiat/adapters/rabbitmq_adapter'
 
-describe Basquiat::Adapters::RabbitMq::Events do
+RSpec.describe Basquiat::Adapters::RabbitMq::Events do
   subject(:events) { Basquiat::Adapters::RabbitMq::Events.new }
 
   context 'basic functionality' do
@@ -64,6 +63,7 @@ describe Basquiat::Adapters::RabbitMq::Events do
         end
       end
     end
+
     describe '#' do
       context 'matches any number of words' do
         it '# matches all events' do

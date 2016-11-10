@@ -1,8 +1,7 @@
 # frozen_string_literal: true
-require 'spec_helper'
 require 'basquiat/adapters/rabbitmq_adapter'
 
-describe Basquiat::Adapters::RabbitMq::AutoAcknowledge do
+RSpec.describe Basquiat::Adapters::RabbitMq::AutoAcknowledge do
   let(:adapter) { Basquiat::Adapters::RabbitMq.new }
   let(:base_options) do
     { connection: { hosts: [ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' }],

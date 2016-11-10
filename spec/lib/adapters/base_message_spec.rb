@@ -1,7 +1,6 @@
 # frozen_string_literal: true
-require 'spec_helper'
 
-describe Basquiat::Adapters::BaseMessage do
+RSpec.describe Basquiat::Adapters::BaseMessage do
   subject(:message) { Basquiat::Adapters::BaseMessage.new({ data: 'everything is AWESOME!' }.to_json) }
 
   it 'delegates calls to the JSON' do

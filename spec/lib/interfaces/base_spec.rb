@@ -1,7 +1,6 @@
 # frozen_string_literal: true
-require 'spec_helper'
 
-describe Basquiat::Base do
+RSpec.describe Basquiat::Base do
   # Sample class used for testing
   class SampleClass
     extend Basquiat::Base

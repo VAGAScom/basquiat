@@ -1,8 +1,7 @@
 # frozen_string_literal: true
-require 'spec_helper'
 
 # Sample class used for testing
-describe Basquiat::Adapters::Base do
+RSpec.describe Basquiat::Adapters::Base do
   subject(:adapter) { Basquiat::Adapters::Base.new }
 
   [:disconnect, :subscribe_to, :publish].each do |meth|

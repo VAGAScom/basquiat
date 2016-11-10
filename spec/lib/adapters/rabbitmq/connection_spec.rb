@@ -1,8 +1,7 @@
 # frozen_string_literal: true
-require 'spec_helper'
 require 'basquiat/adapters/rabbitmq_adapter'
 
-describe Basquiat::Adapters::RabbitMq::Connection do
+RSpec.describe Basquiat::Adapters::RabbitMq::Connection do
   subject(:connection) { Basquiat::Adapters::RabbitMq::Connection }
 
   let(:hosts) do

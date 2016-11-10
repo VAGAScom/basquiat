@@ -1,7 +1,6 @@
 # frozen_string_literal: true
-require 'spec_helper'
 
-describe Basquiat do
+RSpec.describe Basquiat do
   it 'should have a version number' do
     expect(Basquiat::VERSION).not_to be_nil
   end

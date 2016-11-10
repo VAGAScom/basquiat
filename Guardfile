@@ -22,6 +22,6 @@ end
 
 group :docs do
   guard 'yard', cli: '-r' do
-    watch %r{lib/.+\.rb}
+    watch(%r{lib/.+\.rb}) { 'lib' }
   end
 end

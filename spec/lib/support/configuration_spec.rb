@@ -1,7 +1,6 @@
 # frozen_string_literal: true
-require 'spec_helper'
 
-describe Basquiat::Configuration do
+RSpec.describe Basquiat::Configuration do
   subject(:config) { Basquiat::Configuration.new }
 
   context 'accessors' do

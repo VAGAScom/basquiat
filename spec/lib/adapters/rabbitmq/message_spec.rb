@@ -1,8 +1,7 @@
 # frozen_string_literal: true
-require 'spec_helper'
 require 'basquiat/adapters/rabbitmq_adapter'
 
-describe Basquiat::Adapters::RabbitMq::Message do
+RSpec.describe Basquiat::Adapters::RabbitMq::Message do
   let(:json) do
     { key: 'value', date: Date.new.iso8601 }.to_json
   end

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-require 'spec_helper'
 require 'basquiat/adapters/rabbitmq_adapter'
 
 RSpec.describe Basquiat::Adapters::RabbitMq::BaseStrategy do

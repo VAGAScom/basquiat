@@ -1,7 +1,6 @@
 # frozen_string_literal: true
-require 'spec_helper'
 
-describe Basquiat::Adapters::Test do
+RSpec.describe Basquiat::Adapters::Test do
   subject(:adapter) { Basquiat::Adapters::Test.new }
 
   context 'publisher' do

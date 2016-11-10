@@ -1,7 +1,6 @@
 # frozen_string_literal: true
-require 'spec_helper'
 
-describe Basquiat::HashRefinements do
+RSpec.describe Basquiat::HashRefinements do
   using Basquiat::HashRefinements
 
   subject(:hash) do
