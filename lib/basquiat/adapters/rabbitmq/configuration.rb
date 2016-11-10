@@ -10,16 +10,17 @@ module Basquiat
           @options = { connection:
                          { hosts: ['localhost'],
                            port: 5672,
-                           auth: { user: 'guest', password: 'guest' }
-                         },
+                           auth: { user: 'guest', password: 'guest' } },
                        queue: {
                          name: Basquiat.configuration.queue_name,
                          durable: true,
-                         options: {} },
+                         options: {}
+                       },
                        exchange: {
                          name: Basquiat.configuration.exchange_name,
                          durable: true,
-                         options: {} },
+                         options: {}
+                       },
                        publisher: { confirm: true, persistent: false },
                        consumer: { prefetch: 1000, manual_ack: true },
                        requeue: { enabled: false } }

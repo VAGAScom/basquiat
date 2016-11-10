@@ -34,7 +34,7 @@ describe Basquiat::Adapters::RabbitMq::Connection do
     it 'uses another server after all retries on a single one' do
       conn = connection.new(hosts: hosts, failover: failover)
       expect { conn.start }.to_not raise_error
-      expect(conn.host).to match "#{ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' }}"
+      expect(conn.host).to match(ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' })
       conn.close
     end
   end

@@ -11,8 +11,12 @@ module Basquiat
               session: {
                 queue: {
                   options: {
-                    'x-dead-letter-exchange' => opts.fetch(:exchange, 'basquiat.dlx') } } },
-              dlx:     { ttl: opts.fetch(:ttl, 1_000) } }
+                    'x-dead-letter-exchange' => opts.fetch(:exchange, 'basquiat.dlx')
+                  }
+                }
+              },
+              dlx:     { ttl: opts.fetch(:ttl, 1_000) }
+            }
           end
 
           def session_options

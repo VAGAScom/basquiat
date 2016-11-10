@@ -8,8 +8,7 @@ describe 'Requeue Strategies' do
     { connection: { hosts: [ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' }],
                     port: ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } },
       publisher: { persistent: true },
-      requeue: { enabled: true, strategy: 'basic_ack' }
-    }
+      requeue: { enabled: true, strategy: 'basic_ack' } }
   end
 
   before(:each) { adapter.adapter_options(base_options) }

@@ -40,7 +40,7 @@ end
 
 RSpec::Matchers.define :have_unacked_messages do
   match do |queue|
-    QueueStats.new(queue.name).unacked_messages > 0
+    QueueStats.new(queue.name).unacked_messages.positive?
   end
 
   failure_message_when_negated do |queue|

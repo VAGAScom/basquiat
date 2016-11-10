@@ -60,7 +60,8 @@ module Basquiat
             recovery_attempts:         @failover.fetch(:max_retries, 5),
             network_recovery_interval: @failover.fetch(:default_timeout, 5),
             connection_timeout:        @failover.fetch(:connection_timeout, 5),
-            logger:                    Basquiat.logger)
+            logger:                    Basquiat.logger
+          )
           __setobj__(@connection)
         end
       end

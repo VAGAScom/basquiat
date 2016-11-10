@@ -76,7 +76,8 @@ module Basquiat
                                             durable:   true,
                                             arguments: {
                                               'x-dead-letter-exchange' => session.exchange.name,
-                                              'x-message-ttl'          => timeout * 1_000 })
+                                              'x-message-ttl'          => timeout * 1_000
+                                            })
             queue.bind(@exchange, routing_key: "#{timeout * 1_000}.#")
           end
         end

@@ -33,7 +33,7 @@ EOD
   spec.add_development_dependency 'yajl-ruby'
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'rubocop'
-  spec.add_development_dependency 'metric_fu'
+  spec.add_development_dependency 'rubycritic'
   spec.add_development_dependency 'codeclimate-test-reporter'
   spec.add_development_dependency 'yard'
 
