@@ -32,7 +32,7 @@ RSpec.describe Basquiat::Adapters::RabbitMq do
       it 'runs the rescue block when an exception happens' do
         coisa = ''
         adapter.subscribe_to('some.event', ->(_msg) { raise ArgumentError })
-        adapter.listen(block: false, rescue_proc: -> (ex, _msg) { coisa = ex.class.to_s })
+        adapter.listen(block: false, rescue_proc: ->(ex, _msg) { coisa = ex.class.to_s })
         adapter.publish('some.event', data: 'coisa')
         sleep 0.3
 

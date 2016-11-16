@@ -9,7 +9,7 @@ module Basquiat
         end
 
         def clean
-          @events.clear if @events
+          @events&.clear
         end
       end
 
@@ -37,6 +37,10 @@ module Basquiat
         event = subscribed_event
         msg   = self.class.events[event].shift
         msg ? procs[event].call(BaseMessage.new(msg)) : nil
+      end
+
+      def connected?
+        true
       end
 
       private
