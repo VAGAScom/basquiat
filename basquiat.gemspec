@@ -28,7 +28,6 @@ EOD
   spec.add_development_dependency 'guard-bundler'
   spec.add_development_dependency 'guard-rspec'
   spec.add_development_dependency 'guard-rubocop'
-  spec.add_development_dependency 'guard-yard'
   spec.add_development_dependency 'bunny'
   spec.add_development_dependency 'yajl-ruby'
   spec.add_development_dependency 'simplecov'

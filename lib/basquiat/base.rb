@@ -5,28 +5,36 @@ module Basquiat
   # Base module used to extend the classes so that they will be able to use the event infrastructure
   module Base
     class << self
+
+      # @api private
       def extended(klass)
         descendants.push klass
       end
 
+      # @api private
       def descendants
         @descendants ||= []
       end
 
+      # @api private
       def reconfigure_children
         descendants.each(&:reload_adapter_from_configuration)
       end
     end
 
+    # @api private
     def reload_adapter_from_configuration
       @adapter = Kernel.const_get Basquiat.configuration.default_adapter
       adapter_options Basquiat.configuration.adapter_options
     end
 
+    # @!attribute [rw] event_adapter
+    #   @return [Basquiat::Adapter] the adapter instance for the current class
+    #   @deprecated Please use {#adapter}
+
     # @!attribute [rw] adapter
     #   Initializes and return a instance of the default adapter specified on Basquiat.configuration.default_adapter
     #   @return [Basquiat::Adapter] the adapter instance for the current class
-    #   @deprecated event_adapter is deprecated and will be removed eventually. Please use {#adapter}.
     def adapter=(adapter_klass)
       @adapter = adapter_klass.new
     end
