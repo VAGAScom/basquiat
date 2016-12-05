@@ -21,7 +21,7 @@ module Basquiat
       end
 
       def publish(event, message, _single_message = true)
-        self.class.events[event] << Basquiat::Json.encode(message)
+        self.class.events[event] << Basquiat::Support::JSON.encode(message)
       end
 
       def events(key)

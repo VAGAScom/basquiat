@@ -8,7 +8,7 @@ module Basquiat
       # @param message [Object] It's assumed that message is some kind of JSON
       # @note All unknown messages will be delegated to the resulting Hash
       def initialize(message)
-        @message = Basquiat::Json.decode(message)
+        @message = Basquiat::Support::JSON.decode(message)
         super(@message)
         @action = :ack
       end

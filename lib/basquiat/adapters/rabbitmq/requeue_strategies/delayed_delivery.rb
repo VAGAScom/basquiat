@@ -28,7 +28,8 @@ module Basquiat
 
         # @param [Message] message the, well, message to be requeued
         def requeue(message)
-          @exchange.publish(Basquiat::Json.encode(message), routing_key: requeue_route_for(message.di.routing_key))
+          @exchange.publish(Basquiat::Support::JSON.encode(message), routing_key: requeue_route_for(message.di
+                                                                                                   .routing_key))
           ack(message)
         end
 

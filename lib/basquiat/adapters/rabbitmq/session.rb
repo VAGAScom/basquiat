@@ -17,7 +17,7 @@ module Basquiat
 
         def publish(routing_key, message, props = {})
           channel.confirm_select if @options[:publisher][:confirm]
-          exchange.publish(Basquiat::Json.encode(message),
+          exchange.publish(Basquiat::Support::JSON.encode(message),
                            { routing_key: routing_key,
                              persistent:  true,
                              timestamp:   Time.now.to_i }.merge(props))

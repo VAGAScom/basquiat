@@ -1,6 +1,6 @@
 # frozen_string_literal: true
-RSpec.describe Basquiat::Json do
+RSpec.describe Basquiat::Support::JSON do
   it "returns an empty hash if it can't parse the payload" do
-    expect(Basquiat::Json.decode('Idaho Potato')).to eq({})
+    expect(described_class.decode('Idaho Potato')).to eq({})
   end
 end
