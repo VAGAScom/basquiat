@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe Basquiat::HashRefinements do
-  using Basquiat::HashRefinements
+RSpec.describe Basquiat::Support::HashRefinements do
+  using described_class
 
   subject(:hash) do
     { 'key' => 1, 'another_key' => 2, 3 => 3, 'array' => [1, 3, 5], 'hash' => { 'inner_key' => 6 } }

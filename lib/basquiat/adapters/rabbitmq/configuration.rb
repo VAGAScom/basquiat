@@ -4,7 +4,7 @@ module Basquiat
     class RabbitMq
       # Responsible for dealing with the overall configuration of the RabbitMQ adapter
       class Configuration
-        using Basquiat::HashRefinements
+        using Basquiat::Support::HashRefinements
 
         def initialize
           @options = { connection:

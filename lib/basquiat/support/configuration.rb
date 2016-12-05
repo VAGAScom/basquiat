@@ -8,7 +8,7 @@ module Basquiat
   DefaultLogger = Naught.build { |config| config.mimic Logger }
 
   class Configuration
-    using HashRefinements
+    using Support::HashRefinements
 
     def initialize
       @yaml        = {}

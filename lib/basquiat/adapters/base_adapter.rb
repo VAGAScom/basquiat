@@ -6,7 +6,7 @@ module Basquiat
   module Adapters
     # Base implementation for an adapter in uses {HashRefinements} internally.
     class Base
-      using Basquiat::HashRefinements
+      using Basquiat::Support::HashRefinements
 
       class << self
         # A hash representing the registered requeue/acknowledge strategies

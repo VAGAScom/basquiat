@@ -6,7 +6,7 @@ module Basquiat
   module Adapters
     # The RabbitMQ adapter for Basquiat
     class RabbitMq < Basquiat::Adapters::Base
-      using Basquiat::HashRefinements
+      using Basquiat::Support::HashRefinements
 
       # Avoid superclass mismatch errors
       require 'basquiat/adapters/rabbitmq/events'

@@ -4,7 +4,7 @@ module Basquiat
     class RabbitMq
       class DelayedDelivery < BaseStrategy
         class << self
-          using HashRefinements
+          using Basquiat::Support::HashRefinements
           attr_reader :options
 
           def setup(opts)
