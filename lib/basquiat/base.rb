@@ -5,7 +5,6 @@ module Basquiat
   # Base module used to extend the classes so that they will be able to use the event infrastructure
   module Base
     class << self
-
       # @api private
       def extended(klass)
         descendants.push klass

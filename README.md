@@ -27,7 +27,7 @@ Or install it yourself as:
 $ gem install basquiat
 ```
 
-You will also need the right gem for your Message Queue (MQ) system. Bundled in this gem you will find 1 adapter, for RabbitMQ, which depends on the gem _bunny_.
+You will also need the right gem for your Message Queue (MQ) system. Bundled in this gem you will find 1 adapter, for RabbitMQ, which depends on the gem `bunny`.
 
 ## Basic Usage
 
@@ -44,13 +44,13 @@ Then you can extend the class that you will use for communicating with the MQ, s
 ```ruby
 class TownCrier
   extend Basquiat::Base
-  self.event_adapter Basquiat::Adapters::RabbitMq
+  self.adapter = Basquiat::Adapters::RabbitMq
 end
 ```
-From there you can publish events to the queue
+From there you can publish events to the queue (the _RabbitMq Adapter_ uses [topic exchanges](http://www.rabbitmq.com/tutorials/tutorial-five-ruby.html) by default).
 
 ```ruby
-TownCrier.publish('some.nifty.event', {a: 'hash', of: 'values'})
+TownCrier.publish('event.name', {a: 'hash', of: 'values'})
 ```
 And you can subscribe to one or more events using a proc that will get called when the message is received:
 
@@ -58,59 +58,47 @@ And you can subscribe to one or more events using a proc that will get called wh
 class TownCrier
   extend Basquiat::Base
 
-  subscribe_to 'some.nifty.event', ->(msg) { msg.fetch(:of, '').upcase }
+  subscribe_to 'event.name', ->(msg) { msg.fetch(:of, '').upcase }
 end
 ```
 
 ## Configuration
 
-You can setup Basquiat using the configure method. This method will yield a Configuration object:
+You can setup Basquiat as bellow:
 
 ```ruby
+# using a block
 Basquiat.configure do |config|
   config.exchange_name = 'my_exchange'
 end
+
+# or setting each value by itself
+Basquiat.configuration.logger = UberLogger.new(destination: '/dev/null')
 ```
 The available options are:
 
-- config_file= Receive a path to an YAML file (example here)
-- queue_name= The default queue name
-- exchange_name= The default exchange name
-- environment= Forces the environment to something other than the value of BASQUIAT_ENV
-- logger= The logger to be used. Defaults to a null object logger.
+- `config_file=` Receive a path to an YAML file (example here)
+- `queue_name=` The default queue name
+- `exchange_name=` The default exchange name
+- `environment=` Forces the environment to something other than the value of `BASQUIAT_ENV`
+- `logger=` The logger to be used. Defaults to a null object logger.
 
 The configuration can be reset using the `Basquiat.reset` method.
 
-YAML File configuration example:
+You can instead use an YAML file to setup the library using the `Basquiat.config_file=` method:
+
+```ruby
+Basquiat.config_file = 'path/to/yaml' # => Absolute or relative to project root
+```
+
+An example configuration file is provided below:
 
 ```yaml
-test:                                       #environment
-  default_adapter: Basquiat::Adapters::Test #it will overwrite the adapter on all classes that extend Basquiat::Base
-  adapter_options:                          #Adapter specific options
-    servers:
-      -
-        host: 'localhost'
-        port: '98765'
-development:                                #full example of the RabbitMq options
-  exchange_name: 'basquiat.exchange'
-  queue_name: 'basquiat.queue'
+test: # environment name
+  default_adapter: Basquiat::Adapters::Test # adapter to be used when none are provided
+  exchange_name: basquiat.exchange # default exchange name
+  queue_name: basquiat.queue # default queue name
+development:
   default_adapter: Basquiat::Adapters::RabbitMq
-  adapter_options:
-    connection:
-      hosts:
-        - 'localhost'
-      port: 5672
-      auth:
-        user: 'guest'
-        password: 'guest'
-    publisher:
-      confirm: true
-      persistent: true
-    requeue:
-      enabled: true
-      strategy: delayed_delivery
-      options:
-        retries: 10
-        queue_name_preffix: wait.for_it
-        exchange_name: legendary
 ```
+

@@ -23,7 +23,7 @@ module Basquiat
         # @return [Hash] return other hash with the symbolized keys
         def symbolize_keys
           each_with_object({}) do |(key, value), new_hash|
-            new_key           = begin
+            new_key = begin
               key.to_sym
             rescue
               key

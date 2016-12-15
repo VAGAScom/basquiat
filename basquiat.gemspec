@@ -38,4 +38,5 @@ EOD
 
   spec.add_dependency 'multi_json'
   spec.add_dependency 'naught'
+  spec.add_dependency 'dry-configurable'
 end

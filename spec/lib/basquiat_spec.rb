@@ -10,7 +10,7 @@ RSpec.describe Basquiat do
   end
 
   it '#configuration' do
-    expect(Basquiat.configuration).to be_a Basquiat::Configuration
+    expect(Basquiat.configuration).to respond_to(:exchange_name, :queue_name)
   end
 
   it '#reset' do

@@ -31,8 +31,8 @@ module Basquiat
         end
 
         def queue
-          @queue ||= channel.queue(@options.dig(:queue,:name),
-                                   durable:   @options.dig(:queue,:durable),
+          @queue ||= channel.queue(@options.dig(:queue, :name),
+                                   durable:   @options.dig(:queue, :durable),
                                    arguments: (@options[:queue][:options] || {}))
         end
 
