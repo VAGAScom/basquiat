@@ -1,18 +1,15 @@
 ---
+ratings:
+  paths:
+    - "lib/**/*"
+exclude_paths:
+  - "spec/"
 engines:
+  reek:
+    enabled: true
   rubocop:
     enabled: true
     exclude_fingerprints:
       - c78d54034662278a4268b723e32aec63
       - 1a23d922ce0ac7e203d5136a5264345e
       - cc6ffca5c94a3c866534aa8ee909fbe5
-  golint:
-    enabled: false
-  gofmt:
-    enabled: false
-  eslint:
-    enabled: false
-  csslint:
-    enabled: false
-  reek:
-    enabled: true
