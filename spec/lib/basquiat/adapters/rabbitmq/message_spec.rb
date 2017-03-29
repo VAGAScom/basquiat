@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'basquiat/adapters/rabbitmq_adapter'
 
 RSpec.describe Basquiat::Adapters::RabbitMq::Message do

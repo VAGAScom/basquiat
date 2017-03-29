@@ -5,6 +5,10 @@ AllCops:
     - 'docker/*'
     - 'Guardfile'
     - 'basquiat.gemspec'
+Metrics/BlockLength:
+  Exclude:
+    - !ruby/regexp /^spec.*/
+
 Metrics/LineLength:
   Max: 119
 

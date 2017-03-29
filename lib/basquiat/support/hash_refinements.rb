@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Basquiat
   module Support
     # Refinements for hashes used on the library's internals
