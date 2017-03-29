@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'set'
-
 module Basquiat
   # Base module used to extend the classes so that they will be able to use the event infrastructure
   module Base
@@ -18,13 +16,13 @@ module Basquiat
 
       # @api private
       def reconfigure_children
-        descendants.each(&:reload_adapter_from_configuration)
+        descendants.each(&:reload_adapter)
       end
     end
 
     # @api private
-    def reload_adapter_from_configuration
-      @adapter = Kernel.const_get Basquiat.configuration.default_adapter
+    def reload_adapter
+      @adapter = Kernel.const_get(Basquiat.configuration.default_adapter).new
       adapter_options Basquiat.configuration.adapter_options
     end
 

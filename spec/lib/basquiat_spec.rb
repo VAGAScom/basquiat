@@ -9,8 +9,17 @@ RSpec.describe Basquiat do
     expect { |block| Basquiat.configure(&block) }.to yield_control
   end
 
-  it '#configuration' do
-    expect(Basquiat.configuration).to respond_to(:exchange_name, :queue_name)
+  context '#configuration' do
+    subject(:conf) { Basquiat.configuration }
+    %i(exchange_name queue_name rescue_proc logger adapter_options default_adapter).each do |meth|
+      it "responds to #{meth}" do
+        expect(conf).to respond_to(meth)
+      end
+
+      it "responds to #{meth}=" do
+        expect(conf).to respond_to("#{meth}=".to_sym)
+      end
+    end
   end
 
   it '#reset' do
