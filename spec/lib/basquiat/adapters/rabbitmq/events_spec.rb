@@ -21,7 +21,7 @@ RSpec.describe Basquiat::Adapters::RabbitMq::Events do
     let(:proc) { -> { 'Hello from the lambda! o/' } }
 
     describe '*' do
-      let(:words) { %w(awesome lame dumb cool) }
+      let(:words) { %w[awesome lame dumb cool] }
 
       it 'event.* does not match event_some_word' do
         events['event.*'] = proc
@@ -69,14 +69,14 @@ RSpec.describe Basquiat::Adapters::RabbitMq::Events do
       context 'matches any number of words' do
         it '# matches all events' do
           events['#'] = proc
-          %w(some.cool.event event cool.event).each do |event|
+          %w[some.cool.event event cool.event].each do |event|
             expect(events[event]).to eq(proc)
           end
         end
 
         it 'matches specific events' do
           events['#.event'] = proc
-          %w(some.cool.event cool.event).each do |event|
+          %w[some.cool.event cool.event].each do |event|
             expect(events[event]).to eq(proc)
           end
           expect { events['event'] }.to raise_error KeyError

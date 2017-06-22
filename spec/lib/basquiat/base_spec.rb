@@ -9,7 +9,7 @@ RSpec.describe Basquiat::Base do
 
   subject { SampleClass }
 
-  it '.event_adapter= / .adapter=' do
+  it '.event_adapter= || .adapter=' do
     expect(subject).to respond_to(:event_adapter=)
     expect(subject).to respond_to(:adapter=)
   end
@@ -86,7 +86,7 @@ RSpec.describe Basquiat::Base do
       end
 
       subject.subscribe_to('some.event', :test_method)
-      expect(subject.listen(block: false)).to eq(%w(e e e))
+      expect(subject.listen(block: false)).to eq(%w[e e e])
     end
   end
 end

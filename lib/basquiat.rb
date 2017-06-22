@@ -47,7 +47,7 @@ module Basquiat
 
     # resets the library configuration. Useful for testing and not much else
     def reset
-      remove_instance_variable :@_config
+      remove_instance_variable :@_config if @_config
     end
 
     # @return [Logger] shorthand for configuration.logger
@@ -56,5 +56,15 @@ module Basquiat
     end
 
     alias configuration config
+
+    def load_configuration(file)
+      yaml = YAML.safe_load(ERB.new(IO.readlines(file).join).result)
+      yaml = yaml.fetch(ENV['BASQUIAT_ENV'])
+      configure do |conf|
+        yaml.each_pair do |key, value|
+          conf.send("#{key.to_sym}=", value) # TODO: symbolize_values
+        end
+      end
+    end
   end
 end

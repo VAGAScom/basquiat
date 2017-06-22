@@ -12,7 +12,7 @@ Metrics/BlockLength:
 Metrics/LineLength:
   Max: 119
 
-Style/AlignHash:
+Layout/AlignHash:
   EnforcedHashRocketStyle: key
 
 Style/Documentation:

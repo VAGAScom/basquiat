@@ -9,6 +9,11 @@ RSpec.describe Basquiat::Adapters::RabbitMq::Connection do
     [ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' }]
   end
 
+  it 'raises an error when the username/password is invalid' do
+    conn = connection.new(hosts: hosts, auth: { username: 'guest', password: 'wrong' })
+    expect { conn.start }.to raise_error Bunny::AuthenticationFailureError
+  end
+
   it '#connected?' do
     conn = connection.new(hosts: hosts)
     expect(conn.connected?).to be_falsey
