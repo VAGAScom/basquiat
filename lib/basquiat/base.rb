@@ -22,7 +22,7 @@ module Basquiat
 
     # @api private
     def reload_adapter
-      self.adapter = Kernel.const_get(Basquiat.configuration.default_adapter).new
+      self.adapter = Kernel.const_get(Basquiat.configuration.default_adapter)
       adapter_options Basquiat.configuration.adapter_options
     end
 
