@@ -20,7 +20,8 @@ module Basquiat
     end
 
     def reload_adapter_from_configuration
-      self.adapter = Kernel.const_get(Basquiat.configuration.default_adapter, procs: adapter.procs)
+      @procs = adapter.procs
+      self.adapter = Kernel.const_get(Basquiat.configuration.default_adapter)
       adapter_options Basquiat.configuration.adapter_options
     end
 
@@ -28,8 +29,8 @@ module Basquiat
     #   Initializes and return a instance of the default adapter specified on Basquiat.configuration.default_adapter
     #   @return [Basquiat::Adapter] the adapter instance for the current class
     #   @deprecated event_adapter is deprecated and will be removed eventually. Please use {#adapter}.
-    def adapter=(adapter_klass, procs: nil)
-      @adapter = procs ? adapter_klass.new(procs: procs) : adapter_klass.new
+    def adapter=(adapter_klass)
+      @adapter = @procs ? adapter_klass.new(procs: @procs) : adapter_klass.new
     end
 
     alias event_adapter= adapter=
