@@ -23,7 +23,7 @@ class QueueStats
   def fetch
     req = Net::HTTP::Get.new @uri
     req.basic_auth('guest', 'guest')
-    p res = Net::HTTP.start(@uri.host, @uri.port) { |http| http.request(req) }
+    res = Net::HTTP.start(@uri.host, @uri.port) { |http| http.request(req) }
     res.body
   end
 end

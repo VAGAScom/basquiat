@@ -8,6 +8,8 @@ module Basquiat
     class RabbitMq < Basquiat::Adapters::Base
       using Basquiat::HashRefinements
 
+      attr_reader :procs
+
       # Avoid superclass mismatch errors
       require 'basquiat/adapters/rabbitmq/events'
       require 'basquiat/adapters/rabbitmq/message'
@@ -17,8 +19,8 @@ module Basquiat
       require 'basquiat/adapters/rabbitmq/requeue_strategies'
 
       # Initializes the superclass using a {Events} object as the procs instance variable
-      def initialize
-        super(procs: Events.new)
+      def initialize(procs: Events.new)
+        super(procs: procs)
       end
 
       # Since the RabbitMQ configuration options are quite vast and it's interations with the requeue strategies a bit

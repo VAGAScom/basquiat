@@ -91,10 +91,12 @@ module Basquiat
         raise Basquiat::Errors::SubclassResponsibility
       end
       # @!endgroup
+      #
+      attr_reader :procs
 
       private
 
-      attr_reader :procs, :options
+      attr_reader :options
     end
   end
 end
