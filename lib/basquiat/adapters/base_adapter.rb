@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'delegate'
 require 'basquiat/adapters/base_message'
 

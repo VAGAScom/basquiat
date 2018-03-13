@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Basquiat
   module Adapters
     # An adapter to be used in testing

@@ -4,7 +4,7 @@
 RSpec.describe Basquiat::Adapters::Base do
   subject(:adapter) { Basquiat::Adapters::Base.new }
 
-  [:disconnect, :subscribe_to, :publish].each do |meth|
+  %i[disconnect subscribe_to publish].each do |meth|
     it "raise a SubclassResponsibility error if #{meth} isn't implemented" do
       expect { adapter.public_send(meth) }.to raise_error Basquiat::Errors::SubclassResponsibility
     end

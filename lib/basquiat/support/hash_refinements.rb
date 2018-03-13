@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Basquiat
   module HashRefinements
     # @!method deep_merge
@@ -27,7 +28,7 @@ module Basquiat
         each_with_object({}) do |(key, value), new_hash|
           new_key = begin
                       key.to_sym
-                    rescue
+                    rescue StandardError
                       key
                     end
           new_value         = value.is_a?(Hash) ? value.symbolize_keys : value

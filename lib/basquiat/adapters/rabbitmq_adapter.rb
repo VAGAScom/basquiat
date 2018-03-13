@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'bunny'
 require 'delegate'
 
@@ -59,7 +60,7 @@ module Basquiat
 
       def process_message(message, rescue_proc)
         procs[message.routing_key].call(message)
-      rescue => ex
+      rescue StandardError => ex
         rescue_proc.call(ex, message)
       end
 

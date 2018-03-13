@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Basquiat
   class Railtie < ::Rails::Railtie
     initializer 'load_basquiat_configuration' do

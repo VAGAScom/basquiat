@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'naught'
 require 'erb'
 require 'basquiat/support/hash_refinements'
@@ -61,7 +62,7 @@ module Basquiat
 
     # @return [Hash] return the configured adapter options. Defaults to an empty {::Hash}
     def adapter_options
-      config.fetch(:adapter_options) { Hash.new }
+      config.fetch(:adapter_options) { {} }
     end
 
     # @return [String] return the configured default adapter. Defaults to {Adapters::Test}
@@ -81,7 +82,7 @@ module Basquiat
     end
 
     def load_yaml(path)
-      @yaml = YAML.load(ERB.new(IO.readlines(path).join).result).symbolize_keys
+      @yaml = YAML.safe_load(ERB.new(IO.readlines(path).join).result).symbolize_keys
     end
 
     def setup_basic_options

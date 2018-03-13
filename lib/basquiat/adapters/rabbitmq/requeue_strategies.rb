@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'basquiat/adapters/rabbitmq/requeue_strategies/base_strategy'
 require 'basquiat/adapters/rabbitmq/requeue_strategies/auto_acknowledge'
 require 'basquiat/adapters/rabbitmq/requeue_strategies/basic_acknowledge'

@@ -86,7 +86,7 @@ RSpec.describe Basquiat::Base do
       end
 
       subject.subscribe_to('some.event', :test_method)
-      expect(subject.listen(block: false)).to eq(%w(e e e))
+      expect(subject.listen(block: false)).to eq(%w[e e e])
     end
   end
 end
