@@ -7,11 +7,11 @@ class QueueStats
     @queue = queue
     host   = ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_15672_TCP_ADDR', 'localhost')
     port   = ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_15672_TCP_PORT', 15_672)
-    @uri   = URI.parse("http://#{host}:#{port}/api/queues/%2F/#{@queue}")
+    @uri   = URI.parse("http://#{host}:#{port}/api/queues/%2f/#{@queue}")
   end
 
   def unacked_messages
-    queue_status.fetch(:messages_unacknowledged)
+    queue_status.fetch(:messages_unacknowledged) { 0 }
   end
 
   private
@@ -23,7 +23,7 @@ class QueueStats
   def fetch
     req = Net::HTTP::Get.new @uri
     req.basic_auth('guest', 'guest')
-    res = Net::HTTP.start(@uri.host, @uri.port) { |http| http.request(req) }
+    p res = Net::HTTP.start(@uri.host, @uri.port) { |http| http.request(req) }
     res.body
   end
 end
