@@ -30,6 +30,10 @@ module Basquiat
           @session.channel.nack(message.delivery_tag, false)
         end
 
+        def requeue(message)
+          @session.channel.nack(message.delivery_tag, true)
+        end
+
         private
 
         attr_reader :session
