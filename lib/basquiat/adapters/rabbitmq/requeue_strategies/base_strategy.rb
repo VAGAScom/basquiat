@@ -31,7 +31,7 @@ module Basquiat
         end
 
         def requeue(message)
-          @session.channel.nack(message.delivery_tag, true)
+          @session.channel.nack(message.delivery_tag, false, true)
         end
 
         private
