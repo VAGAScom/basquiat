@@ -53,7 +53,7 @@ RSpec.describe Basquiat::Configuration do
     expect(config.queue_name).to eq('my.nice_queue')
     expect(config.exchange_name).to eq('my.test_exchange')
     expect(config.default_adapter).to eq('Basquiat::Adapters::Test')
-    expect(config.adapter_options).to have_key(:servers)
+    expect(config.adapter_options).to have_key(:connection)
   end
 
   it 'settings provided on the config file have lower precedence' do
