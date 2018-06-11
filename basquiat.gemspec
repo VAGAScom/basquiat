@@ -7,8 +7,8 @@ require 'basquiat/version'
 Gem::Specification.new do |spec|
   spec.name        = 'basquiat'
   spec.version     = Basquiat::VERSION
-  spec.authors     = ['Marcello "mereghost" Rocha']
-  spec.email       = %w(marcello.rocha@gmail.com.br)
+  spec.authors     = ['Marcello "mereghost" Rocha', 'Adriano Dadario']
+  spec.email       = %w(marcello.rocha@gmail.com.br dadario@gmail.com)
   spec.description = <<EOD
 Basquiat is a library that intends to abstract all the complexity of working with message queues
 EOD
