@@ -22,10 +22,26 @@ RSpec.describe Basquiat::Adapters::RabbitMq do
     end
 
     context 'publisher' do
-      it '#publish [enqueue a message]' do
-        expect do
-          adapter.publish('messages.welcome', data: 'A Nice Welcome Message')
-        end.to_not raise_error
+      context 'with session pool' do
+        let(:base_options) do
+          { connection: { hosts: [ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_ADDR') { 'localhost' }],
+                          port:  ENV.fetch('BASQUIAT_RABBITMQ_1_PORT_5672_TCP_PORT') { 5672 } },
+            publisher: { persistent: true, session_pool: { size: 1, timeout: 5 } } }
+        end
+
+        it '#publish [enqueue a message]' do
+          expect do
+            adapter.publish('messages.welcome', data: 'A Nice Welcome Message')
+          end.to_not raise_error
+        end
+      end
+
+      context 'without session pool' do
+        it '#publish [enqueue a message]' do
+          expect do
+            adapter.publish('messages.welcome', data: 'A Nice Welcome Message')
+          end.to_not raise_error
+        end
       end
     end
 
