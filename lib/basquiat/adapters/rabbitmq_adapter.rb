@@ -43,11 +43,7 @@ module Basquiat
       # @param message [Hash] the message to be publish
       # @param props [Hash] other properties you wish to publish with the message, such as custom headers etc.
       def publish(event, message, props: {})
-        if options[:publisher][:session_pool]
-          session_pool.with { |session| session.publish(event, message, props) }
-        else
-          session.publish(event, message, props)
-        end
+        session_pool.with { |session| session.publish(event, message, props) }
         disconnect unless options[:publisher][:persistent]
       end
 
