@@ -30,7 +30,6 @@ EOD
   spec.add_development_dependency 'guard-rubocop'
   spec.add_development_dependency 'guard-yard'
   spec.add_development_dependency 'bunny'
-  spec.add_development_dependency 'connection_pool'
   spec.add_development_dependency 'yajl-ruby'
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'rubocop'
@@ -38,6 +37,7 @@ EOD
   spec.add_development_dependency 'codeclimate-test-reporter'
   spec.add_development_dependency 'yard'
 
+  spec.add_dependency 'connection_pool'
   spec.add_dependency 'multi_json'
   spec.add_dependency 'naught'
 end
