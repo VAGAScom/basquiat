@@ -106,6 +106,9 @@ development:                                #full example of the RabbitMq option
     publisher:
       confirm: true
       persistent: true
+      session_pool:
+        size: 10
+        timeout: 5
     requeue:
       enabled: true
       strategy: delayed_delivery
