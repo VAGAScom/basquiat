@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'connection_pool'
 require 'multi_json'
 require 'naught'
 require 'yaml'
