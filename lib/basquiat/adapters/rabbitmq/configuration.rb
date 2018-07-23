@@ -22,7 +22,7 @@ module Basquiat
                          durable: true,
                          options: {}
                        },
-                       publisher: { confirm: true, persistent: false, session_pool: { size: 1, timeout: 5 } },
+                       publisher: { confirm: true, persistent: false },
                        consumer: { prefetch: 1000, manual_ack: true },
                        requeue: { enabled: false } }
         end

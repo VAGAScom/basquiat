@@ -22,7 +22,7 @@ module Basquiat
         # Creates a channel
         # @return [Bunny::Channel]
         def create_channel
-          connection.start
+          connection.start unless connected?
           Basquiat.logger.debug 'Creating a new channel'
           connection.create_channel
         end
@@ -53,7 +53,7 @@ module Basquiat
         end
 
         def connection
-          @connection ||= Bunny.new(
+          @connection ||= Basquiat.configuration.connection || Bunny.new(
             hosts:                     @hosts,
             port:                      @port,
             username:                  @auth.fetch(:user, 'guest'),
