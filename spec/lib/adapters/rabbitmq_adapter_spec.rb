@@ -37,9 +37,7 @@ RSpec.describe Basquiat::Adapters::RabbitMq do
             publisher: { persistent: true, session_pool: { size: 10 } } }
         end
 
-        before do
-          Basquiat.configure { |c| c.connection = Bunny.new.tap { |b| b.start } }
-        end
+        before { Basquiat.configure { |c| c.connection = Bunny.new.tap(&:start) } }
 
         it '#publish [enqueue a message 10 times concurrently]' do
           expect do
