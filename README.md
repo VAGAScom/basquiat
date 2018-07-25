@@ -74,6 +74,7 @@ end
 The available options are:
 
 - config_file= Receive a path to an YAML file (example here)
+- connection= Makes Basquiat to use a provided Bunny connection
 - queue_name= The default queue name
 - exchange_name= The default exchange name
 - environment= Forces the environment to something other than the value of BASQUIAT_ENV

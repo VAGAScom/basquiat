@@ -7,9 +7,12 @@ module Basquiat
       class Connection < SimpleDelegator
         # @param hosts: [Array<String>] IPs or FQDN of the RabbitMQ instances
         # @param port [Fixnum] Port that the RabbitMQ instances run
+        # @option failover: [Fixnum|Symbol] :heartbeat (:server) Heartbeat timeout to offer to the server
         # @option failover: [Fixnum] :max_retries (5) Maximum number of reconnection retries
         # @option failover: [Fixnum] :default_timeout (5) Interval between to reconnect attempts
         # @option failover: [Fixnum] :connection_timeout (5) Allowed time before a connection attempt timeouts
+        # @option failover: [Fixnum] :read_timeout (30) TCP socket read timeout in seconds
+        # @option failover: [Fixnum] :write_timeout (30) TCP socket write timeout in seconds
         # @option auth: [String] :user ('guest')
         # @option auth: [String] :password ('guest')
         def initialize(hosts:, port: 5672, failover: {}, auth: {})
@@ -22,7 +25,7 @@ module Basquiat
         # Creates a channel
         # @return [Bunny::Channel]
         def create_channel
-          connection.start
+          connection.start unless connected?
           Basquiat.logger.debug 'Creating a new channel'
           connection.create_channel
         end
@@ -53,14 +56,17 @@ module Basquiat
         end
 
         def connection
-          @connection ||= Bunny.new(
+          @connection ||= Basquiat.configuration.connection || Bunny.new(
             hosts:                     @hosts,
             port:                      @port,
             username:                  @auth.fetch(:user, 'guest'),
             password:                  @auth.fetch(:password, 'guest'),
+            heartbeat:                 @failover.fetch(:heartbeat, :server),
             recovery_attempts:         @failover.fetch(:max_retries, 5),
             network_recovery_interval: @failover.fetch(:default_timeout, 5),
             connection_timeout:        @failover.fetch(:connection_timeout, 5),
+            read_timeout:              @failover.fetch(:read_timeout, 30),
+            write_timeout:             @failover.fetch(:write_timeout, 30),
             logger:                    Basquiat.logger
           )
           __setobj__(@connection)
