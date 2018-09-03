@@ -15,7 +15,7 @@ module Basquiat
       @yaml        = {}
       @rescue_proc = lambda do |exception, message|
         logger.error do
-          { exception: exception, stack_trace: exception.stack_trace, message: message }.to_json
+          { exception: exception, backtrace: exception.backtrace, message: message }.to_json
         end
         raise exception
       end
