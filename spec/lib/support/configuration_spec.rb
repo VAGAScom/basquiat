@@ -37,6 +37,17 @@ RSpec.describe Basquiat::Configuration do
       expect(config.exchange_name).to eq('basquiat.exchange')
     end
 
+    it '#connection' do
+      expect(config.connection).to be_nil
+    end
+
+    it '#connection=' do
+      connection = spy('connection')
+      config.connection = connection
+
+      expect(config.connection).to eq(connection)
+    end
+
     it '#logger' do
       expect(config.logger).not_to be_nil
     end

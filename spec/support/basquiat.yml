@@ -1,4 +1,11 @@
-test:
+failure_options: &failure_options
+  failover:
+    default_timeout: 1
+    read_timeout: 5
+    write_timeout: 3
+    max_retries: 3
+
+test: &test
   exchange_name: 'my.test_exchange'
   queue_name: 'my.nice_queue'
   default_adapter: Basquiat::Adapters::Test
@@ -10,6 +17,7 @@ test:
       auth:
         user: 'guest'
         password: 'guest'
+      <<: *failure_options
     consumer:
       prefetch: 1
       manual_ack: true

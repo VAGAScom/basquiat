@@ -43,7 +43,11 @@ module Basquiat
       # @param message [Hash] the message to be publish
       # @param props [Hash] other properties you wish to publish with the message, such as custom headers etc.
       def publish(event, message, props: {})
-        session.publish(event, message, props)
+        if options[:publisher][:session_pool]
+          session_pool.with { |session| session.publish(event, message, props) }
+        else
+          session.publish(event, message, props)
+        end
         disconnect unless options[:publisher][:persistent]
       end
 
@@ -67,9 +71,10 @@ module Basquiat
       # Reset the connection to RabbitMQ.
       def reset_connection
         connection.disconnect
-        @connection = nil
-        @session    = nil
-        @strategy   = nil
+        @connection   = nil
+        @session      = nil
+        @session_pool = nil
+        @strategy     = nil
       end
 
       alias disconnect reset_connection
@@ -84,6 +89,15 @@ module Basquiat
       # @return [Session]
       def session
         @session ||= Session.new(connection.create_channel, @configuration.session_options)
+      end
+
+      # Lazy initializes and return the session pool
+      # @return [ConnectionPool<Session>]
+      def session_pool
+        @session_pool ||= ConnectionPool.new(size: options[:publisher][:session_pool].fetch(:size, 1),
+                                             timeout: options[:publisher][:session_pool].fetch(:timeout, 5)) do
+          Session.new(connection.create_channel, @configuration.session_options)
+        end
       end
 
       private

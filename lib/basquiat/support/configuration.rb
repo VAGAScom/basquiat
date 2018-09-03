@@ -32,10 +32,12 @@ module Basquiat
     #     or :development
     attr_writer :queue_name, :exchange_name, :logger, :environment
 
+    # @!attribute connection - Makes Basquiat to use a provided connection
+    #   @return [Object] the provided connection
     # @!attribute rescue_proc
     #   @return [#call] return the callable to be executed when some exception is thrown. The callable receives the
     #     exception and message
-    attr_accessor :rescue_proc
+    attr_accessor :connection, :rescue_proc
 
     def queue_name
       @queue_name || 'basquiat.queue'
@@ -82,7 +84,7 @@ module Basquiat
     end
 
     def load_yaml(path)
-      @yaml = YAML.safe_load(ERB.new(IO.readlines(path).join).result, [Symbol]).symbolize_keys
+      @yaml = YAML.safe_load(ERB.new(IO.readlines(path).join).result, [Symbol], [], true).symbolize_keys
     end
 
     def setup_basic_options
