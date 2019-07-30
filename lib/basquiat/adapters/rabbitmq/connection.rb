@@ -7,6 +7,12 @@ module Basquiat
       class Connection < SimpleDelegator
         # @param hosts: [Array<String>] IPs or FQDN of the RabbitMQ instances
         # @param port [Fixnum] Port that the RabbitMQ instances run
+        # @param vhost [String] Virtual host
+        # @option tls_options [Boolean] :tls when set to true, will set SSL context up and switch to TLS port (5671)
+        # @option tls_options [String] :tls_cert string path to the client certificate (public key) in PEM format
+        # @option tls_options [String] :tls_key string path to the client key (private key) in PEM format
+        # @option tls_options [Array<String>] :tls_ca_certificates array of string paths to CA certificates in PEM format
+        # @option tls_options [Boolean] :verify_peer determines if TLS peer authentication (verification) is performed, true by default
         # @option failover: [Fixnum|Symbol] :heartbeat (:server) Heartbeat timeout to offer to the server
         # @option failover: [Fixnum] :max_retries (5) Maximum number of reconnection retries
         # @option failover: [Fixnum] :default_timeout (5) Interval between to reconnect attempts
@@ -15,11 +21,13 @@ module Basquiat
         # @option failover: [Fixnum] :write_timeout (30) TCP socket write timeout in seconds
         # @option auth: [String] :user ('guest')
         # @option auth: [String] :password ('guest')
-        def initialize(hosts:, port: 5672, failover: {}, auth: {})
-          @hosts    = hosts
-          @port     = port
-          @failover = failover
-          @auth     = auth
+        def initialize(hosts:, port: 5672, vhost: '/', tls_options: {}, failover: {}, auth: {})
+          @hosts       = hosts
+          @port        = port
+          @vhost       = vhost
+          @tls_options = tls_options
+          @failover    = failover
+          @auth        = auth
         end
 
         # Creates a channel
@@ -55,10 +63,10 @@ module Basquiat
           __setobj__(nil)
         end
 
-        def connection
-          @connection ||= Basquiat.configuration.connection || Bunny.new(
-            hosts:                     @hosts,
+        def configuration
+          { hosts:                     @hosts,
             port:                      @port,
+            vhost:                     @vhost,
             username:                  @auth.fetch(:user, 'guest'),
             password:                  @auth.fetch(:password, 'guest'),
             heartbeat:                 @failover.fetch(:heartbeat, :server),
@@ -67,7 +75,12 @@ module Basquiat
             connection_timeout:        @failover.fetch(:connection_timeout, 5),
             read_timeout:              @failover.fetch(:read_timeout, 30),
             write_timeout:             @failover.fetch(:write_timeout, 30),
-            logger:                    Basquiat.logger
+            logger:                    Basquiat.logger }.merge(@tls_options)
+        end
+
+        def connection
+          @connection ||= Basquiat.configuration.connection || Bunny.new(
+            configuration
           )
           __setobj__(@connection)
         end
