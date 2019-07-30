@@ -104,6 +104,8 @@ development:                                #full example of the RabbitMq option
       auth:
         user: 'guest'
         password: 'guest'
+      tls_options:
+        tls: false
     publisher:
       confirm: true
       persistent: true
