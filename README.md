@@ -101,6 +101,7 @@ development:                                #full example of the RabbitMq option
       hosts:
         - 'localhost'
       port: 5672
+      vhost: '/'
       auth:
         user: 'guest'
         password: 'guest'
