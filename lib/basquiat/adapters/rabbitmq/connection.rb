@@ -21,13 +21,14 @@ module Basquiat
         # @option failover: [Fixnum] :write_timeout (30) TCP socket write timeout in seconds
         # @option auth: [String] :user ('guest')
         # @option auth: [String] :password ('guest')
-        def initialize(hosts:, port: 5672, vhost: '/', tls_options: {}, failover: {}, auth: {})
-          @hosts       = hosts
-          @port        = port
-          @vhost       = vhost
-          @tls_options = tls_options
-          @failover    = failover
-          @auth        = auth
+        #def initialize(hosts:, port: 5672, vhost: '/', tls_options: {}, failover: {}, auth: {}, **kwargs)
+        def initialize(args, **kwargs)
+          @hosts       = args[:hosts]
+          @port        = args[:port]
+          @vhost       = args[:vhost]
+          @tls_options = args[:tls_options]
+          @failover    = args[:failover]
+          @auth        = args[:auth]
         end
 
         # Creates a channel
@@ -69,13 +70,18 @@ module Basquiat
             vhost:                     @vhost,
             username:                  @auth.fetch(:user, 'guest'),
             password:                  @auth.fetch(:password, 'guest'),
-            heartbeat:                 @failover.fetch(:heartbeat, :server),
-            recovery_attempts:         @failover.fetch(:max_retries, 5),
-            network_recovery_interval: @failover.fetch(:default_timeout, 5),
-            connection_timeout:        @failover.fetch(:connection_timeout, 5),
-            read_timeout:              @failover.fetch(:read_timeout, 30),
-            write_timeout:             @failover.fetch(:write_timeout, 30),
+            heartbeat:                 set_failover_opt('heartbeat', :server),
+            recovery_attempts:         set_failover_opt('max_retries', 5),
+            network_recovery_interval: set_failover_opt('default_timeout', 5),
+            connection_timeout:        set_failover_opt('connection_timeout', 5),
+            read_timeout:              set_failover_opt('read_timeout', 30),
+            write_timeout:             set_failover_opt('write_timeout', 30),
             logger:                    Basquiat.logger }.merge(@tls_options)
+        end
+
+        def set_failover_opt(key, default_value)
+          return default_value if @failover.nil?
+          return @failover.fetch(key.to_sym, default_value)
         end
 
         def connection

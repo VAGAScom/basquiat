@@ -13,6 +13,9 @@ module Basquiat
 
     refine Hash do
       def deep_merge(other_hash)
+        if (other_hash.is_a?(Array))
+          other_hash = other_hash[0]
+        end
         other_hash.each_pair do |key, value|
           current = self[key]
           if current.is_a?(Hash) && value.is_a?(Hash)

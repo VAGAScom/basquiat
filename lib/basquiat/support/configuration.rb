@@ -84,7 +84,7 @@ module Basquiat
     end
 
     def load_yaml(path)
-      @yaml = YAML.safe_load(ERB.new(IO.readlines(path).join).result, [Symbol], [], true).symbolize_keys
+      @yaml = YAML.safe_load(ERB.new(IO.readlines(path).join).result).symbolize_keys
     end
 
     def setup_basic_options

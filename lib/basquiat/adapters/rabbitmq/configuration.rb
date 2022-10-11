@@ -39,7 +39,7 @@ module Basquiat
         # @option user_opts [Hash{Symbol=>Object}] :publisher
         # @option user_opts [Hash{Symbol=>Object}] :requeue
         # @return [Hash] the configuration option hash
-        def merge_user_options(**user_opts)
+        def merge_user_options(*user_opts, **kwargs)
           @options.deep_merge(user_opts)
         end
 
