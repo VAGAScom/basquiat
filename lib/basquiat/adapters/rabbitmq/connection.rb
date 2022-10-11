@@ -21,7 +21,6 @@ module Basquiat
         # @option failover: [Fixnum] :write_timeout (30) TCP socket write timeout in seconds
         # @option auth: [String] :user ('guest')
         # @option auth: [String] :password ('guest')
-        #def initialize(hosts:, port: 5672, vhost: '/', tls_options: {}, failover: {}, auth: {}, **kwargs)
         def initialize(args, **kwargs)
           @hosts       = args[:hosts]
           @port        = args[:port]
